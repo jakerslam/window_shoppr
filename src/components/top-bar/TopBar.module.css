@@ -1,0 +1,67 @@
+.topBar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 16px;
+  padding: 18px min(1200px, 92vw);
+  margin: 0 auto;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.topBar__brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.topBar__logo {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-primary-strong);
+  letter-spacing: 0.3px;
+}
+
+.topBar__nav {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.topBar__navLink {
+  font-size: 14px;
+  color: var(--color-text-muted);
+  padding: 6px 8px;
+  border-radius: 999px;
+  background: var(--color-surface-muted);
+}
+
+.topBar__search {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.topBar__searchInput {
+  width: min(220px, 36vw);
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: #fff;
+}
+
+.topBar__actions {
+  display: flex;
+  align-items: center;
+}
+
+.topBar__login {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-primary-strong);
+  font-weight: 600;
+}
