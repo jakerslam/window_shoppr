@@ -174,10 +174,10 @@ export default function TopBar() {
           Wishlist
         </Link>
 
-        {/* Login placeholder action. */}
-        <button className={styles.topBar__actionButton} type="button">
+        {/* Login action linking to modal/page. */}
+        <Link className={styles.topBar__actionButton} href="/login">
           Login
-        </button>
+        </Link>
       </div>
     </header>
   );

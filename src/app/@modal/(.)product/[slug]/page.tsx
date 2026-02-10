@@ -1,6 +1,7 @@
 import Modal from "@/components/modal/Modal";
 import ProductDetail from "@/components/product-detail/ProductDetail";
 import { fetchProductBySlug } from "@/lib/data";
+import styles from "@/app/@modal/(.)product/[slug]/page.module.css";
 
 /**
  * Modal overlay for product details when navigating from the feed.
@@ -19,7 +20,7 @@ export default async function ProductModal({
   }
 
   return (
-    <Modal>
+    <Modal contentClassName={styles.productModal}>
       {/* Product details with modal-aware back button. */}
       <ProductDetail product={product} inModal />
     </Modal>

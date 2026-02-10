@@ -192,7 +192,7 @@
   padding: 0 40px 0 12px;
   border-radius: 999px;
   border: 1px solid var(--color-border);
-  background: var(--color-surface);
+  background: var(--color-surface-muted);
   color: var(--color-primary-strong);
   font-weight: 600;
 }
@@ -246,4 +246,19 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+
+.topBar__categoriesTrigger:hover {
+  opacity: 0.7;
+}
+
+.topBar__actionButton {
+  cursor: pointer;
+  transition: opacity 150ms ease;
+  font-size: 14px;
+}
+
+.topBar__actionButton:hover {
+  opacity: 0.7;
 }

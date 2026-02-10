@@ -1,19 +1,40 @@
 "use client";
 
 import { useCallback, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import styles from "@/components/modal/Modal.module.css";
 
 /**
  * Modal shell that overlays content above the page.
  */
-export default function Modal({ children }: { children: React.ReactNode }) {
+export default function Modal({
+  children,
+  contentClassName,
+  contentStyle,
+}: {
+  children: React.ReactNode;
+  contentClassName?: string;
+  contentStyle?: React.CSSProperties;
+}) {
   const router = useRouter();
+  const pathname = usePathname();
 
   // Close the modal by navigating back in history.
   const handleClose = useCallback(() => {
     router.back(); // Return to the previous route to dismiss the modal.
-  }, [router]);
+
+    if (typeof window === "undefined") {
+      return; // Skip secondary close when not in the browser.
+    }
+
+    if (pathname === "/login" || pathname === "/signup") {
+      window.setTimeout(() => {
+        if (window.location.pathname === "/login" || window.location.pathname === "/signup") {
+          router.back(); // Ensure modal closes when switching between auth routes.
+        }
+      }, 0);
+    }
+  }, [pathname, router]);
 
   // Wire escape key handling and lock background scroll.
   useEffect(() => {
@@ -43,7 +64,20 @@ export default function Modal({ children }: { children: React.ReactNode }) {
       />
 
       {/* Content container for modal body. */}
-      <div className={styles.modal__content}>
+      <div
+        className={`${styles.modal__content} ${contentClassName ?? ""}`}
+        style={contentStyle} // Optional inline overrides for sizing.
+      >
+        {/* Close button for explicit dismissal. */}
+        <button
+          className={styles.modal__close}
+          type="button"
+          aria-label="Close modal"
+          onClick={handleClose} // Close modal on button click.
+        >
+          ×
+        </button>
+
         {/* Modal body content. */}
         {children}
       </div>

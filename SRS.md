@@ -6,7 +6,7 @@
 - [NEXT] Selected next requirement
 
 ## Core Requirements
-- [NEXT] 🔵 R12.2: Login modal/page UI with auth handler stubs
+- [x] R12.2: Login modal/page UI with auth handler stubs
 - [x] R1: Initialize architecture (Next.js + TypeScript scaffold) and baseline project structure
 - [x] R2: Define core data model and JSON fallback loading strategy (with SQL stubs)
 - [x] R3: Global layout with top bar (categories, search, login placeholder) and footer stub
