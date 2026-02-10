@@ -8,9 +8,11 @@ import { fetchProductBySlug } from "@/lib/data";
 export default async function ProductModal({
   params,
 }: {
-  params: { slug: string };
+  params: { slug: string } | Promise<{ slug: string }>;
 }) {
-  const product = await fetchProductBySlug(params.slug); // Load product by slug.
+  const resolvedParams = await params; // Support async params when applicable.
+  const slug = decodeURIComponent(resolvedParams.slug); // Normalize slug input.
+  const product = await fetchProductBySlug(slug); // Load product by slug.
 
   if (!product) {
     return null; // Skip modal when product is missing.

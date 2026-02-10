@@ -14,6 +14,7 @@ export type Product = {
   images: string[];
   description: string;
   affiliateUrl: string;
+  retailer?: string;
   videoUrl?: string;
   dealEndsAt?: string;
   isSponsored?: boolean;
@@ -23,5 +24,5 @@ export type Product = {
  * Centralized UI constants tied to product content display.
  */
 export const PRODUCT_UI = {
-  DESCRIPTION_PREVIEW_LIMIT: 400,
+  DESCRIPTION_PREVIEW_LIMIT: 800,
 } as const;

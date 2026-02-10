@@ -16,13 +16,14 @@
 - [x] R5.1: Add sample product images and update card layout (rectangular card, square image)
 - [x] R5.2: Add LLM operating instructions markdown
 - [x] R6.1: In-feed expansion overlay (desktop) with mobile direct navigation
-- [NEXT] R6: Product detail page template (back arrow, images, price, rating, description with "More")
-- [ ] R7: Deal-specific UI (timer, deal badge, crossed-out price)
+- [x] R6: Product detail page template (back arrow, images, price, rating, description with "More")
+- [NEXT] R7: Deal-specific UI (timer, deal badge, crossed-out price)
 - [ ] R8: Category pages and routing
 - [ ] R9: Email capture popup UI (delayed) with backend stubs
 - [ ] R10: SEO baseline (metadata, Open Graph, schema.org, sitemap, robots)
 - [ ] R11: Personalization stubs (recently viewed tracking/cookies)
 - [ ] R12: Wishlist UI stub and placeholder page
+- [ ] R12.1: Wishlist save menu (hover/long-press list selection)
 - [ ] R13: Animation system for mesmerizing scrolling columns (hover pause)
 - [ ] R14: Navigation menu with hover unfurl (categories -> subcategories)
 

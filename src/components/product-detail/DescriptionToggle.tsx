@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import styles from "@/components/product-detail/ProductDetail.module.css";
 
 /**
@@ -16,17 +16,19 @@ export default function DescriptionToggle({
   const [isExpanded, setIsExpanded] = useState(false);
   const shouldClamp = text.length > previewLimit; // Only show toggle when long.
 
+  const previewText = useMemo(() => {
+    if (!shouldClamp) {
+      return text; // Use full text when short.
+    }
+
+    return `${text.slice(0, previewLimit).trim()}...`; // Use preview length.
+  }, [previewLimit, shouldClamp, text]);
+
   return (
     <div className={styles.productDetail__description}>
-      {/* Description content with optional clamping. */}
-      <p
-        className={`${styles.productDetail__descriptionText} ${
-          !isExpanded && shouldClamp
-            ? styles["productDetail__descriptionText--clamped"]
-            : ""
-        }`}
-      >
-        {text}
+      {/* Description content with optional expansion. */}
+      <p className={styles.productDetail__descriptionText}>
+        {isExpanded ? text : previewText}
       </p>
 
       {/* Expand/collapse toggle for longer descriptions. */}
