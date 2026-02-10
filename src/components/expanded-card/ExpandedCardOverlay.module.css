@@ -7,7 +7,7 @@
 .expandedOverlay__backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(20, 16, 12, 0.35);
+  background: rgba(20, 16, 12, 0.42);
   backdrop-filter: blur(3px);
   -webkit-backdrop-filter: blur(3px);
 }
@@ -48,6 +48,11 @@
   font-weight: 700;
   cursor: pointer;
 }
+
+
+expandedOverlay__close:hover {
+  opacity: 0.5;
+} 
 
 .expandedOverlay__save {
   position: absolute;
@@ -163,8 +168,10 @@
 
 .expandedOverlay__hint {
   margin-top: auto;
+  margin-right: auto;
   font-size: 13px;
   font-weight: 600;
   text-align: center;
   color: var(--color-text-muted);
 }
+
