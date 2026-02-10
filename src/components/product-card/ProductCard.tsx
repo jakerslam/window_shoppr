@@ -9,14 +9,37 @@ const formatPrice = (price: number) => `$${price.toFixed(2)}`;
 /**
  * Product card with square image, name, and price section.
  */
-export default function ProductCard({ product }: { product: Product }) {
+export default function ProductCard({
+  product,
+  onOpen,
+  onWishlist,
+  isSaved = false,
+}: {
+  product: Product;
+  onOpen?: (event: React.SyntheticEvent<HTMLElement>) => void;
+  onWishlist?: (product: Product) => void;
+  isSaved?: boolean;
+}) {
   const hasDeal =
     typeof product.originalPrice === "number" &&
     product.originalPrice > product.price; // Determine if strike price should show.
   const imageSrc = product.images[0] ?? "/images/sample-01.svg"; // Use first image or fallback.
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      onOpen?.(event); // Trigger open on keyboard activation.
+    }
+  };
+
   return (
-    <article className={styles.productCard}>
+    <article
+      className={styles.productCard}
+      role="button"
+      tabIndex={0}
+      onClick={onOpen}
+      onKeyDown={handleKeyDown}
+    >
       {/* Image section kept square regardless of source image ratio. */}
       <div className={styles.productCard__media}>
         <img
@@ -46,11 +69,17 @@ export default function ProductCard({ product }: { product: Product }) {
         </div>
 
         <button
-          className={styles.productCard__wishlist}
+          className={`${styles.productCard__wishlist} ${
+            isSaved ? styles["productCard__wishlist--saved"] : ""
+          }`}
           type="button"
-          aria-label="Save to wishlist"
+          aria-label={isSaved ? "Remove from wishlist" : "Save to wishlist"}
+          onClick={(event) => {
+            event.stopPropagation();
+            onWishlist?.(product);
+          }}
         >
-          ☆
+          {isSaved ? "★" : "☆"}
         </button>
       </div>
     </article>
