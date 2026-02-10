@@ -71,6 +71,10 @@ export default function ExpandedCardOverlay({
     () => formatTimeRemaining(product.dealEndsAt),
     [product.dealEndsAt],
   );
+  const hasDeal =
+    typeof product.originalPrice === "number" &&
+    product.originalPrice > product.price; // Determine if strike price should show.
+  const showDealBadge = hasDeal || Boolean(dealLabel); // Show badge for active deals.
 
   const ratingValue = product.rating ?? 0;
   const ratingPercent = clamp((ratingValue / 5) * 100, 0, 100);
@@ -143,6 +147,10 @@ export default function ExpandedCardOverlay({
 
         {/* Image preview for context. */}
         <div className={styles.expandedOverlay__media}>
+          {/* Deal badge positioned on the media frame. */}
+          {showDealBadge ? (
+            <span className={styles.expandedOverlay__badge}>Deal</span>
+          ) : null}
           <img src={mainImage} alt={product.name} />
         </div>
 

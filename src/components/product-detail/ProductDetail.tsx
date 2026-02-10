@@ -16,6 +16,37 @@ const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
 
 /**
+ * Format time remaining until a deal expires.
+ */
+const formatTimeRemaining = (dealEndsAt?: string) => {
+  if (!dealEndsAt) {
+    return null; // No timer when deal end is missing.
+  }
+
+  const endTime = new Date(dealEndsAt).getTime();
+  const diffMs = endTime - Date.now();
+
+  if (Number.isNaN(endTime) || diffMs <= 0) {
+    return "Deal ended";
+  }
+
+  const totalMinutes = Math.floor(diffMs / 60000);
+  const days = Math.floor(totalMinutes / 1440);
+  const hours = Math.floor((totalMinutes % 1440) / 60);
+  const minutes = totalMinutes % 60;
+
+  if (days > 0) {
+    return `Ends in ${days}d ${hours}h`;
+  }
+
+  if (hours > 0) {
+    return `Ends in ${hours}h ${minutes}m`;
+  }
+
+  return `Ends in ${minutes}m`;
+};
+
+/**
  * Product detail layout used for both page and modal views.
  */
 export default function ProductDetail({
@@ -26,6 +57,8 @@ export default function ProductDetail({
   const hasDeal =
     typeof product.originalPrice === "number" &&
     product.originalPrice > product.price; // Determine if strike price should show.
+  const dealLabel = formatTimeRemaining(product.dealEndsAt); // Compute deal timer when available.
+  const showDealBadge = hasDeal || Boolean(dealLabel); // Show badge for active deals.
   const ratingValue = product.rating ?? 0; // Default to zero for fill calculations.
   const ratingPercent = clamp((ratingValue / 5) * 100, 0, 100); // Convert rating to percent.
   const ratingText = product.rating
@@ -65,6 +98,16 @@ export default function ProductDetail({
               </span>
             )}
           </div>
+
+          {/* Deal badge with optional timer text. */}
+          {showDealBadge ? (
+            <div className={styles.productDetail__dealRow}>
+              <span className={styles.productDetail__badge}>Deal</span>
+              {dealLabel ? (
+                <span className={styles.productDetail__dealTime}>{dealLabel}</span>
+              ) : null}
+            </div>
+          ) : null}
 
           {/* Rating stars with review count text. */}
           <div className={styles.productDetail__ratingRow}>

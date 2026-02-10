@@ -81,6 +81,7 @@ expandedOverlay__close:hover {
 }
 
 .expandedOverlay__media {
+  position: relative;
   width: 100%;
   aspect-ratio: 4 / 3;
   border-radius: 16px;
@@ -99,6 +100,22 @@ expandedOverlay__close:hover {
   font-size: 20px;
   font-weight: 700;
   color: var(--color-fg);
+}
+
+
+.expandedOverlay__badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: var(--color-warning);
+  color: var(--color-text-inverse);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  border-radius: 999px;
+  z-index: 1;
 }
 
 .expandedOverlay__metaRow {
