@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import TopBar from "@/components/top-bar/TopBar";
 import CategoryFilterProvider from "@/components/category-filter/CategoryFilterProvider";
 import Footer from "@/components/footer/Footer";
+import EmailCaptureModal from "@/components/email-capture/EmailCaptureModal";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -42,6 +43,9 @@ export default function RootLayout({
 
             {/* Main content area for route content. */}
             <main className="site-shell__content">{children}</main>
+
+            {/* Delayed email capture prompt. */}
+            <EmailCaptureModal />
           </CategoryFilterProvider>
 
           {/* Footer stub for future links and info. */}

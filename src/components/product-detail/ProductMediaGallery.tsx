@@ -45,7 +45,8 @@ export default function ProductMediaGallery({
   onToggleSave: () => void;
 }) {
   const galleryItems = useMemo(() => {
-    const items: GalleryItem[] = images.map((src) => ({
+    const trimmedImages = images.slice(0, 5); // Limit gallery to five sample images.
+    const items: GalleryItem[] = trimmedImages.map((src) => ({
       type: "image",
       src,
     }));

@@ -36,6 +36,9 @@
 - [ ] R18: Error boundaries and graceful fallback UI
 - [ ] R19: Performance hooks (memoization/callbacks) where proven beneficial
 
+## Backend & Data
+- [ ] R30: SQL data layer wiring (products, wishlist, email capture submissions)
+
 ## Analytics & Revenue
 - [ ] R23: Click tracking for affiliate links
 - [ ] R24: Cookie consent + privacy/affiliate disclosure
