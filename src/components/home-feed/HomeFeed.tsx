@@ -1,8 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import type { CSSProperties } from "react";
 import { Product } from "@/lib/types";
 import ProductCard from "@/components/product-card/ProductCard";
+import ExpandedCardOverlay from "@/components/expanded-card/ExpandedCardOverlay";
 import styles from "@/components/home-feed/HomeFeed.module.css";
 
 /**
@@ -16,11 +18,41 @@ type SortOption = "top-rated" | "newest" | "price-low" | "price-high";
 const normalizeText = (value: string) => value.trim().toLowerCase();
 
 /**
- * Client-side feed renderer with sorting and search controls.
+ * Compute an expanded overlay style that stays inside the viewport.
+ */
+const buildExpandedStyle = (rect: DOMRect): CSSProperties => {
+  const scale = 1.5;
+  const margin = 16;
+  const targetWidth = rect.width * scale;
+  const targetHeight = rect.height * scale;
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + rect.height / 2;
+
+  let left = centerX - targetWidth / 2;
+  let top = centerY - targetHeight / 2;
+  const maxLeft = window.innerWidth - targetWidth - margin;
+  const maxTop = window.innerHeight - targetHeight - margin;
+
+  left = Math.min(Math.max(left, margin), Math.max(margin, maxLeft));
+  top = Math.min(Math.max(top, margin), Math.max(margin, maxTop));
+
+  return {
+    left: `${left}px`,
+    top: `${top}px`,
+    width: `${targetWidth}px`,
+    height: `${targetHeight}px`,
+  };
+};
+
+/**
+ * Client-side feed renderer with sorting, search, and in-feed expansion.
  */
 export default function HomeFeed({ products }: { products: Product[] }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState<SortOption>("newest");
+  const [expandedProduct, setExpandedProduct] = useState<Product | null>(null);
+  const [expandedStyle, setExpandedStyle] = useState<CSSProperties | null>(null);
+  const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
 
   const filteredProducts = useMemo(() => {
     const normalizedQuery = normalizeText(searchQuery); // Normalize input for matching.
@@ -71,6 +103,39 @@ export default function HomeFeed({ products }: { products: Product[] }) {
     return productsCopy.sort((a, b) => b.price - a.price); // Highest price first.
   }, [filteredProducts, sortOption]);
 
+  const handleCardOpen =
+    (product: Product) => (event: React.SyntheticEvent<HTMLElement>) => {
+      if (window.matchMedia("(max-width: 900px)").matches) {
+        window.location.href = `/product/${product.slug}`; // Mobile navigates to full page.
+        return;
+      }
+
+      const rect = event.currentTarget.getBoundingClientRect(); // Anchor expansion to card.
+      setExpandedStyle(buildExpandedStyle(rect));
+      setExpandedProduct(product);
+    };
+
+  const handleCloseOverlay = () => {
+    setExpandedProduct(null);
+    setExpandedStyle(null);
+  };
+
+  const handleViewDetails = (product: Product) => {
+    window.location.href = `/product/${product.slug}`; // Full page view for details.
+  };
+
+  const handleSave = (product: Product) => {
+    setSavedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(product.id)) {
+        next.delete(product.id);
+      } else {
+        next.add(product.id);
+      }
+      return next;
+    });
+  };
+
   return (
     <section className={styles.homeFeed}>
       {/* Header with title and controls. */}
@@ -110,7 +175,13 @@ export default function HomeFeed({ products }: { products: Product[] }) {
       {/* Grid of product cards. */}
       <div className={styles.homeFeed__grid}>
         {sortedProducts.map((product) => (
-          <ProductCard key={product.id} product={product} />
+          <ProductCard
+            key={product.id}
+            product={product}
+            onOpen={handleCardOpen(product)}
+            onWishlist={handleSave}
+            isSaved={savedIds.has(product.id)}
+          />
         ))}
       </div>
 
@@ -120,6 +191,18 @@ export default function HomeFeed({ products }: { products: Product[] }) {
           No results yet. Try a different search.
         </div>
       )}
+
+      {/* In-feed expanded overlay for desktop users. */}
+      {expandedProduct && expandedStyle ? (
+        <ExpandedCardOverlay
+          product={expandedProduct}
+          style={expandedStyle}
+          onClose={handleCloseOverlay}
+          onViewDetails={() => handleViewDetails(expandedProduct)}
+          onSave={handleSave}
+          isSaved={savedIds.has(expandedProduct.id)}
+        />
+      ) : null}
     </section>
   );
 }

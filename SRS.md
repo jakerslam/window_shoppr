@@ -14,7 +14,9 @@
 - [x] R4: Home feed grid with sorting and search (client-side)
 - [x] R5: Product card design (name truncation, price/strike, wishlist star stub)
 - [x] R5.1: Add sample product images and update card layout (rectangular card, square image)
-- [NEXT] R6: Product detail page template (back arrow, images, price, rating, description with "More")
+- [x] R5.2: Add LLM operating instructions markdown
+- [NEXT] R6.1: In-feed expansion overlay (desktop) with mobile direct navigation
+- [ ] R6: Product detail page template (back arrow, images, price, rating, description with "More")
 - [ ] R7: Deal-specific UI (timer, deal badge, crossed-out price)
 - [ ] R8: Category pages and routing
 - [ ] R9: Email capture popup UI (delayed) with backend stubs
