@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useWishlist } from "@/lib/wishlist";
 import type { CSSProperties } from "react";
 import { Product } from "@/lib/types";
 import ProductCard from "@/components/product-card/ProductCard";
@@ -52,7 +53,7 @@ export default function HomeFeed({ products }: { products: Product[] }) {
   const [sortOption, setSortOption] = useState<SortOption>("newest");
   const [expandedProduct, setExpandedProduct] = useState<Product | null>(null);
   const [expandedStyle, setExpandedStyle] = useState<CSSProperties | null>(null);
-  const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
+  const { isSaved, toggleSaved } = useWishlist(); // Shared wishlist state.
 
   const filteredProducts = useMemo(() => {
     const normalizedQuery = normalizeText(searchQuery); // Normalize input for matching.
@@ -125,15 +126,7 @@ export default function HomeFeed({ products }: { products: Product[] }) {
   };
 
   const handleSave = (product: Product) => {
-    setSavedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(product.id)) {
-        next.delete(product.id);
-      } else {
-        next.add(product.id);
-      }
-      return next;
-    });
+    toggleSaved(product.id); // Toggle saved state and persist it.
   };
 
   return (
@@ -180,7 +173,7 @@ export default function HomeFeed({ products }: { products: Product[] }) {
             product={product}
             onOpen={handleCardOpen(product)}
             onWishlist={handleSave}
-            isSaved={savedIds.has(product.id)}
+            isSaved={isSaved(product.id)}
           />
         ))}
       </div>
@@ -200,7 +193,7 @@ export default function HomeFeed({ products }: { products: Product[] }) {
           onClose={handleCloseOverlay}
           onViewDetails={() => handleViewDetails(expandedProduct)}
           onSave={handleSave}
-          isSaved={savedIds.has(expandedProduct.id)}
+          isSaved={isSaved(expandedProduct.id)}
         />
       ) : null}
     </section>

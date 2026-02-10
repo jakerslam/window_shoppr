@@ -17,8 +17,8 @@
 - [x] R5.2: Add LLM operating instructions markdown
 - [x] R6.1: In-feed expansion overlay (desktop) with mobile direct navigation
 - [x] R6: Product detail page template (back arrow, images, price, rating, description with "More")
-- [NEXT] R7: Deal-specific UI (timer, deal badge, crossed-out price)
-- [ ] R8: Category pages and routing
+- [x] R7: Deal-specific UI (timer, deal badge, crossed-out price)
+- [NEXT] R8: Category pages and routing
 - [ ] R9: Email capture popup UI (delayed) with backend stubs
 - [ ] R10: SEO baseline (metadata, Open Graph, schema.org, sitemap, robots)
 - [ ] R11: Personalization stubs (recently viewed tracking/cookies)

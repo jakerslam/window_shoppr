@@ -35,10 +35,14 @@ export default function ProductMediaGallery({
   images,
   videoUrl,
   name,
+  isSaved,
+  onToggleSave,
 }: {
   images: string[];
   videoUrl?: string;
   name: string;
+  isSaved: boolean;
+  onToggleSave: () => void;
 }) {
   const galleryItems = useMemo(() => {
     const items: GalleryItem[] = images.map((src) => ({
@@ -54,7 +58,6 @@ export default function ProductMediaGallery({
   }, [images, videoUrl]);
 
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [isSaved, setIsSaved] = useState(false); // Track wishlist state locally for now.
   const safeSelectedIndex = Math.min(
     selectedIndex,
     Math.max(galleryItems.length - 1, 0),
@@ -99,7 +102,7 @@ export default function ProductMediaGallery({
           type="button"
           aria-pressed={isSaved}
           aria-label={isSaved ? "Remove from wishlist" : "Save to wishlist"}
-          onClick={() => setIsSaved((prev) => !prev)} // Toggle local save state.
+          onClick={onToggleSave} // Toggle wishlist state.
         >
           {isSaved ? "★" : "☆"}
         </button>
