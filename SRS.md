@@ -6,6 +6,7 @@
 - [NEXT] Selected next requirement
 
 ## Core Requirements
+- [x] R12.2: Login modal/page UI with auth handler stubs
 - [x] R1: Initialize architecture (Next.js + TypeScript scaffold) and baseline project structure
 - [x] R2: Define core data model and JSON fallback loading strategy (with SQL stubs)
 - [x] R3: Global layout with top bar (categories, search, login placeholder) and footer stub
@@ -16,17 +17,20 @@
 - [x] R5.1: Add sample product images and update card layout (rectangular card, square image)
 - [x] R5.2: Add LLM operating instructions markdown
 - [x] R6.1: In-feed expansion overlay (desktop) with mobile direct navigation
-- [NEXT] R6: Product detail page template (back arrow, images, price, rating, description with "More")
-- [ ] R7: Deal-specific UI (timer, deal badge, crossed-out price)
-- [ ] R8: Category pages and routing
-- [ ] R9: Email capture popup UI (delayed) with backend stubs
-- [ ] R10: SEO baseline (metadata, Open Graph, schema.org, sitemap, robots)
-- [ ] R11: Personalization stubs (recently viewed tracking/cookies)
-- [ ] R12: Wishlist UI stub and placeholder page
+- [x] R6: Product detail page template (back arrow, images, price, rating, description with "More")
+- [x] R7: Deal-specific UI (timer, deal badge, crossed-out price)
+- [x] R8: Category pages and routing
+- [x] R9: Email capture popup UI (delayed) with backend stubs
+- [x] R10: SEO baseline (metadata, Open Graph, schema.org, sitemap, robots)
+- [x] R11: Personalization stubs (recently viewed tracking/cookies)
+- [ ] R11.1: Personalization display rules (use cookies/recently viewed to tailor content)
+- [x] R12: Wishlist UI stub and placeholder page
+- [NEXT] 🔵 R12.1: Wishlist save menu (hover/long-press list selection)
 - [ ] R13: Animation system for mesmerizing scrolling columns (hover pause)
 - [ ] R14: Navigation menu with hover unfurl (categories -> subcategories)
 
 ## SEO & Growth
+- [ ] R25 (Phase 2 Optional): AI-curated blog engine with intent-to-product mapping (pillar templates, FAQ schema)
 - [ ] R20: SEO structured data (Product/Offer JSON-LD)
 - [ ] R21: Sitemap, robots, and canonical URLs
 
@@ -34,6 +38,10 @@
 - [ ] R22: Image optimization and lazy-loading
 - [ ] R18: Error boundaries and graceful fallback UI
 - [ ] R19: Performance hooks (memoization/callbacks) where proven beneficial
+
+## Backend & Data
+- [ ] R12.3: Account management wiring (backend/auth integration)
+- [ ] R30: SQL data layer wiring (products, wishlist, email capture submissions)
 
 ## Analytics & Revenue
 - [ ] R23: Click tracking for affiliate links
@@ -52,6 +60,9 @@
 - [ ] O1: Extract product sorting/filtering into reusable helpers
 - [ ] O2: Add search weighting and relevance scoring
 - [ ] O3: Add pagination/virtualization for large product sets
+- [ ] R26: Wishlist search input (filter saved items)
+- [ ] R27: Wishlist list deletion (remove list entirely)
+
 
 ## Notes
 - Branding target: "Window Shoppr" (finalized)

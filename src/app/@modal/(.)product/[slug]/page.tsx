@@ -1,6 +1,7 @@
 import Modal from "@/components/modal/Modal";
 import ProductDetail from "@/components/product-detail/ProductDetail";
 import { fetchProductBySlug } from "@/lib/data";
+import styles from "@/app/@modal/(.)product/[slug]/page.module.css";
 
 /**
  * Modal overlay for product details when navigating from the feed.
@@ -8,17 +9,20 @@ import { fetchProductBySlug } from "@/lib/data";
 export default async function ProductModal({
   params,
 }: {
-  params: { slug: string };
+  params: { slug: string } | Promise<{ slug: string }>;
 }) {
-  const product = await fetchProductBySlug(params.slug); // Load product by slug.
+  const resolvedParams = await params; // Support async params when applicable.
+  const slug = decodeURIComponent(resolvedParams.slug); // Normalize slug input.
+  const product = await fetchProductBySlug(slug); // Load product by slug.
 
   if (!product) {
     return null; // Skip modal when product is missing.
   }
 
   return (
-    <Modal>
-      <ProductDetail product={product} />
+    <Modal contentClassName={styles.productModal}>
+      {/* Product details with modal-aware back button. */}
+      <ProductDetail product={product} inModal />
     </Modal>
   );
 }

@@ -9,11 +9,18 @@
     "originalPrice": 59.99,
     "rating": 4.7,
     "ratingCount": 1842,
-    "images": ["/images/sample-01.svg"],
+    "images": [
+      "https://www.softminkyblankets.com/cdn/shop/products/Zzoriginals_86_x740.progressive.jpg?v=1680114249",
+      "/images/sample-01.svg",
+      "/images/sample-02.svg",
+      "/images/sample-03.svg",
+      "/images/sample-04.svg"
+    ],
     "description": "Cozy Cloud Throw Blanket is a soft, plush, all-season layer designed for couch lounging, nap-time, and movie nights. The microfiber weave keeps warmth in without overheating, while the breathable surface helps reduce static cling. The size is generous enough to share, yet light enough to toss in a carry bag for travel. Use it on a bed as an accent, on a chair as a texture boost, or as a comfort layer for quick afternoon resets. The fabric is gentle on skin, machine washable, and built to keep its loft after repeated cycles. This style pairs well with neutral rooms, warm tones, and minimalist spaces that need a soft pop. If you like weighted comfort without the heavy feel, this is the relaxing in-between option that stays cozy, tidy, and easy to maintain.",
     "affiliateUrl": "https://example.com/affiliate/blanket",
     "videoUrl": "https://www.youtube.com/watch?v=5qap5aO4i9A",
-    "dealEndsAt": "2026-02-28T23:59:59Z"
+    "dealEndsAt": "2026-02-28T23:59:59Z",
+    "retailer": "Amazon"
   },
   {
     "id": "prod-002",
@@ -24,9 +31,16 @@
     "price": 24.5,
     "rating": 4.4,
     "ratingCount": 612,
-    "images": ["/images/sample-02.svg"],
+    "images": [
+      "https://assets.wfcdn.com/im/45975112/resize-h600-w600%5Ecompr-r85/3539/353973289/Small+Desk+Fan+Battery+Powered+-+Cordless+Low+Noise+Quiet+Portable+Gentle+Blowing+Without+Headaches+Office+Bedroom+Sleep+Living+Room+Table+Top+Wall+Hanging+Kitchen+Travel+Camping+5-Speed+360+Rotation.jpg",
+      "/images/sample-01.svg",
+      "/images/sample-02.svg",
+      "/images/sample-03.svg",
+      "/images/sample-04.svg"
+    ],
     "description": "Glow Breeze Mini Desk Fan delivers a quiet cooling stream for work desks, vanity spaces, and small bedside tables. The compact frame tucks neatly under shelves, while a multi-angle tilt lets you direct airflow without shifting your workspace. It uses a low-power motor for steady comfort and can run for long stretches without the high hum typical of bigger units. The styling leans clean and modern, making it a good fit for cozy rooms and minimalist setups. Use it as a light summer companion or a year-round airflow helper that keeps you comfortable while you focus. Setup takes seconds, and the simple control dial keeps it easy to use for anyone who prefers straightforward, no-fuss gear.",
-    "affiliateUrl": "https://example.com/affiliate/fan"
+    "affiliateUrl": "https://example.com/affiliate/fan",
+    "retailer": "Best Buy"
   },
   {
     "id": "prod-003",
@@ -38,10 +52,17 @@
     "originalPrice": 36.0,
     "rating": 4.5,
     "ratingCount": 410,
-    "images": ["/images/sample-03.svg"],
+    "images": [
+      "data:image/jpeg;base64,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",
+      "/images/sample-01.svg",
+      "/images/sample-02.svg",
+      "/images/sample-03.svg",
+      "/images/sample-04.svg"
+    ],
     "description": "LunaLift Collagen Matcha blends ceremonial-grade green tea with collagen peptides for a smooth, lightly sweet cup that fits into morning rituals. It dissolves easily in warm water or oat milk, creating a creamy texture without gritty residue. The flavor is mellow and balanced, making it a simple swap for sugary coffee drinks while still offering a gentle caffeine lift. For people who like structured wellness habits, this is an easy daily add-on because the scoop size is consistent and the taste is mild enough to mix into smoothies or latte blends. The jar is compact for countertop storage, and the lid seals tightly to keep the powder fresh between uses.",
     "affiliateUrl": "https://example.com/affiliate/matcha",
-    "dealEndsAt": "2026-03-05T23:59:59Z"
+    "dealEndsAt": "2026-03-05T23:59:59Z",
+    "retailer": "Amazon"
   },
   {
     "id": "prod-004",
@@ -53,10 +74,17 @@
     "originalPrice": 64.99,
     "rating": 4.6,
     "ratingCount": 980,
-    "images": ["/images/sample-04.svg"],
+    "images": [
+      "https://image.chewy.com/catalog/general/images/moe/0691e23d-7a19-7c9e-8000-8d6b91c1022b._AC_SX500_SY400_QL75_V1_.jpg",
+      "/images/sample-01.svg",
+      "/images/sample-02.svg",
+      "/images/sample-03.svg",
+      "/images/sample-04.svg"
+    ],
     "description": "Pet Haven Calming Bed is a plush donut-style lounger designed to give small and medium pets a cozy, secure nook. The raised rim offers head and neck support, while the center cushion stays soft enough for burrowing and nesting. A neutral tone makes it easy to blend into living rooms, bedrooms, or office corners without looking like a loud pet accessory. The cover is machine washable to keep things fresh, and the base includes a gentle non-slip backing so it stays put on hardwood or tile. If your pet likes to curl, stretch, or rest with a little structure, this bed keeps them settled and comfortable throughout the day.",
     "affiliateUrl": "https://example.com/affiliate/pet-bed",
-    "dealEndsAt": "2026-03-12T23:59:59Z"
+    "dealEndsAt": "2026-03-12T23:59:59Z",
+    "retailer": "Chewy"
   },
   {
     "id": "prod-005",
@@ -68,10 +96,17 @@
     "originalPrice": 109.0,
     "rating": 4.3,
     "ratingCount": 350,
-    "images": ["/images/sample-05.svg"],
+    "images": [
+      "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcSBCB_1vuJ1ni2CkHL9Pu4Om47fyNXtZmSx9ZF9Uhlqz7Bvp2EZVdwBYZy_OwOjecqGf8bvfO8IDE6G78d_CUbG5aq_uEuM7sbOv2ktnP5lmYSRrOzgm6jZ-nmnD1K7ps7r-u4j3I_FMQ&usqp=CAc",
+      "/images/sample-01.svg",
+      "/images/sample-02.svg",
+      "/images/sample-03.svg",
+      "/images/sample-04.svg"
+    ],
     "description": "Aurora LED Vanity Mirror brings bright, even lighting to everyday routines, from skincare to detailed makeup work. The light ring is designed to reduce harsh shadows, helping you see true tones and blend accurately. A slim profile keeps it elegant on counters, and the adjustable angle makes it easy to position at eye level. The touch controls are simple and responsive, so you can brighten or soften the glow depending on the time of day. This mirror feels premium without being oversized, making it a useful upgrade for anyone who likes a clean, organized vanity setup that still feels warm and inviting.",
     "affiliateUrl": "https://example.com/affiliate/vanity-mirror",
-    "videoUrl": "https://www.youtube.com/watch?v=V-_O7nl0Ii0"
+    "videoUrl": "https://www.youtube.com/watch?v=V-_O7nl0Ii0",
+    "retailer": "Ulta"
   },
   {
     "id": "prod-006",
@@ -83,10 +118,17 @@
     "originalPrice": 48.0,
     "rating": 4.6,
     "ratingCount": 755,
-    "images": ["/images/sample-06.svg"],
+    "images": [
+      "data:image/jpeg;base64,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",
+      "/images/sample-01.svg",
+      "/images/sample-02.svg",
+      "/images/sample-03.svg",
+      "/images/sample-04.svg"
+    ],
     "description": "TrailNest Packable Hammock is a lightweight outdoor essential for quick relax breaks, backyard hangs, or weekend camping. It packs down into a small pouch and clips easily to a backpack, making it ideal for day trips and spontaneous stops. The fabric is breathable yet supportive, and the seams are reinforced to handle steady use over time. Setup is straightforward with basic straps, and once it is up, the hammock holds its shape without sagging too much in the middle. If you enjoy slow outdoor moments, this gives you a comfortable place to unwind without adding much weight to your gear list.",
     "affiliateUrl": "https://example.com/affiliate/hammock",
-    "dealEndsAt": "2026-03-08T23:59:59Z"
+    "dealEndsAt": "2026-03-08T23:59:59Z",
+    "retailer": "REI"
   },
   {
     "id": "prod-007",
@@ -97,9 +139,16 @@
     "price": 46.0,
     "rating": 4.2,
     "ratingCount": 290,
-    "images": ["/images/sample-07.svg"],
+    "images": [
+      "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcSAaSEaH0uFribTOq0LLQ6zMT4GGg5-q7N1F7Rg2n9UQcUMYIxd_5fR6sdoU0tp7QKRIFYhzADoZuyH-QeqJowv0grJwnj2DD44WvhdCq2ZUbVD3VFpWJ4yI00yO9JbLGUJuJQ4Qg&usqp=CAc",
+      "/images/sample-01.svg",
+      "/images/sample-02.svg",
+      "/images/sample-03.svg",
+      "/images/sample-04.svg"
+    ],
     "description": "SteamFresh Handheld Steamer is a compact, travel-friendly tool for smoothing wrinkles without setting up a full ironing board. The water tank heats quickly and delivers a consistent stream, making it easy to freshen shirts, dresses, or light upholstery in minutes. The handle sits comfortably in the hand, and the trigger is simple to operate, even for quick touchups before a meeting or event. It is light enough to store in a closet or take on a trip, while still delivering enough steam to make a visible difference on delicate fabrics. For everyday care, it keeps clothes looking crisp with minimal fuss.",
-    "affiliateUrl": "https://example.com/affiliate/steamer"
+    "affiliateUrl": "https://example.com/affiliate/steamer",
+    "retailer": "Amazon"
   },
   {
     "id": "prod-008",
@@ -110,9 +159,16 @@
     "price": 21.99,
     "rating": 4.8,
     "ratingCount": 1200,
-    "images": ["/images/sample-08.svg"],
+    "images": [
+      "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcSNujhITBZ2LjH43XhVVSmbASgWO2LDyFSYeFI8N9Ana4sBoF_6rOA59uMMFX8zXOfwoJAMA_UbnCnwsGDf4WImQTRoGe8bl3zHWWkKZjxOXt_n0-I5QcPWEQQl1Pn4Um9-z9I3dWE&usqp=CAc",
+      "/images/sample-01.svg",
+      "/images/sample-02.svg",
+      "/images/sample-03.svg",
+      "/images/sample-04.svg"
+    ],
     "description": "QuietSip Thermal Tumbler is built for long, steady sips on the go, with a smooth lid design that reduces spills and keeps drinks at a comfortable temperature. The double-wall insulation helps keep iced beverages cold and warm drinks cozy for hours, while the slim profile fits most cup holders. The finish feels soft in the hand and resists fingerprints, making it a clean-looking companion for desks, car rides, and errands. The lid seals tightly and cleans easily, so it works well for daily routines without extra upkeep. If you like a tidy, modern tumbler that looks good and performs, this is a strong pick.",
-    "affiliateUrl": "https://example.com/affiliate/tumbler"
+    "affiliateUrl": "https://example.com/affiliate/tumbler",
+    "retailer": "Target"
   },
   {
     "id": "prod-009",
@@ -124,10 +180,17 @@
     "originalPrice": 39.99,
     "rating": 4.1,
     "ratingCount": 520,
-    "images": ["/images/sample-09.svg"],
+    "images": [
+      "data:image/jpeg;base64,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",
+      "/images/sample-01.svg",
+      "/images/sample-02.svg",
+      "/images/sample-03.svg",
+      "/images/sample-04.svg"
+    ],
     "description": "PixelDock Wireless Charger keeps your phone upright and charging with a clean, minimal footprint. The stand angle is designed for easy glanceable notifications, and the base stays stable on desks or nightstands. It supports standard wireless charging speeds for most modern phones, and the soft-touch pad helps reduce sliding. The styling blends well with both tech-heavy and cozy setups, making it a subtle upgrade that keeps your surface uncluttered. If you charge frequently throughout the day, this offers a simple way to keep devices topped up while still looking tidy and intentional.",
     "affiliateUrl": "https://example.com/affiliate/charger",
-    "dealEndsAt": "2026-03-15T23:59:59Z"
+    "dealEndsAt": "2026-03-15T23:59:59Z",
+    "retailer": "Best Buy"
   },
   {
     "id": "prod-010",
@@ -138,8 +201,119 @@
     "price": 18.5,
     "rating": 4.4,
     "ratingCount": 640,
-    "images": ["/images/sample-10.svg"],
+    "images": [
+      "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcSHlRAv5lCqE_OA-HJXgVI7LzHvM9h7g3VPRpN6IqiLwrg_jtmayzcrQodSVN9ZfE_XYrLC0yE4IZj0UQJMSzW_9bloHYUsRS7FRhUsyVrlAYZ3ObXMvoVHvwo&usqp=CAc",
+      "/images/sample-01.svg",
+      "/images/sample-02.svg",
+      "/images/sample-03.svg",
+      "/images/sample-04.svg"
+    ],
     "description": "FlexTone Pilates Ring is a lightweight resistance tool that adds gentle challenge to core and mobility workouts. The padded grips keep hands comfortable, while the ring provides steady tension for upper-body and inner-thigh routines. It is easy to store under a bed or slide into a closet, so it fits into small spaces without taking over your room. The resistance level is friendly for beginners yet still useful for slow, controlled movement sessions. If you want low-impact strength work that feels approachable, this ring helps build consistency without needing a full gym setup.",
-    "affiliateUrl": "https://example.com/affiliate/pilates-ring"
+    "affiliateUrl": "https://example.com/affiliate/pilates-ring",
+    "retailer": "Amazon"
+  },
+  {
+    "id": "prod-011",
+    "slug": "hearthglow-electric-kettle",
+    "name": "HearthGlow Electric Kettle",
+    "category": "Home & Kitchen",
+    "subCategory": "Drinkware",
+    "price": 69.0,
+    "originalPrice": 89.0,
+    "rating": 4.6,
+    "ratingCount": 214,
+    "images": [
+      "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcTpB-Sr_ezZawM1udYZYEz3PVjOl208dnf3yZ4IMF0m7ZPztobXSISjhj1RRNgXVE6sSd2JdPrSS6lJFe6X1hKBHteCmpEvtD2iqXXYiMw2aBkLFhUpPXFBR-ncC3Xxzmi3cwTIhw8&usqp=CAc",
+      "/images/sample-01.svg",
+      "/images/sample-02.svg",
+      "/images/sample-03.svg",
+      "/images/sample-04.svg"
+    ],
+    "description": "HearthGlow Electric Kettle keeps hot water ready for tea, pour-over, or instant comfort drinks with a clean countertop look. The glass body shows the boil and the temperature readout gives a quick glance without lifting the lid. It heats quickly, pours smoothly, and shuts off automatically once it reaches a rolling boil. The handle stays cool to the touch and the base tucks away the cord for a tidy setup. If you want a warm drink routine that feels calm and intentional, this is an easy daily companion.",
+    "affiliateUrl": "https://example.com/affiliate/kettle",
+    "retailer": "Amazon"
+  },
+  {
+    "id": "prod-012",
+    "slug": "soundnest-wireless-earbuds",
+    "name": "SoundNest Wireless Earbuds",
+    "category": "Tech",
+    "subCategory": "Accessories",
+    "price": 49.0,
+    "originalPrice": 69.0,
+    "rating": 4.3,
+    "ratingCount": 870,
+    "images": [
+      "https://i5.walmartimages.com/seo/Open-Ear-Earbuds-Wireless-Earbuds-bluetooth-headphones-Mic-Adaptive-Noise-Cancelling-Calls-Bluetooth-5-4-50H-Playtime-Light-Weight-Clip-Earbuds-Worko_bdea6dac-867e-4205-a2c3-3ddc837d655c.fcd5790468828560735457814fcbcdd7.jpeg?odnHeight=2000&odnWidth=2000&odnBg=FFFFFF",
+      "/images/sample-01.svg",
+      "/images/sample-02.svg",
+      "/images/sample-03.svg",
+      "/images/sample-04.svg"
+    ],
+    "description": "SoundNest Wireless Earbuds deliver a clean, balanced sound with a compact case that slips into pockets and desk organizers. The fit is snug for walks and commutes, while touch controls keep calls and playlists easy to manage. The charging case offers quick top-ups, and the glossy finish keeps them looking polished on a work desk. If you want a simple, reliable set that feels tidy and modern, these are an easy grab-and-go choice.",
+    "affiliateUrl": "https://example.com/affiliate/earbuds",
+    "retailer": "Best Buy"
+  },
+  {
+    "id": "prod-013",
+    "slug": "sereneflow-yoga-mat",
+    "name": "SereneFlow Yoga Mat",
+    "category": "Health & Fitness",
+    "subCategory": "Pilates",
+    "price": 34.0,
+    "originalPrice": 44.0,
+    "rating": 4.5,
+    "ratingCount": 522,
+    "images": [
+      "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcSqq-j7EBJQNOE6bIOiB4fyn46dPO2RX8Qr7u3njssqIy6D-uhdFnu5Eb4Zwv-rBHnBZnnYmb7qfvHWnYy--emU4ehZpoI6xPP02bZYBCQT7X8tVO_HD1-PsySk4e5zbqwd7Cw05-7x&usqp=CAc",
+      "/images/sample-01.svg",
+      "/images/sample-02.svg",
+      "/images/sample-03.svg",
+      "/images/sample-04.svg"
+    ],
+    "description": "SereneFlow Yoga Mat brings a steady, cushioned feel to slow stretches, Pilates sessions, or quick mobility resets. The surface has a gentle grip that keeps hands and feet anchored without feeling sticky, while the padding balances comfort and stability. It rolls up cleanly, stores easily, and adds a soft color pop to home workout corners. If you want a mat that feels calm and supportive, this one keeps routines consistent and comfortable.",
+    "affiliateUrl": "https://example.com/affiliate/yoga-mat",
+    "retailer": "Target"
+  },
+  {
+    "id": "prod-014",
+    "slug": "lumibloom-facial-serum",
+    "name": "LumiBloom Facial Serum",
+    "category": "Beauty & Personal Care",
+    "subCategory": "Skincare",
+    "price": 28.0,
+    "rating": 4.4,
+    "ratingCount": 306,
+    "images": [
+      "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcQolzIj57hOzeWQcQIHT3BqUnpC4_YYtLW02OcgLxP05I1LVgfx5rmDFHpwTmzKkZjfum8gBqi7a4P8yn7r_Ow0T27ns5W4JbMV5RFveT8w-4Lg5ote5YF30g65h-tguin3akBbOg&usqp=CAc",
+      "/images/sample-01.svg",
+      "/images/sample-02.svg",
+      "/images/sample-03.svg",
+      "/images/sample-04.svg"
+    ],
+    "description": "LumiBloom Facial Serum is a lightweight daily layer designed for a soft, dewy finish without heavy residue. The dropper makes it easy to portion a few drops for morning or night routines, and the glass bottle feels premium on the vanity. It absorbs quickly, sits well under moisturizer, and works as a calm reset step when skin feels dry or dull. If you want a simple glow boost that looks elegant on the shelf, this serum fits right in.",
+    "affiliateUrl": "https://example.com/affiliate/serum",
+    "retailer": "Ulta"
+  },
+  {
+    "id": "prod-015",
+    "slug": "pawnest-cozy-dog-bed",
+    "name": "PawNest Cozy Dog Bed",
+    "category": "Pets",
+    "subCategory": "Sleep",
+    "price": 54.0,
+    "originalPrice": 72.0,
+    "rating": 4.7,
+    "ratingCount": 1280,
+    "images": [
+      "data:image/jpeg;base64,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",
+      "/images/sample-01.svg",
+      "/images/sample-02.svg",
+      "/images/sample-03.svg",
+      "/images/sample-04.svg"
+    ],
+    "description": "PawNest Cozy Dog Bed creates a soft, nest-like spot for naps, movie nights, and quiet corners of the house. The plush cushion supports curled or sprawled sleepers, while the raised rim gives a little extra head support. It blends into warm interiors without looking overly pet-centric, and the cover is easy to freshen between washes. If your pup loves to settle into a calm, secure space, this bed keeps them comfy and content.",
+    "affiliateUrl": "https://example.com/affiliate/dog-bed",
+    "retailer": "Chewy"
   }
 ]

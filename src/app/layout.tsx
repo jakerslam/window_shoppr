@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import TopBar from "@/components/top-bar/TopBar";
+import CategoryFilterProvider from "@/components/category-filter/CategoryFilterProvider";
 import Footer from "@/components/footer/Footer";
+import EmailCaptureModal from "@/components/email-capture/EmailCaptureModal";
+import { SITE_URL } from "@/lib/seo";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -14,9 +17,60 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+/**
+ * Default marketing description used in metadata and previews.
+ */
+const siteDescription =
+  "Window Shoppr is a cozy window-shopping destination for trending finds and real deals."; // Shared meta description.
+
+/**
+ * Base site URL used to build absolute metadata links.
+ */
+const siteUrl = new URL(SITE_URL); // Normalize the metadata base URL.
+
+/**
+ * Placeholder Open Graph image until branded assets are added.
+ */
+const siteOgImage = "/window.svg"; // Fallback OG image in /public.
+
+/**
+ * Global metadata defaults for the entire site.
+ */
 export const metadata: Metadata = {
-  title: "Window Shoppr",
-  description: "A window-shopping deal destination.",
+  metadataBase: siteUrl, // Base for absolute URL resolution.
+  title: {
+    default: "Window Shoppr", // Default document title.
+    template: "%s | Window Shoppr", // Template for nested page titles.
+  },
+  description: siteDescription, // Shared SEO description.
+  applicationName: "Window Shoppr", // App name for installable contexts.
+  alternates: {
+    canonical: "/", // Canonical path for the homepage.
+  },
+  openGraph: {
+    title: "Window Shoppr", // Open Graph title.
+    description: siteDescription, // Open Graph description.
+    url: SITE_URL, // Open Graph canonical URL.
+    siteName: "Window Shoppr", // Open Graph site name.
+    type: "website", // Open Graph type for the homepage.
+    locale: "en_US", // Locale for Open Graph previews.
+    images: [
+      {
+        url: siteOgImage, // Open Graph image URL.
+        alt: "Window Shoppr", // Open Graph image alt text.
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image", // Twitter card layout.
+    title: "Window Shoppr", // Twitter title.
+    description: siteDescription, // Twitter description.
+    images: [siteOgImage], // Twitter preview image.
+  },
+  robots: {
+    index: true, // Allow indexing.
+    follow: true, // Allow link following.
+  },
 };
 
 /**
@@ -34,11 +88,17 @@ export default function RootLayout({
       {/* Page body with shared global layout. */}
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <div className="site-shell">
-          {/* Top navigation for all pages. */}
-          <TopBar />
+          {/* Shared filters for navigation + feed. */}
+          <CategoryFilterProvider>
+            {/* Top navigation for all pages. */}
+            <TopBar />
 
-          {/* Main content area for route content. */}
-          <main className="site-shell__content">{children}</main>
+            {/* Main content area for route content. */}
+            <main className="site-shell__content">{children}</main>
+
+            {/* Delayed email capture prompt. */}
+            <EmailCaptureModal />
+          </CategoryFilterProvider>
 
           {/* Footer stub for future links and info. */}
           <Footer />

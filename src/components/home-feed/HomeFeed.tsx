@@ -1,10 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { CSSProperties } from "react";
+import { useRouter } from "next/navigation";
+import { useCategoryFilter } from "@/components/category-filter/CategoryFilterProvider";
 import { Product } from "@/lib/types";
+import { toCategorySlug } from "@/lib/categories";
 import ProductCard from "@/components/product-card/ProductCard";
-import ExpandedCardOverlay from "@/components/expanded-card/ExpandedCardOverlay";
 import styles from "@/components/home-feed/HomeFeed.module.css";
 
 /**
@@ -18,61 +19,46 @@ type SortOption = "top-rated" | "newest" | "price-low" | "price-high";
 const normalizeText = (value: string) => value.trim().toLowerCase();
 
 /**
- * Compute an expanded overlay style that stays inside the viewport.
+ * Client-side feed renderer with sorting and search.
  */
-const buildExpandedStyle = (rect: DOMRect): CSSProperties => {
-  const scale = 1.5;
-  const margin = 16;
-  const targetWidth = rect.width * scale;
-  const targetHeight = rect.height * scale;
-  const centerX = rect.left + rect.width / 2;
-  const centerY = rect.top + rect.height / 2;
-
-  let left = centerX - targetWidth / 2;
-  let top = centerY - targetHeight / 2;
-  const maxLeft = window.innerWidth - targetWidth - margin;
-  const maxTop = window.innerHeight - targetHeight - margin;
-
-  left = Math.min(Math.max(left, margin), Math.max(margin, maxLeft));
-  top = Math.min(Math.max(top, margin), Math.max(margin, maxTop));
-
-  return {
-    left: `${left}px`,
-    top: `${top}px`,
-    width: `${targetWidth}px`,
-    height: `${targetHeight}px`,
-  };
-};
-
-/**
- * Client-side feed renderer with sorting, search, and in-feed expansion.
- */
-export default function HomeFeed({ products }: { products: Product[] }) {
-  const [searchQuery, setSearchQuery] = useState("");
+export default function HomeFeed({
+  products,
+  title = "Today's Window Finds",
+  subtitleLabel = "curated picks and cozy deals.",
+}: {
+  products: Product[];
+  title?: string;
+  subtitleLabel?: string;
+}) {
+  const router = useRouter(); // Router for modal navigation.
   const [sortOption, setSortOption] = useState<SortOption>("newest");
-  const [expandedProduct, setExpandedProduct] = useState<Product | null>(null);
-  const [expandedStyle, setExpandedStyle] = useState<CSSProperties | null>(null);
-  const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
+  const { selectedCategory, selectedSubCategory, searchQuery } =
+    useCategoryFilter(); // Shared category filter + search query.
 
   const filteredProducts = useMemo(() => {
     const normalizedQuery = normalizeText(searchQuery); // Normalize input for matching.
-
-    if (!normalizedQuery) {
-      return products; // Skip filtering when query is empty.
-    }
+    const categorySlug = selectedCategory ?? ""; // Normalize selected category slug.
+    const subCategorySlug = selectedSubCategory ?? ""; // Normalize selected subcategory slug.
 
     return products.filter((product) => {
       const name = normalizeText(product.name); // Normalize product name.
       const category = normalizeText(product.category); // Normalize product category.
       const subCategory = normalizeText(product.subCategory ?? ""); // Normalize subcategory.
-
-      return (
+      const matchesSearch =
+        !normalizedQuery ||
         name.includes(normalizedQuery) ||
         category.includes(normalizedQuery) ||
-        subCategory.includes(normalizedQuery)
-      ); // Match on name or categories.
+        subCategory.includes(normalizedQuery); // Match on name or categories.
+      const matchesCategory =
+        !categorySlug || toCategorySlug(product.category) === categorySlug; // Match category filter.
+      const matchesSubCategory =
+        !subCategorySlug ||
+        (product.subCategory &&
+          toCategorySlug(product.subCategory) === subCategorySlug); // Match subcategory filter.
+
+      return matchesSearch && matchesCategory && matchesSubCategory; // Apply stacked filters.
     });
-  }, [products, searchQuery]);
+  }, [products, searchQuery, selectedCategory, selectedSubCategory]);
 
   const sortedProducts = useMemo(() => {
     const productsCopy = [...filteredProducts]; // Clone to avoid mutating source.
@@ -104,37 +90,14 @@ export default function HomeFeed({ products }: { products: Product[] }) {
   }, [filteredProducts, sortOption]);
 
   const handleCardOpen =
-    (product: Product) => (event: React.SyntheticEvent<HTMLElement>) => {
+    (product: Product) => () => {
       if (window.matchMedia("(max-width: 900px)").matches) {
         window.location.href = `/product/${product.slug}`; // Mobile navigates to full page.
         return;
       }
 
-      const rect = event.currentTarget.getBoundingClientRect(); // Anchor expansion to card.
-      setExpandedStyle(buildExpandedStyle(rect));
-      setExpandedProduct(product);
+      router.push(`/product/${product.slug}`); // Open modal detail view with slug.
     };
-
-  const handleCloseOverlay = () => {
-    setExpandedProduct(null);
-    setExpandedStyle(null);
-  };
-
-  const handleViewDetails = (product: Product) => {
-    window.location.href = `/product/${product.slug}`; // Full page view for details.
-  };
-
-  const handleSave = (product: Product) => {
-    setSavedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(product.id)) {
-        next.delete(product.id);
-      } else {
-        next.add(product.id);
-      }
-      return next;
-    });
-  };
 
   return (
     <section className={styles.homeFeed}>
@@ -142,22 +105,15 @@ export default function HomeFeed({ products }: { products: Product[] }) {
       <div className={styles.homeFeed__header}>
         {/* Title and helper text. */}
         <div className={styles.homeFeed__titleGroup}>
-          <h1 className={styles.homeFeed__title}>Today&apos;s Window Finds</h1>
+          <h1 className={styles.homeFeed__title}>{title}</h1>
+          {/* Subtitle reflects the active result count. */}
           <p className={styles.homeFeed__subtitle}>
-            Browse {sortedProducts.length} curated picks and cozy deals.
+            Browse {sortedProducts.length} {subtitleLabel}
           </p>
         </div>
 
-        {/* Search + sort controls. */}
+        {/* Sort controls (search lives in the top bar). */}
         <div className={styles.homeFeed__controls}>
-          <input
-            className={styles.homeFeed__search}
-            type="search"
-            placeholder="Search products"
-            value={searchQuery}
-            onChange={(event) => setSearchQuery(event.target.value)}
-            aria-label="Search products"
-          />
           <select
             className={styles.homeFeed__select}
             value={sortOption}
@@ -179,8 +135,6 @@ export default function HomeFeed({ products }: { products: Product[] }) {
             key={product.id}
             product={product}
             onOpen={handleCardOpen(product)}
-            onWishlist={handleSave}
-            isSaved={savedIds.has(product.id)}
           />
         ))}
       </div>
@@ -192,17 +146,6 @@ export default function HomeFeed({ products }: { products: Product[] }) {
         </div>
       )}
 
-      {/* In-feed expanded overlay for desktop users. */}
-      {expandedProduct && expandedStyle ? (
-        <ExpandedCardOverlay
-          product={expandedProduct}
-          style={expandedStyle}
-          onClose={handleCloseOverlay}
-          onViewDetails={() => handleViewDetails(expandedProduct)}
-          onSave={handleSave}
-          isSaved={savedIds.has(expandedProduct.id)}
-        />
-      ) : null}
     </section>
   );
 }
