@@ -6,7 +6,7 @@
 - [NEXT] Selected next requirement
 
 ## Core Requirements
-- [ ] R12.2: Login modal/page UI with auth handler stubs
+- [NEXT] 🔵 R12.2: Login modal/page UI with auth handler stubs
 - [x] R1: Initialize architecture (Next.js + TypeScript scaffold) and baseline project structure
 - [x] R2: Define core data model and JSON fallback loading strategy (with SQL stubs)
 - [x] R3: Global layout with top bar (categories, search, login placeholder) and footer stub
@@ -30,6 +30,7 @@
 - [ ] R14: Navigation menu with hover unfurl (categories -> subcategories)
 
 ## SEO & Growth
+- [ ] R25 (Phase 2 Optional): AI-curated blog engine with intent-to-product mapping (pillar templates, FAQ schema)
 - [ ] R20: SEO structured data (Product/Offer JSON-LD)
 - [ ] R21: Sitemap, robots, and canonical URLs
 
@@ -59,6 +60,9 @@
 - [ ] O1: Extract product sorting/filtering into reusable helpers
 - [ ] O2: Add search weighting and relevance scoring
 - [ ] O3: Add pagination/virtualization for large product sets
+- [ ] R26: Wishlist search input (filter saved items)
+- [ ] R27: Wishlist list deletion (remove list entirely)
+
 
 ## Notes
 - Branding target: "Window Shoppr" (finalized)
