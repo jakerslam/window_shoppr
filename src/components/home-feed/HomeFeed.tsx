@@ -1,9 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useCategoryFilter } from "@/components/category-filter/CategoryFilterProvider";
 import { useWishlist } from "@/lib/wishlist";
 import type { CSSProperties } from "react";
 import { Product } from "@/lib/types";
+import { toCategorySlug } from "@/lib/categories";
 import ProductCard from "@/components/product-card/ProductCard";
 import ExpandedCardOverlay from "@/components/expanded-card/ExpandedCardOverlay";
 import styles from "@/components/home-feed/HomeFeed.module.css";
@@ -48,32 +50,46 @@ const buildExpandedStyle = (rect: DOMRect): CSSProperties => {
 /**
  * Client-side feed renderer with sorting, search, and in-feed expansion.
  */
-export default function HomeFeed({ products }: { products: Product[] }) {
-  const [searchQuery, setSearchQuery] = useState("");
+export default function HomeFeed({
+  products,
+  title = "Today\'s Window Finds",
+  subtitleLabel = "curated picks and cozy deals.",
+}: {
+  products: Product[];
+  title?: string;
+  subtitleLabel?: string;
+}) {
   const [sortOption, setSortOption] = useState<SortOption>("newest");
   const [expandedProduct, setExpandedProduct] = useState<Product | null>(null);
   const [expandedStyle, setExpandedStyle] = useState<CSSProperties | null>(null);
+  const { selectedCategory, selectedSubCategory, searchQuery } =
+    useCategoryFilter(); // Shared category filter + search query.
   const { isSaved, toggleSaved } = useWishlist(); // Shared wishlist state.
 
   const filteredProducts = useMemo(() => {
     const normalizedQuery = normalizeText(searchQuery); // Normalize input for matching.
-
-    if (!normalizedQuery) {
-      return products; // Skip filtering when query is empty.
-    }
+    const categorySlug = selectedCategory ?? ""; // Normalize selected category slug.
+    const subCategorySlug = selectedSubCategory ?? ""; // Normalize selected subcategory slug.
 
     return products.filter((product) => {
       const name = normalizeText(product.name); // Normalize product name.
       const category = normalizeText(product.category); // Normalize product category.
       const subCategory = normalizeText(product.subCategory ?? ""); // Normalize subcategory.
-
-      return (
+      const matchesSearch =
+        !normalizedQuery ||
         name.includes(normalizedQuery) ||
         category.includes(normalizedQuery) ||
-        subCategory.includes(normalizedQuery)
-      ); // Match on name or categories.
+        subCategory.includes(normalizedQuery); // Match on name or categories.
+      const matchesCategory =
+        !categorySlug || toCategorySlug(product.category) === categorySlug; // Match category filter.
+      const matchesSubCategory =
+        !subCategorySlug ||
+        (product.subCategory &&
+          toCategorySlug(product.subCategory) === subCategorySlug); // Match subcategory filter.
+
+      return matchesSearch && matchesCategory && matchesSubCategory; // Apply stacked filters.
     });
-  }, [products, searchQuery]);
+  }, [products, searchQuery, selectedCategory, selectedSubCategory]);
 
   const sortedProducts = useMemo(() => {
     const productsCopy = [...filteredProducts]; // Clone to avoid mutating source.
@@ -135,22 +151,15 @@ export default function HomeFeed({ products }: { products: Product[] }) {
       <div className={styles.homeFeed__header}>
         {/* Title and helper text. */}
         <div className={styles.homeFeed__titleGroup}>
-          <h1 className={styles.homeFeed__title}>Today&apos;s Window Finds</h1>
+          <h1 className={styles.homeFeed__title}>{title}</h1>
+          {/* Subtitle reflects the active result count. */}
           <p className={styles.homeFeed__subtitle}>
-            Browse {sortedProducts.length} curated picks and cozy deals.
+            Browse {sortedProducts.length} {subtitleLabel}
           </p>
         </div>
 
-        {/* Search + sort controls. */}
+        {/* Sort controls (search lives in the top bar). */}
         <div className={styles.homeFeed__controls}>
-          <input
-            className={styles.homeFeed__search}
-            type="search"
-            placeholder="Search products"
-            value={searchQuery}
-            onChange={(event) => setSearchQuery(event.target.value)}
-            aria-label="Search products"
-          />
           <select
             className={styles.homeFeed__select}
             value={sortOption}

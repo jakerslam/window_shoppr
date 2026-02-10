@@ -18,8 +18,8 @@
 - [x] R6.1: In-feed expansion overlay (desktop) with mobile direct navigation
 - [x] R6: Product detail page template (back arrow, images, price, rating, description with "More")
 - [x] R7: Deal-specific UI (timer, deal badge, crossed-out price)
-- [NEXT] R8: Category pages and routing
-- [ ] R9: Email capture popup UI (delayed) with backend stubs
+- [x] R8: Category pages and routing
+- [NEXT] R9: Email capture popup UI (delayed) with backend stubs
 - [ ] R10: SEO baseline (metadata, Open Graph, schema.org, sitemap, robots)
 - [ ] R11: Personalization stubs (recently viewed tracking/cookies)
 - [ ] R12: Wishlist UI stub and placeholder page
