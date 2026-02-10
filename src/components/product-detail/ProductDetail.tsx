@@ -1,7 +1,9 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { useWishlist } from "@/lib/wishlist";
+import { trackRecentlyViewed } from "@/lib/recently-viewed";
 import { Product, PRODUCT_UI } from "@/lib/types";
 import DescriptionToggle from "@/components/product-detail/DescriptionToggle";
 import ProductMediaGallery from "@/components/product-detail/ProductMediaGallery";
@@ -64,6 +66,11 @@ export default function ProductDetail({
   const showDealBadge = hasDeal || Boolean(dealLabel); // Show badge for active deals.
   const ratingValue = product.rating ?? 0; // Default to zero for fill calculations.
   const { isSaved, toggleSaved } = useWishlist(); // Load wishlist state and toggles.
+
+  // Track recently viewed items for personalization stubs.
+  useEffect(() => { // Track viewed items on mount or change.
+    trackRecentlyViewed(product.id); // Persist recently viewed state.
+  }, [product.id]);
   const ratingPercent = clamp((ratingValue / 5) * 100, 0, 100); // Convert rating to percent.
   const ratingText = product.rating
     ? `${product.rating.toFixed(1)} / 5 (${product.ratingCount ?? 0})`
