@@ -420,5 +420,417 @@
       "sleep",
       "calming"
     ]
+  },
+  {
+    "id": "prod-016",
+    "slug": "driftwood-scented-candle",
+    "name": "Driftwood Scented Candle",
+    "category": "Home & Kitchen",
+    "subCategory": "Decor",
+    "price": 18.99,
+    "originalPrice": 24.0,
+    "rating": 4.6,
+    "ratingCount": 322,
+    "images": [
+      "/images/sample-06.svg",
+      "/images/sample-07.svg",
+      "/images/sample-08.svg",
+      "/images/sample-09.svg",
+      "/images/sample-10.svg"
+    ],
+    "description": "Driftwood Scented Candle layers soft coastal notes with a warm, clean finish. The glass jar looks tidy on shelves or side tables, and the slow burn creates an easy ambient glow for evenings at home. It is a small upgrade that makes cozy spaces feel intentional without overpowering the room.",
+    "affiliateUrl": "https://example.com/affiliate/candle",
+    "retailer": "Amazon",
+    "tags": [
+      "candle",
+      "cozy",
+      "home",
+      "decor",
+      "scented"
+    ]
+  },
+  {
+    "id": "prod-017",
+    "slug": "aerofold-travel-backpack",
+    "name": "AeroFold Travel Backpack",
+    "category": "Outdoors & Sports",
+    "subCategory": "Travel",
+    "price": 54.0,
+    "originalPrice": 72.0,
+    "rating": 4.5,
+    "ratingCount": 410,
+    "images": [
+      "/images/sample-01.svg",
+      "/images/sample-02.svg",
+      "/images/sample-03.svg",
+      "/images/sample-04.svg",
+      "/images/sample-05.svg"
+    ],
+    "description": "AeroFold Travel Backpack keeps essentials organized with a slim profile that still fits weekend layers and tech. The straps feel padded without bulk, and the layout keeps small items easy to find. It is a practical grab-and-go bag for day trips or flights.",
+    "affiliateUrl": "https://example.com/affiliate/backpack",
+    "retailer": "REI",
+    "tags": [
+      "backpack",
+      "travel",
+      "outdoors",
+      "carry-on",
+      "organized"
+    ]
+  },
+  {
+    "id": "prod-018",
+    "slug": "glownest-bedside-lamp",
+    "name": "GlowNest Bedside Lamp",
+    "category": "Home & Kitchen",
+    "subCategory": "Lighting",
+    "price": 42.0,
+    "originalPrice": 55.0,
+    "rating": 4.4,
+    "ratingCount": 285,
+    "images": [
+      "/images/sample-02.svg",
+      "/images/sample-03.svg",
+      "/images/sample-04.svg",
+      "/images/sample-05.svg",
+      "/images/sample-06.svg"
+    ],
+    "description": "GlowNest Bedside Lamp adds a soft glow that makes evening routines feel calm and cozy. The shade diffuses light gently for reading or winding down, while the simple silhouette blends into minimal or warm bedrooms. It is a subtle way to make a room feel more intentional.",
+    "affiliateUrl": "https://example.com/affiliate/lamp",
+    "retailer": "Target",
+    "tags": [
+      "lamp",
+      "bedside",
+      "lighting",
+      "cozy",
+      "home"
+    ]
+  },
+  {
+    "id": "prod-019",
+    "slug": "cloudsip-cold-brew-maker",
+    "name": "CloudSip Cold Brew Maker",
+    "category": "Home & Kitchen",
+    "subCategory": "Drinkware",
+    "price": 36.0,
+    "originalPrice": 49.0,
+    "rating": 4.5,
+    "ratingCount": 412,
+    "images": [
+      "/images/sample-03.svg",
+      "/images/sample-04.svg",
+      "/images/sample-05.svg",
+      "/images/sample-06.svg",
+      "/images/sample-07.svg"
+    ],
+    "description": "CloudSip Cold Brew Maker keeps a smooth coffee concentrate ready in the fridge. The filter lifts out cleanly, and the pitcher pours without dripping. It is a small daily upgrade for anyone who likes chilled coffee without the coffee shop run.",
+    "affiliateUrl": "https://example.com/affiliate/cold-brew",
+    "retailer": "Amazon",
+    "tags": [
+      "cold brew",
+      "coffee",
+      "kitchen",
+      "drinkware",
+      "morning"
+    ]
+  },
+  {
+    "id": "prod-020",
+    "slug": "bloomrise-planter-set",
+    "name": "BloomRise Planter Set",
+    "category": "Home & Kitchen",
+    "subCategory": "Decor",
+    "price": 29.0,
+    "rating": 4.3,
+    "ratingCount": 198,
+    "images": [
+      "/images/sample-04.svg",
+      "/images/sample-05.svg",
+      "/images/sample-06.svg",
+      "/images/sample-07.svg",
+      "/images/sample-08.svg"
+    ],
+    "description": "BloomRise Planter Set brings greenery into shelves, desks, or kitchen windows. The matte finish keeps it modern and neutral, while the sizing works for herbs or small indoor plants. It is an easy refresh for spaces that feel a little empty.",
+    "affiliateUrl": "https://example.com/affiliate/planters",
+    "retailer": "Target",
+    "tags": [
+      "planter",
+      "plants",
+      "decor",
+      "home",
+      "greenery"
+    ]
+  },
+  {
+    "id": "prod-021",
+    "slug": "luxeloom-waffle-throw",
+    "name": "LuxeLoom Waffle Throw",
+    "category": "Home & Kitchen",
+    "subCategory": "Bedding",
+    "price": 45.0,
+    "originalPrice": 60.0,
+    "rating": 4.6,
+    "ratingCount": 530,
+    "images": [
+      "/images/sample-05.svg",
+      "/images/sample-06.svg",
+      "/images/sample-07.svg",
+      "/images/sample-08.svg",
+      "/images/sample-09.svg"
+    ],
+    "description": "LuxeLoom Waffle Throw adds texture and warmth without feeling heavy. The waffle weave looks elevated on sofas or beds, and the fabric keeps its shape after washes. It is a cozy layer that still feels breathable.",
+    "affiliateUrl": "https://example.com/affiliate/throw",
+    "retailer": "Amazon",
+    "tags": [
+      "throw",
+      "blanket",
+      "cozy",
+      "home",
+      "bedding"
+    ]
+  },
+  {
+    "id": "prod-022",
+    "slug": "zenpulse-massage-roller",
+    "name": "ZenPulse Massage Roller",
+    "category": "Health & Fitness",
+    "subCategory": "Recovery",
+    "price": 22.0,
+    "rating": 4.4,
+    "ratingCount": 264,
+    "images": [
+      "/images/sample-06.svg",
+      "/images/sample-07.svg",
+      "/images/sample-08.svg",
+      "/images/sample-09.svg",
+      "/images/sample-10.svg"
+    ],
+    "description": "ZenPulse Massage Roller helps loosen tight muscles after workouts or long desk days. The compact size tucks into gym bags, and the textured surface adds a deeper release without being too intense. It is a simple recovery tool for everyday use.",
+    "affiliateUrl": "https://example.com/affiliate/roller",
+    "retailer": "Target",
+    "tags": [
+      "massage",
+      "recovery",
+      "fitness",
+      "stretching",
+      "wellness"
+    ]
+  },
+  {
+    "id": "prod-023",
+    "slug": "puretone-noise-masker",
+    "name": "PureTone Noise Masker",
+    "category": "Tech",
+    "subCategory": "Home Office",
+    "price": 39.0,
+    "rating": 4.2,
+    "ratingCount": 190,
+    "images": [
+      "/images/sample-07.svg",
+      "/images/sample-08.svg",
+      "/images/sample-09.svg",
+      "/images/sample-10.svg",
+      "/images/sample-01.svg"
+    ],
+    "description": "PureTone Noise Masker blends gentle ambient sounds that help soften background distractions. It is compact for desks or bedside tables, with a simple control layout that keeps it easy to use at night or during work blocks.",
+    "affiliateUrl": "https://example.com/affiliate/noise-masker",
+    "retailer": "Best Buy",
+    "tags": [
+      "white noise",
+      "sleep",
+      "focus",
+      "home office",
+      "sound"
+    ]
+  },
+  {
+    "id": "prod-024",
+    "slug": "sunnytrail-picnic-blanket",
+    "name": "SunnyTrail Picnic Blanket",
+    "category": "Outdoors & Sports",
+    "subCategory": "Camping",
+    "price": 34.0,
+    "originalPrice": 44.0,
+    "rating": 4.5,
+    "ratingCount": 355,
+    "images": [
+      "/images/sample-08.svg",
+      "/images/sample-09.svg",
+      "/images/sample-10.svg",
+      "/images/sample-01.svg",
+      "/images/sample-02.svg"
+    ],
+    "description": "SunnyTrail Picnic Blanket rolls up neatly for park hangs, beach days, or backyard movie nights. The underside resists damp ground while the top layer stays soft enough for lounging. It is a simple way to make outdoor time feel comfortable.",
+    "affiliateUrl": "https://example.com/affiliate/picnic-blanket",
+    "retailer": "REI",
+    "tags": [
+      "picnic",
+      "outdoors",
+      "blanket",
+      "camping",
+      "family"
+    ]
+  },
+  {
+    "id": "prod-025",
+    "slug": "breezeline-linen-sheets",
+    "name": "BreezeLine Linen Sheets",
+    "category": "Home & Kitchen",
+    "subCategory": "Bedding",
+    "price": 79.0,
+    "originalPrice": 99.0,
+    "rating": 4.4,
+    "ratingCount": 460,
+    "images": [
+      "/images/sample-09.svg",
+      "/images/sample-10.svg",
+      "/images/sample-01.svg",
+      "/images/sample-02.svg",
+      "/images/sample-03.svg"
+    ],
+    "description": "BreezeLine Linen Sheets feel airy and breathable for warm sleepers. The weave softens with each wash and the neutral palette works with a calm, minimal bedroom look. It is a cozy upgrade for everyday rest.",
+    "affiliateUrl": "https://example.com/affiliate/linen-sheets",
+    "retailer": "Amazon",
+    "tags": [
+      "sheets",
+      "bedding",
+      "linen",
+      "sleep",
+      "home"
+    ]
+  },
+  {
+    "id": "prod-026",
+    "slug": "frostflow-water-bottle",
+    "name": "FrostFlow Water Bottle",
+    "category": "Health & Fitness",
+    "subCategory": "Hydration",
+    "price": 28.0,
+    "rating": 4.5,
+    "ratingCount": 640,
+    "images": [
+      "/images/sample-10.svg",
+      "/images/sample-01.svg",
+      "/images/sample-02.svg",
+      "/images/sample-03.svg",
+      "/images/sample-04.svg"
+    ],
+    "description": "FrostFlow Water Bottle keeps drinks cold for long stretches and stays easy to grip on walks or gym sessions. The lid seals tightly and the slim profile fits most cup holders, making it simple to take everywhere.",
+    "affiliateUrl": "https://example.com/affiliate/water-bottle",
+    "retailer": "Target",
+    "tags": [
+      "water bottle",
+      "hydration",
+      "fitness",
+      "gym",
+      "travel"
+    ]
+  },
+  {
+    "id": "prod-027",
+    "slug": "snapfit-resistance-bands",
+    "name": "SnapFit Resistance Bands",
+    "category": "Health & Fitness",
+    "subCategory": "Strength",
+    "price": 25.0,
+    "rating": 4.4,
+    "ratingCount": 510,
+    "images": [
+      "/images/sample-01.svg",
+      "/images/sample-02.svg",
+      "/images/sample-03.svg",
+      "/images/sample-04.svg",
+      "/images/sample-05.svg"
+    ],
+    "description": "SnapFit Resistance Bands add easy strength training at home or on the go. The set packs down small, and the range of tension levels makes them useful for warmups, mobility, or full workouts.",
+    "affiliateUrl": "https://example.com/affiliate/resistance-bands",
+    "retailer": "Amazon",
+    "tags": [
+      "resistance bands",
+      "workout",
+      "strength",
+      "fitness",
+      "home gym"
+    ]
+  },
+  {
+    "id": "prod-028",
+    "slug": "marbleglow-soap-dispenser",
+    "name": "MarbleGlow Soap Dispenser",
+    "category": "Beauty & Personal Care",
+    "subCategory": "Bath",
+    "price": 19.0,
+    "rating": 4.3,
+    "ratingCount": 175,
+    "images": [
+      "/images/sample-02.svg",
+      "/images/sample-03.svg",
+      "/images/sample-04.svg",
+      "/images/sample-05.svg",
+      "/images/sample-06.svg"
+    ],
+    "description": "MarbleGlow Soap Dispenser adds a clean, spa-like detail to bathroom counters. The pump is smooth and the weight keeps it stable by the sink, making it a simple upgrade for everyday routines.",
+    "affiliateUrl": "https://example.com/affiliate/soap-dispenser",
+    "retailer": "Target",
+    "tags": [
+      "bath",
+      "soap",
+      "decor",
+      "countertop",
+      "beauty"
+    ]
+  },
+  {
+    "id": "prod-029",
+    "slug": "quietnest-white-noise-machine",
+    "name": "QuietNest White Noise Machine",
+    "category": "Tech",
+    "subCategory": "Sleep",
+    "price": 45.0,
+    "rating": 4.5,
+    "ratingCount": 390,
+    "images": [
+      "/images/sample-03.svg",
+      "/images/sample-04.svg",
+      "/images/sample-05.svg",
+      "/images/sample-06.svg",
+      "/images/sample-07.svg"
+    ],
+    "description": "QuietNest White Noise Machine blends gentle soundscapes that help soften distractions at night. It is small enough for nightstands and simple to use, making it an easy addition to bedtime routines.",
+    "affiliateUrl": "https://example.com/affiliate/white-noise",
+    "retailer": "Best Buy",
+    "tags": [
+      "sleep",
+      "white noise",
+      "relax",
+      "bedroom",
+      "sound"
+    ]
+  },
+  {
+    "id": "prod-030",
+    "slug": "coastalweave-storage-basket",
+    "name": "CoastalWeave Storage Basket",
+    "category": "Home & Kitchen",
+    "subCategory": "Organization",
+    "price": 32.0,
+    "rating": 4.5,
+    "ratingCount": 230,
+    "images": [
+      "/images/sample-04.svg",
+      "/images/sample-05.svg",
+      "/images/sample-06.svg",
+      "/images/sample-07.svg",
+      "/images/sample-08.svg"
+    ],
+    "description": "CoastalWeave Storage Basket keeps blankets, toys, or books corralled without looking cluttered. The woven texture adds warmth to shelves or corners, while the handles make it easy to move around the house.",
+    "affiliateUrl": "https://example.com/affiliate/storage-basket",
+    "retailer": "Target",
+    "tags": [
+      "storage",
+      "organization",
+      "home",
+      "basket",
+      "decor"
+    ]
   }
 ]

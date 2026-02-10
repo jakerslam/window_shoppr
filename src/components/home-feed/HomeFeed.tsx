@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCategoryFilter } from "@/components/category-filter/CategoryFilterProvider";
 import { Product } from "@/lib/types";
@@ -17,6 +17,121 @@ type SortOption = "top-rated" | "newest" | "price-low" | "price-high";
  * Normalize text for consistent search matching.
  */
 const normalizeText = (value: string) => value.trim().toLowerCase();
+
+/**
+ * Rank products for each user (cookie- + preference-driven in a later pass).
+ */
+const rankProductsForUser = (products: Product[]) =>
+  products; // TODO: apply personalization weights from cookies/preferences.
+
+/**
+ * Split products into column decks for the animated feed.
+ */
+const buildCardDecks = (
+  products: Product[],
+  columnCount: number,
+  minimumPerColumn: number,
+) => {
+  const decks: Product[][] = Array.from({ length: columnCount }, () => []);
+
+  if (products.length === 0) {
+    return decks; // Keep empty decks when no results are available.
+  }
+
+  const targetSize = columnCount * minimumPerColumn; // Ensure enough cards to loop smoothly.
+  const deckPool: Product[] = []; // Working list that supplies the decks.
+
+  while (deckPool.length < targetSize) {
+    deckPool.push(...products); // Repeat products until we fill the deck pool.
+  }
+
+  deckPool.slice(0, targetSize).forEach((product, index) => {
+    decks[index % columnCount].push(product); // Distribute cards across columns.
+  });
+
+  return decks;
+};
+
+/**
+ * Scrolling column of product cards with hover pause + smooth resume.
+ */
+const ScrollingColumn = ({
+  deck,
+  duration,
+  onOpen,
+}: {
+  deck: Product[];
+  duration: number;
+  onOpen: (product: Product) => () => void;
+}) => {
+  const [isPaused, setIsPaused] = useState(false);
+  const [speedScale, setSpeedScale] = useState(1);
+  const resumeTimers = useRef<number[]>([]);
+
+  const loopedDeck = useMemo(() => [...deck, ...deck], [deck]);
+  const effectiveDuration = Math.max(duration * speedScale, 1); // Keep duration usable.
+
+  // Clear any pending resume timers.
+  const clearResumeTimers = useCallback(() => {
+    resumeTimers.current.forEach((timer) => window.clearTimeout(timer));
+    resumeTimers.current = [];
+  }, []);
+
+  // Pause animation on hover.
+  const handleMouseEnter = () => {
+    clearResumeTimers(); // Stop queued speed ramps.
+    setIsPaused(true); // Pause the scrolling motion.
+  };
+
+  // Resume with a gentle speed ramp.
+  const handleMouseLeave = () => {
+    clearResumeTimers(); // Reset any existing timers.
+    setIsPaused(false); // Resume the scrolling motion.
+    setSpeedScale(1.35); // Restart slowly for a softer return.
+    resumeTimers.current.push(
+      window.setTimeout(() => setSpeedScale(1.15), 300), // Speed up a bit.
+    );
+    resumeTimers.current.push(
+      window.setTimeout(() => setSpeedScale(1), 650), // Return to normal speed.
+    );
+  };
+
+  // Clean up timers on unmount.
+  useEffect(() => {
+    return () => {
+      clearResumeTimers(); // Avoid stale timers after unmount.
+    };
+  }, [clearResumeTimers]);
+
+  if (deck.length === 0) {
+    return null; // Skip empty columns when there are no cards.
+  }
+
+  return (
+    <div
+      className={styles.homeFeed__column}
+      onMouseEnter={handleMouseEnter} // Pause when hovering the column.
+      onMouseLeave={handleMouseLeave} // Resume when leaving the column.
+    >
+      <div
+        className={`${styles.homeFeed__columnTrack} ${
+          isPaused ? styles.homeFeed__columnTrackPaused : ""
+        }`}
+        style={{
+          "--scroll-duration": `${effectiveDuration}s`, // Control scroll speed per column.
+        } as React.CSSProperties}
+      >
+        {loopedDeck.map((product, index) => (
+          <ProductCard
+            key={`${product.id}-${index}`}
+            product={product}
+            onOpen={onOpen(product)} // Open modal/full page on click.
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
 
 /**
  * Client-side feed renderer with sorting and search.
@@ -92,6 +207,22 @@ export default function HomeFeed({
     return productsCopy.sort((a, b) => b.price - a.price); // Highest price first.
   }, [filteredProducts, sortOption]);
 
+  const rankedProducts = useMemo(
+    () => rankProductsForUser(sortedProducts),
+    [sortedProducts],
+  );
+
+  const columnCount = 5; // Desktop column count for the animated feed.
+  const columnDurations = [38, 46, 54, 62, 70]; // Unique speeds for each column.
+  const minimumPerColumn = Math.min(
+    7,
+    Math.max(4, Math.ceil(rankedProducts.length / columnCount)),
+  ); // Scale deck size with available inventory.
+  const columnDecks = useMemo(
+    () => buildCardDecks(rankedProducts, columnCount, minimumPerColumn),
+    [rankedProducts, minimumPerColumn],
+  );
+
   const handleCardOpen =
     (product: Product) => () => {
       if (window.matchMedia("(max-width: 900px)").matches) {
@@ -131,13 +262,14 @@ export default function HomeFeed({
         </div>
       </div>
 
-      {/* Grid of product cards. */}
-      <div className={styles.homeFeed__grid}>
-        {sortedProducts.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-            onOpen={handleCardOpen(product)}
+      {/* Animated columns of product cards. */}
+      <div className={styles.homeFeed__columns}>
+        {columnDecks.map((deck, index) => (
+          <ScrollingColumn
+            key={`column-${index}`}
+            deck={deck}
+            duration={columnDurations[index % columnDurations.length]}
+            onOpen={handleCardOpen}
           />
         ))}
       </div>
@@ -148,7 +280,6 @@ export default function HomeFeed({
           No results yet. Try a different search.
         </div>
       )}
-
     </section>
   );
 }
