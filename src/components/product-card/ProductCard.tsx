@@ -1,4 +1,5 @@
 import { Product } from "@/lib/types";
+import WishlistSaveButton from "@/components/wishlist/WishlistSaveButton";
 import styles from "@/components/product-card/ProductCard.module.css";
 
 /**
@@ -43,15 +44,15 @@ const formatTimeRemaining = (dealEndsAt?: string) => {
 export default function ProductCard({
   product,
   onOpen,
-  onWishlist,
-  isSaved = false,
   variant = "default", // Choose default density when unspecified.
+  activeListName,
+  onListRemoval,
 }: {
   product: Product;
   onOpen?: (event: React.SyntheticEvent<HTMLElement>) => void;
-  onWishlist?: (product: Product) => void;
-  isSaved?: boolean;
   variant?: "default" | "compact";
+  activeListName?: string;
+  onListRemoval?: (productId: string, listName: string) => void;
 }) {
   const hasDeal =
     typeof product.originalPrice === "number" &&
@@ -123,19 +124,15 @@ export default function ProductCard({
           ) : null}
         </div>
 
-        <button
-          className={`${styles.productCard__wishlist} ${
-            isSaved ? styles["productCard__wishlist--saved"] : ""
-          }`}
-          type="button"
-          aria-label={isSaved ? "Remove from wishlist" : "Save to wishlist"}
-          onClick={(event) => {
-            event.stopPropagation();
-            onWishlist?.(product);
-          }}
-        >
-          {isSaved ? "★" : "☆"}
-        </button>
+        {/* Save button with list menu interactions. */}
+        <WishlistSaveButton
+          productId={product.id}
+          buttonClassName={styles.productCard__wishlist}
+          savedClassName={styles["productCard__wishlist--saved"]}
+          activeListName={activeListName}
+          onListRemoval={onListRemoval}
+          wrapperClassName={styles.productCard__wishlistWrap}
+        />
       </div>
     </article>
   );

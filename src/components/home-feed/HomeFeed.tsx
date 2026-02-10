@@ -3,7 +3,6 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCategoryFilter } from "@/components/category-filter/CategoryFilterProvider";
-import { useWishlist } from "@/lib/wishlist";
 import { Product } from "@/lib/types";
 import { toCategorySlug } from "@/lib/categories";
 import ProductCard from "@/components/product-card/ProductCard";
@@ -24,7 +23,7 @@ const normalizeText = (value: string) => value.trim().toLowerCase();
  */
 export default function HomeFeed({
   products,
-  title = "Today\'s Window Finds",
+  title = "Today's Window Finds",
   subtitleLabel = "curated picks and cozy deals.",
 }: {
   products: Product[];
@@ -35,7 +34,6 @@ export default function HomeFeed({
   const [sortOption, setSortOption] = useState<SortOption>("newest");
   const { selectedCategory, selectedSubCategory, searchQuery } =
     useCategoryFilter(); // Shared category filter + search query.
-  const { isSaved, toggleSaved } = useWishlist(); // Shared wishlist state.
 
   const filteredProducts = useMemo(() => {
     const normalizedQuery = normalizeText(searchQuery); // Normalize input for matching.
@@ -101,10 +99,6 @@ export default function HomeFeed({
       router.push(`/product/${product.slug}`); // Open modal detail view with slug.
     };
 
-  const handleSave = (product: Product) => {
-    toggleSaved(product.id); // Toggle saved state and persist it.
-  };
-
   return (
     <section className={styles.homeFeed}>
       {/* Header with title and controls. */}
@@ -141,8 +135,6 @@ export default function HomeFeed({
             key={product.id}
             product={product}
             onOpen={handleCardOpen(product)}
-            onWishlist={handleSave}
-            isSaved={isSaved(product.id)}
           />
         ))}
       </div>

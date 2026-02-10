@@ -3,7 +3,6 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useWishlist } from "@/lib/wishlist";
 import { trackRecentlyViewed } from "@/lib/recently-viewed";
 import { Product, PRODUCT_UI } from "@/lib/types";
 import DescriptionToggle from "@/components/product-detail/DescriptionToggle";
@@ -69,7 +68,6 @@ export default function ProductDetail({
   const dealLabel = formatTimeRemaining(product.dealEndsAt); // Compute deal timer when available.
   const showDealBadge = hasDeal || Boolean(dealLabel); // Show badge for active deals.
   const ratingValue = product.rating ?? 0; // Default to zero for fill calculations.
-  const { isSaved, toggleSaved } = useWishlist(); // Load wishlist state and toggles.
 
   // Track recently viewed items for personalization stubs.
   useEffect(() => { // Track viewed items on mount or change.
@@ -114,11 +112,10 @@ export default function ProductDetail({
       <div className={styles.productDetail__content}>
         {/* Media gallery column with thumbnails. */}
         <ProductMediaGallery
+          productId={product.id}
           images={product.images}
           videoUrl={product.videoUrl}
           name={product.name}
-          isSaved={isSaved(product.id)}
-          onToggleSave={() => toggleSaved(product.id)} // Toggle save for this product.
         />
 
         {/* Info column with title, pricing, and description. */}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import WishlistSaveButton from "@/components/wishlist/WishlistSaveButton";
 import styles from "@/components/product-detail/ProductDetail.module.css";
 
 /**
@@ -32,17 +33,15 @@ const getVideoEmbedUrl = (videoUrl: string) => {
  * Product media gallery with image thumbnails and optional video support.
  */
 export default function ProductMediaGallery({
+  productId,
   images,
   videoUrl,
   name,
-  isSaved,
-  onToggleSave,
 }: {
+  productId: string;
   images: string[];
   videoUrl?: string;
   name: string;
-  isSaved: boolean;
-  onToggleSave: () => void;
 }) {
   const galleryItems = useMemo(() => {
     const trimmedImages = images.slice(0, 5); // Limit gallery to five sample images.
@@ -96,17 +95,12 @@ export default function ProductMediaGallery({
       {/* Main media frame for image or video. */}
       <div className={styles.productDetail__mainImage}>
         {/* Save button pinned to the media frame. */}
-        <button
-          className={`${styles.productDetail__save} ${
-            isSaved ? styles["productDetail__save--saved"] : ""
-          }`}
-          type="button"
-          aria-pressed={isSaved}
-          aria-label={isSaved ? "Remove from wishlist" : "Save to wishlist"}
-          onClick={onToggleSave} // Toggle wishlist state.
-        >
-          {isSaved ? "★" : "☆"}
-        </button>
+        <WishlistSaveButton
+          productId={productId}
+          buttonClassName={styles.productDetail__save}
+          savedClassName={styles["productDetail__save--saved"]}
+          wrapperClassName={styles.productDetail__saveWrap}
+        />
 
         {activeItem?.type === "video" ? (
           embedUrl ? (
