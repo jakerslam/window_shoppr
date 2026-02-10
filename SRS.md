@@ -6,6 +6,7 @@
 - [NEXT] Selected next requirement
 
 ## Core Requirements
+- [ ] R12.2: Login modal/page UI with auth handler stubs
 - [x] R1: Initialize architecture (Next.js + TypeScript scaffold) and baseline project structure
 - [x] R2: Define core data model and JSON fallback loading strategy (with SQL stubs)
 - [x] R3: Global layout with top bar (categories, search, login placeholder) and footer stub
@@ -23,8 +24,8 @@
 - [x] R10: SEO baseline (metadata, Open Graph, schema.org, sitemap, robots)
 - [x] R11: Personalization stubs (recently viewed tracking/cookies)
 - [ ] R11.1: Personalization display rules (use cookies/recently viewed to tailor content)
-- [NEXT] 🔵 R12: Wishlist UI stub and placeholder page
-- [ ] R12.1: Wishlist save menu (hover/long-press list selection)
+- [x] R12: Wishlist UI stub and placeholder page
+- [NEXT] 🔵 R12.1: Wishlist save menu (hover/long-press list selection)
 - [ ] R13: Animation system for mesmerizing scrolling columns (hover pause)
 - [ ] R14: Navigation menu with hover unfurl (categories -> subcategories)
 
@@ -38,6 +39,7 @@
 - [ ] R19: Performance hooks (memoization/callbacks) where proven beneficial
 
 ## Backend & Data
+- [ ] R12.3: Account management wiring (backend/auth integration)
 - [ ] R30: SQL data layer wiring (products, wishlist, email capture submissions)
 
 ## Analytics & Revenue

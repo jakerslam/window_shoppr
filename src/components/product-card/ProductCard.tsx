@@ -45,11 +45,13 @@ export default function ProductCard({
   onOpen,
   onWishlist,
   isSaved = false,
+  variant = "default", // Choose default density when unspecified.
 }: {
   product: Product;
   onOpen?: (event: React.SyntheticEvent<HTMLElement>) => void;
   onWishlist?: (product: Product) => void;
   isSaved?: boolean;
+  variant?: "default" | "compact";
 }) {
   const hasDeal =
     typeof product.originalPrice === "number" &&
@@ -57,6 +59,7 @@ export default function ProductCard({
   const dealLabel = formatTimeRemaining(product.dealEndsAt); // Compute deal timer when available.
   const showDealBadge = hasDeal || Boolean(dealLabel); // Show badge for active deals.
   const imageSrc = product.images[0] ?? "/images/sample-01.svg"; // Use first image or fallback.
+  const isCompact = variant === "compact"; // Toggle compact styling for dense layouts.
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
     if (event.key === "Enter" || event.key === " ") {
@@ -67,7 +70,9 @@ export default function ProductCard({
 
   return (
     <article
-      className={styles.productCard}
+      className={`${styles.productCard} ${
+        isCompact ? styles["productCard--compact"] : ""
+      }`}
       role="button"
       tabIndex={0}
       onClick={onOpen}
@@ -86,10 +91,12 @@ export default function ProductCard({
         />
       </div>
 
-      {/* Name section with category context. */}
+      {/* Name section with optional category context. */}
       <div className={styles.productCard__nameSection}>
         <span className={styles.productCard__name}>{product.name}</span>
-        <span className={styles.productCard__meta}>{product.category}</span>
+        {!isCompact ? ( // Hide category in compact mode.
+          <span className={styles.productCard__meta}>{product.category}</span>
+        ) : null}
       </div>
 
       {/* Price section with optional strike-through and wishlist stub. */}
@@ -100,14 +107,19 @@ export default function ProductCard({
             <span className={styles.productCard__price}>
               {formatPrice(product.price)}
             </span>
-            {hasDeal && (
+            {hasDeal && !isCompact && ( // Hide strike price in compact mode.
               <span className={styles.productCard__originalPrice}>
                 {formatPrice(product.originalPrice ?? product.price)}
               </span>
             )}
           </div>
-          {dealLabel ? (
-            <span className={styles.productCard__dealTime}>{dealLabel}</span>
+          {!isCompact ? ( // Hide deal timer in compact mode.
+            <span
+              className={styles.productCard__dealTime}
+              aria-hidden={!dealLabel}
+            >
+              {dealLabel ?? " "} {/* Reserve space when timer is missing. */}
+            </span>
           ) : null}
         </div>
 

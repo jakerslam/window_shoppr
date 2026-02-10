@@ -40,7 +40,7 @@
 
 .topBar__categories {
   position: relative;
-  padding-bottom: 8px;
+  padding-bottom: 0;
 }
 
 .topBar__categoriesTrigger {
@@ -59,7 +59,7 @@
 
 .topBar__menu {
   position: absolute;
-  top: calc(100% + 2px);
+  top: 100%;
   left: 0;
   display: flex;
   flex-direction: column;
@@ -93,7 +93,11 @@
   font-weight: 600;
   color: var(--color-text-muted);
   cursor: pointer;
+  width: 100%;
+  display: block;
   position: relative;
+  width: 100%;
+  display: block;
 }
 
 .topBar__menuItem--active {
@@ -102,9 +106,15 @@
   border-color: var(--color-border);
 }
 
+.topBar__menuItem:hover {
+  background: rgba(244, 239, 232, 0.6);
+  color: var(--color-primary-strong);
+}
+
 .topBar__menuGroup {
   position: relative;
   padding-right: 12px;
+  width: 100%;
 }
 
 .topBar__menuGroup:hover .topBar__subMenu {
@@ -148,12 +158,19 @@
   font-weight: 600;
   color: var(--color-text-muted);
   cursor: pointer;
+  width: 100%;
+  display: block;
 }
 
 .topBar__subMenuItem--active {
   background: var(--color-surface-muted);
   color: var(--color-primary-strong);
   border-color: var(--color-border);
+}
+
+.topBar__subMenuItem:hover {
+  background: rgba(244, 239, 232, 0.6);
+  color: var(--color-primary-strong);
 }
 
 .topBar__search {
@@ -215,9 +232,10 @@
   display: flex;
   align-items: center;
   justify-self: end;
+  gap: 10px;
 }
 
-.topBar__login {
+.topBar__actionButton {
   height: 36px;
   padding: 0 14px;
   border-radius: 999px;
@@ -225,4 +243,7 @@
   background: var(--color-surface-muted);
   color: var(--color-primary-strong);
   font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }

@@ -167,9 +167,15 @@ export default function TopBar() {
         </div>
       </div>
 
-      {/* Action area for login placeholder. */}
+      {/* Action area for wishlist and login placeholders. */}
       <div className={styles.topBar__actions}>
-        <button className={styles.topBar__login} type="button">
+        {/* Wishlist link for saved items. */}
+        <Link className={styles.topBar__actionButton} href="/wishlist">
+          Wishlist
+        </Link>
+
+        {/* Login placeholder action. */}
+        <button className={styles.topBar__actionButton} type="button">
           Login
         </button>
       </div>

@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useWishlist } from "@/lib/wishlist";
 import { trackRecentlyViewed } from "@/lib/recently-viewed";
 import { Product, PRODUCT_UI } from "@/lib/types";
@@ -56,9 +57,12 @@ const formatTimeRemaining = (dealEndsAt?: string) => {
  */
 export default function ProductDetail({
   product,
+  inModal = false,
 }: {
   product: Product;
+  inModal?: boolean;
 }) {
+  const router = useRouter();
   const hasDeal =
     typeof product.originalPrice === "number" &&
     product.originalPrice > product.price; // Determine if strike price should show.
@@ -77,12 +81,34 @@ export default function ProductDetail({
     : "No ratings yet"; // Build rating label with reviews.
   const retailerLabel = product.retailer ?? "Retailer"; // Fall back when retailer is unknown.
 
+  // Handle back navigation for modal usage.
+  const handleBack = () => {
+    if (inModal) {
+      router.back(); // Close modal by returning to the previous page.
+    }
+  };
+
   return (
     <section className={styles.productDetail}>
-      {/* Back navigation to the feed. */}
-      <Link className={styles.productDetail__back} href="/">
-        &lt; Back to browse
-      </Link>
+      {/* Back navigation to the feed or modal close. */}
+      {inModal ? (
+        <button
+          className={styles.productDetail__back}
+          type="button"
+          onClick={handleBack} // Close modal when previewing from the feed.
+          aria-label="Back to feed" // Accessible label for the back button.
+        >
+          &larr;
+        </button>
+      ) : (
+        <Link
+          className={styles.productDetail__back}
+          href="/"
+          aria-label="Back to feed" // Accessible label for the back link.
+        >
+          &larr;
+        </Link>
+      )}
 
       {/* Main content grid with gallery and info. */}
       <div className={styles.productDetail__content}>

@@ -20,7 +20,8 @@ export default async function ProductModal({
 
   return (
     <Modal>
-      <ProductDetail product={product} />
+      {/* Product details with modal-aware back button. */}
+      <ProductDetail product={product} inModal />
     </Modal>
   );
 }

@@ -1,13 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useCategoryFilter } from "@/components/category-filter/CategoryFilterProvider";
 import { useWishlist } from "@/lib/wishlist";
-import type { CSSProperties } from "react";
 import { Product } from "@/lib/types";
 import { toCategorySlug } from "@/lib/categories";
 import ProductCard from "@/components/product-card/ProductCard";
-import ExpandedCardOverlay from "@/components/expanded-card/ExpandedCardOverlay";
 import styles from "@/components/home-feed/HomeFeed.module.css";
 
 /**
@@ -21,34 +20,7 @@ type SortOption = "top-rated" | "newest" | "price-low" | "price-high";
 const normalizeText = (value: string) => value.trim().toLowerCase();
 
 /**
- * Compute an expanded overlay style that stays inside the viewport.
- */
-const buildExpandedStyle = (rect: DOMRect): CSSProperties => {
-  const scale = 1.5;
-  const margin = 16;
-  const targetWidth = rect.width * scale;
-  const targetHeight = rect.height * scale;
-  const centerX = rect.left + rect.width / 2;
-  const centerY = rect.top + rect.height / 2;
-
-  let left = centerX - targetWidth / 2;
-  let top = centerY - targetHeight / 2;
-  const maxLeft = window.innerWidth - targetWidth - margin;
-  const maxTop = window.innerHeight - targetHeight - margin;
-
-  left = Math.min(Math.max(left, margin), Math.max(margin, maxLeft));
-  top = Math.min(Math.max(top, margin), Math.max(margin, maxTop));
-
-  return {
-    left: `${left}px`,
-    top: `${top}px`,
-    width: `${targetWidth}px`,
-    height: `${targetHeight}px`,
-  };
-};
-
-/**
- * Client-side feed renderer with sorting, search, and in-feed expansion.
+ * Client-side feed renderer with sorting and search.
  */
 export default function HomeFeed({
   products,
@@ -59,9 +31,8 @@ export default function HomeFeed({
   title?: string;
   subtitleLabel?: string;
 }) {
+  const router = useRouter(); // Router for modal navigation.
   const [sortOption, setSortOption] = useState<SortOption>("newest");
-  const [expandedProduct, setExpandedProduct] = useState<Product | null>(null);
-  const [expandedStyle, setExpandedStyle] = useState<CSSProperties | null>(null);
   const { selectedCategory, selectedSubCategory, searchQuery } =
     useCategoryFilter(); // Shared category filter + search query.
   const { isSaved, toggleSaved } = useWishlist(); // Shared wishlist state.
@@ -121,25 +92,14 @@ export default function HomeFeed({
   }, [filteredProducts, sortOption]);
 
   const handleCardOpen =
-    (product: Product) => (event: React.SyntheticEvent<HTMLElement>) => {
+    (product: Product) => () => {
       if (window.matchMedia("(max-width: 900px)").matches) {
         window.location.href = `/product/${product.slug}`; // Mobile navigates to full page.
         return;
       }
 
-      const rect = event.currentTarget.getBoundingClientRect(); // Anchor expansion to card.
-      setExpandedStyle(buildExpandedStyle(rect));
-      setExpandedProduct(product);
+      router.push(`/product/${product.slug}`); // Open modal detail view with slug.
     };
-
-  const handleCloseOverlay = () => {
-    setExpandedProduct(null);
-    setExpandedStyle(null);
-  };
-
-  const handleViewDetails = (product: Product) => {
-    window.location.href = `/product/${product.slug}`; // Full page view for details.
-  };
 
   const handleSave = (product: Product) => {
     toggleSaved(product.id); // Toggle saved state and persist it.
@@ -194,17 +154,6 @@ export default function HomeFeed({
         </div>
       )}
 
-      {/* In-feed expanded overlay for desktop users. */}
-      {expandedProduct && expandedStyle ? (
-        <ExpandedCardOverlay
-          product={expandedProduct}
-          style={expandedStyle}
-          onClose={handleCloseOverlay}
-          onViewDetails={() => handleViewDetails(expandedProduct)}
-          onSave={handleSave}
-          isSaved={isSaved(expandedProduct.id)}
-        />
-      ) : null}
     </section>
   );
 }
