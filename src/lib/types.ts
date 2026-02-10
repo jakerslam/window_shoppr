@@ -7,6 +7,7 @@ export type Product = {
   name: string;
   category: string;
   subCategory?: string;
+  tags?: string[];
   price: number;
   originalPrice?: number;
   rating?: number;

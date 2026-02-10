@@ -24,9 +24,10 @@
 - [x] R10: SEO baseline (metadata, Open Graph, schema.org, sitemap, robots)
 - [x] R11: Personalization stubs (recently viewed tracking/cookies)
 - [ ] R11.1: Personalization display rules (use cookies/recently viewed to tailor content)
+- [x] R11.2: Product tags + tag-based search/filter + clickable tag chips
 - [x] R12: Wishlist UI stub and placeholder page
-- [NEXT] 🔵 R12.1: Wishlist save menu (hover/long-press list selection)
-- [ ] R13: Animation system for mesmerizing scrolling columns (hover pause)
+- [x] R12.1: Wishlist save menu (hover/long-press list selection)
+- [NEXT] 🔵 R13: Animation system for mesmerizing scrolling columns (hover pause)
 - [ ] R14: Navigation menu with hover unfurl (categories -> subcategories)
 
 ## SEO & Growth

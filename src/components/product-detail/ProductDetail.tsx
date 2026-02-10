@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useCategoryFilter } from "@/components/category-filter/CategoryFilterProvider";
 import { trackRecentlyViewed } from "@/lib/recently-viewed";
 import { Product, PRODUCT_UI } from "@/lib/types";
 import DescriptionToggle from "@/components/product-detail/DescriptionToggle";
@@ -62,6 +63,7 @@ export default function ProductDetail({
   inModal?: boolean;
 }) {
   const router = useRouter();
+  const { setSearchQuery } = useCategoryFilter(); // Share tag clicks with the global search bar.
   const hasDeal =
     typeof product.originalPrice === "number" &&
     product.originalPrice > product.price; // Determine if strike price should show.
@@ -84,6 +86,20 @@ export default function ProductDetail({
     if (inModal) {
       router.back(); // Close modal by returning to the previous page.
     }
+  };
+
+  /**
+   * Send a tag to the shared search bar and return to the feed.
+   */
+  const handleTagClick = (tag: string) => {
+    setSearchQuery(tag); // Mirror the tag into the search input.
+
+    if (inModal) {
+      router.back(); // Close the modal when the feed is already behind it.
+      return;
+    }
+
+    router.push("/"); // Navigate to the feed when coming from a full page.
   };
 
   return (
@@ -176,6 +192,22 @@ export default function ProductDetail({
             text={product.description}
             previewLimit={PRODUCT_UI.DESCRIPTION_PREVIEW_LIMIT}
           />
+
+          {/* Tag chips for fast filtering back in the feed. */}
+          {product.tags && product.tags.length > 0 ? (
+            <div className={styles.productDetail__tags}>
+              {product.tags.map((tag) => (
+                <button
+                  key={tag}
+                  className={styles.productDetail__tag}
+                  type="button"
+                  onClick={() => handleTagClick(tag)} // Send tag to search + return.
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+          ) : null}
         </div>
       </div>
     </section>

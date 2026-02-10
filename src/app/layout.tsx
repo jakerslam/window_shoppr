@@ -98,14 +98,14 @@ export default function RootLayout({
 
             {/* Delayed email capture prompt. */}
             <EmailCaptureModal />
+
+            {/* Modal slot for intercepting routes. */}
+            {modal}
           </CategoryFilterProvider>
 
           {/* Footer stub for future links and info. */}
           <Footer />
         </div>
-
-        {/* Modal slot for intercepting routes. */}
-        {modal}
       </body>
     </html>
   );

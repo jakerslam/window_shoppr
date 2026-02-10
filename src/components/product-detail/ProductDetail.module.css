@@ -318,3 +318,28 @@
   font-size: 12px;
   font-weight: 600;
 }
+
+
+.productDetail__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.productDetail__tag {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-muted);
+  color: var(--color-primary-strong);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: opacity 150ms ease, transform 150ms ease;
+  opacity: 0.75;
+}
+
+.productDetail__tag:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}

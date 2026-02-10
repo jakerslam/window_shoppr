@@ -44,11 +44,14 @@ export default function HomeFeed({
       const name = normalizeText(product.name); // Normalize product name.
       const category = normalizeText(product.category); // Normalize product category.
       const subCategory = normalizeText(product.subCategory ?? ""); // Normalize subcategory.
+      const tags = (product.tags ?? []).map(normalizeText); // Normalize tags for search.
+      const matchesTags = tags.some((tag) => tag.includes(normalizedQuery)); // Match tag values.
       const matchesSearch =
         !normalizedQuery ||
         name.includes(normalizedQuery) ||
         category.includes(normalizedQuery) ||
-        subCategory.includes(normalizedQuery); // Match on name or categories.
+        subCategory.includes(normalizedQuery) ||
+        matchesTags; // Match on name, categories, or tags.
       const matchesCategory =
         !categorySlug || toCategorySlug(product.category) === categorySlug; // Match category filter.
       const matchesSubCategory =

@@ -20,7 +20,14 @@
     "affiliateUrl": "https://example.com/affiliate/blanket",
     "videoUrl": "https://www.youtube.com/watch?v=5qap5aO4i9A",
     "dealEndsAt": "2026-02-28T23:59:59Z",
-    "retailer": "Amazon"
+    "retailer": "Amazon",
+    "tags": [
+      "cozy",
+      "blanket",
+      "soft",
+      "home",
+      "living room"
+    ]
   },
   {
     "id": "prod-002",
@@ -40,7 +47,14 @@
     ],
     "description": "Glow Breeze Mini Desk Fan delivers a quiet cooling stream for work desks, vanity spaces, and small bedside tables. The compact frame tucks neatly under shelves, while a multi-angle tilt lets you direct airflow without shifting your workspace. It uses a low-power motor for steady comfort and can run for long stretches without the high hum typical of bigger units. The styling leans clean and modern, making it a good fit for cozy rooms and minimalist setups. Use it as a light summer companion or a year-round airflow helper that keeps you comfortable while you focus. Setup takes seconds, and the simple control dial keeps it easy to use for anyone who prefers straightforward, no-fuss gear.",
     "affiliateUrl": "https://example.com/affiliate/fan",
-    "retailer": "Best Buy"
+    "retailer": "Best Buy",
+    "tags": [
+      "desk",
+      "fan",
+      "cooling",
+      "home office",
+      "quiet"
+    ]
   },
   {
     "id": "prod-003",
@@ -62,7 +76,14 @@
     "description": "LunaLift Collagen Matcha blends ceremonial-grade green tea with collagen peptides for a smooth, lightly sweet cup that fits into morning rituals. It dissolves easily in warm water or oat milk, creating a creamy texture without gritty residue. The flavor is mellow and balanced, making it a simple swap for sugary coffee drinks while still offering a gentle caffeine lift. For people who like structured wellness habits, this is an easy daily add-on because the scoop size is consistent and the taste is mild enough to mix into smoothies or latte blends. The jar is compact for countertop storage, and the lid seals tightly to keep the powder fresh between uses.",
     "affiliateUrl": "https://example.com/affiliate/matcha",
     "dealEndsAt": "2026-03-05T23:59:59Z",
-    "retailer": "Amazon"
+    "retailer": "Amazon",
+    "tags": [
+      "matcha",
+      "collagen",
+      "wellness",
+      "morning",
+      "latte"
+    ]
   },
   {
     "id": "prod-004",
@@ -84,7 +105,14 @@
     "description": "Pet Haven Calming Bed is a plush donut-style lounger designed to give small and medium pets a cozy, secure nook. The raised rim offers head and neck support, while the center cushion stays soft enough for burrowing and nesting. A neutral tone makes it easy to blend into living rooms, bedrooms, or office corners without looking like a loud pet accessory. The cover is machine washable to keep things fresh, and the base includes a gentle non-slip backing so it stays put on hardwood or tile. If your pet likes to curl, stretch, or rest with a little structure, this bed keeps them settled and comfortable throughout the day.",
     "affiliateUrl": "https://example.com/affiliate/pet-bed",
     "dealEndsAt": "2026-03-12T23:59:59Z",
-    "retailer": "Chewy"
+    "retailer": "Chewy",
+    "tags": [
+      "pet bed",
+      "calming",
+      "dog",
+      "cat",
+      "sleep"
+    ]
   },
   {
     "id": "prod-005",
@@ -106,7 +134,14 @@
     "description": "Aurora LED Vanity Mirror brings bright, even lighting to everyday routines, from skincare to detailed makeup work. The light ring is designed to reduce harsh shadows, helping you see true tones and blend accurately. A slim profile keeps it elegant on counters, and the adjustable angle makes it easy to position at eye level. The touch controls are simple and responsive, so you can brighten or soften the glow depending on the time of day. This mirror feels premium without being oversized, making it a useful upgrade for anyone who likes a clean, organized vanity setup that still feels warm and inviting.",
     "affiliateUrl": "https://example.com/affiliate/vanity-mirror",
     "videoUrl": "https://www.youtube.com/watch?v=V-_O7nl0Ii0",
-    "retailer": "Ulta"
+    "retailer": "Ulta",
+    "tags": [
+      "vanity",
+      "mirror",
+      "led",
+      "skincare",
+      "lighting"
+    ]
   },
   {
     "id": "prod-006",
@@ -128,7 +163,14 @@
     "description": "TrailNest Packable Hammock is a lightweight outdoor essential for quick relax breaks, backyard hangs, or weekend camping. It packs down into a small pouch and clips easily to a backpack, making it ideal for day trips and spontaneous stops. The fabric is breathable yet supportive, and the seams are reinforced to handle steady use over time. Setup is straightforward with basic straps, and once it is up, the hammock holds its shape without sagging too much in the middle. If you enjoy slow outdoor moments, this gives you a comfortable place to unwind without adding much weight to your gear list.",
     "affiliateUrl": "https://example.com/affiliate/hammock",
     "dealEndsAt": "2026-03-08T23:59:59Z",
-    "retailer": "REI"
+    "retailer": "REI",
+    "tags": [
+      "hammock",
+      "camping",
+      "outdoors",
+      "packable",
+      "travel"
+    ]
   },
   {
     "id": "prod-007",
@@ -148,7 +190,14 @@
     ],
     "description": "SteamFresh Handheld Steamer is a compact, travel-friendly tool for smoothing wrinkles without setting up a full ironing board. The water tank heats quickly and delivers a consistent stream, making it easy to freshen shirts, dresses, or light upholstery in minutes. The handle sits comfortably in the hand, and the trigger is simple to operate, even for quick touchups before a meeting or event. It is light enough to store in a closet or take on a trip, while still delivering enough steam to make a visible difference on delicate fabrics. For everyday care, it keeps clothes looking crisp with minimal fuss.",
     "affiliateUrl": "https://example.com/affiliate/steamer",
-    "retailer": "Amazon"
+    "retailer": "Amazon",
+    "tags": [
+      "steamer",
+      "garment care",
+      "travel",
+      "wrinkle-free",
+      "laundry"
+    ]
   },
   {
     "id": "prod-008",
@@ -168,7 +217,14 @@
     ],
     "description": "QuietSip Thermal Tumbler is built for long, steady sips on the go, with a smooth lid design that reduces spills and keeps drinks at a comfortable temperature. The double-wall insulation helps keep iced beverages cold and warm drinks cozy for hours, while the slim profile fits most cup holders. The finish feels soft in the hand and resists fingerprints, making it a clean-looking companion for desks, car rides, and errands. The lid seals tightly and cleans easily, so it works well for daily routines without extra upkeep. If you like a tidy, modern tumbler that looks good and performs, this is a strong pick.",
     "affiliateUrl": "https://example.com/affiliate/tumbler",
-    "retailer": "Target"
+    "retailer": "Target",
+    "tags": [
+      "tumbler",
+      "insulated",
+      "coffee",
+      "travel",
+      "hydration"
+    ]
   },
   {
     "id": "prod-009",
@@ -190,7 +246,14 @@
     "description": "PixelDock Wireless Charger keeps your phone upright and charging with a clean, minimal footprint. The stand angle is designed for easy glanceable notifications, and the base stays stable on desks or nightstands. It supports standard wireless charging speeds for most modern phones, and the soft-touch pad helps reduce sliding. The styling blends well with both tech-heavy and cozy setups, making it a subtle upgrade that keeps your surface uncluttered. If you charge frequently throughout the day, this offers a simple way to keep devices topped up while still looking tidy and intentional.",
     "affiliateUrl": "https://example.com/affiliate/charger",
     "dealEndsAt": "2026-03-15T23:59:59Z",
-    "retailer": "Best Buy"
+    "retailer": "Best Buy",
+    "tags": [
+      "wireless charger",
+      "phone",
+      "desk",
+      "tech",
+      "charging"
+    ]
   },
   {
     "id": "prod-010",
@@ -210,7 +273,14 @@
     ],
     "description": "FlexTone Pilates Ring is a lightweight resistance tool that adds gentle challenge to core and mobility workouts. The padded grips keep hands comfortable, while the ring provides steady tension for upper-body and inner-thigh routines. It is easy to store under a bed or slide into a closet, so it fits into small spaces without taking over your room. The resistance level is friendly for beginners yet still useful for slow, controlled movement sessions. If you want low-impact strength work that feels approachable, this ring helps build consistency without needing a full gym setup.",
     "affiliateUrl": "https://example.com/affiliate/pilates-ring",
-    "retailer": "Amazon"
+    "retailer": "Amazon",
+    "tags": [
+      "pilates",
+      "fitness",
+      "toning",
+      "workout",
+      "home gym"
+    ]
   },
   {
     "id": "prod-011",
@@ -231,7 +301,14 @@
     ],
     "description": "HearthGlow Electric Kettle keeps hot water ready for tea, pour-over, or instant comfort drinks with a clean countertop look. The glass body shows the boil and the temperature readout gives a quick glance without lifting the lid. It heats quickly, pours smoothly, and shuts off automatically once it reaches a rolling boil. The handle stays cool to the touch and the base tucks away the cord for a tidy setup. If you want a warm drink routine that feels calm and intentional, this is an easy daily companion.",
     "affiliateUrl": "https://example.com/affiliate/kettle",
-    "retailer": "Amazon"
+    "retailer": "Amazon",
+    "tags": [
+      "kettle",
+      "tea",
+      "hot water",
+      "kitchen",
+      "electric"
+    ]
   },
   {
     "id": "prod-012",
@@ -252,7 +329,14 @@
     ],
     "description": "SoundNest Wireless Earbuds deliver a clean, balanced sound with a compact case that slips into pockets and desk organizers. The fit is snug for walks and commutes, while touch controls keep calls and playlists easy to manage. The charging case offers quick top-ups, and the glossy finish keeps them looking polished on a work desk. If you want a simple, reliable set that feels tidy and modern, these are an easy grab-and-go choice.",
     "affiliateUrl": "https://example.com/affiliate/earbuds",
-    "retailer": "Best Buy"
+    "retailer": "Best Buy",
+    "tags": [
+      "earbuds",
+      "wireless",
+      "audio",
+      "commute",
+      "music"
+    ]
   },
   {
     "id": "prod-013",
@@ -273,7 +357,14 @@
     ],
     "description": "SereneFlow Yoga Mat brings a steady, cushioned feel to slow stretches, Pilates sessions, or quick mobility resets. The surface has a gentle grip that keeps hands and feet anchored without feeling sticky, while the padding balances comfort and stability. It rolls up cleanly, stores easily, and adds a soft color pop to home workout corners. If you want a mat that feels calm and supportive, this one keeps routines consistent and comfortable.",
     "affiliateUrl": "https://example.com/affiliate/yoga-mat",
-    "retailer": "Target"
+    "retailer": "Target",
+    "tags": [
+      "yoga",
+      "mat",
+      "stretching",
+      "workout",
+      "wellness"
+    ]
   },
   {
     "id": "prod-014",
@@ -293,7 +384,14 @@
     ],
     "description": "LumiBloom Facial Serum is a lightweight daily layer designed for a soft, dewy finish without heavy residue. The dropper makes it easy to portion a few drops for morning or night routines, and the glass bottle feels premium on the vanity. It absorbs quickly, sits well under moisturizer, and works as a calm reset step when skin feels dry or dull. If you want a simple glow boost that looks elegant on the shelf, this serum fits right in.",
     "affiliateUrl": "https://example.com/affiliate/serum",
-    "retailer": "Ulta"
+    "retailer": "Ulta",
+    "tags": [
+      "serum",
+      "skincare",
+      "glow",
+      "beauty",
+      "hydration"
+    ]
   },
   {
     "id": "prod-015",
@@ -314,6 +412,13 @@
     ],
     "description": "PawNest Cozy Dog Bed creates a soft, nest-like spot for naps, movie nights, and quiet corners of the house. The plush cushion supports curled or sprawled sleepers, while the raised rim gives a little extra head support. It blends into warm interiors without looking overly pet-centric, and the cover is easy to freshen between washes. If your pup loves to settle into a calm, secure space, this bed keeps them comfy and content.",
     "affiliateUrl": "https://example.com/affiliate/dog-bed",
-    "retailer": "Chewy"
+    "retailer": "Chewy",
+    "tags": [
+      "dog bed",
+      "pet",
+      "cozy",
+      "sleep",
+      "calming"
+    ]
   }
 ]
