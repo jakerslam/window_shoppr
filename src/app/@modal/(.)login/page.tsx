@@ -11,7 +11,6 @@ export default function LoginModal() {
       contentClassName={styles.loginModal}
       contentStyle={{ width: "min(420px, 92vw)" }}
     >
-      {/* Modal-sized login panel for quick access. */}
       <LoginForm
         subtitle="Sign in to save your finds."
         switchLinkHref="/signup"

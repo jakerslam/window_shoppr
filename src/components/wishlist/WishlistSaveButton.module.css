@@ -3,6 +3,16 @@
   display: inline-flex;
 }
 
+.wishlistSave__button {
+  position: relative;
+  isolation: isolate;
+}
+
+.wishlistSave__icon {
+  position: relative;
+  z-index: 1;
+}
+
 .wishlistSave__menu {
   position: absolute;
   right: var(--wishlist-menu-right-offset, 0px);
@@ -97,4 +107,17 @@
 
 .wishlistSave__createButton:hover {
   opacity: 0.7;
+}
+
+
+.wishlistSave__menuItem:focus-visible,
+.wishlistSave__createButton:focus-visible,
+.wishlistSave__createInput:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.wishlistSave__button[aria-pressed="true"] .wishlistSave__icon {
+  -webkit-text-stroke: 1px var(--color-text-inverse);
+  text-shadow: 0 0 1px var(--color-text-inverse), 0 0 2px var(--color-text-inverse);
 }

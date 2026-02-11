@@ -76,6 +76,7 @@ export default function ProductCard({
       }`}
       role="button"
       tabIndex={0}
+      aria-label={`View ${product.name}`}
       onClick={onOpen}
       onKeyDown={handleKeyDown}
     >

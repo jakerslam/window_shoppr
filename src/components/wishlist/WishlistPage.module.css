@@ -144,3 +144,12 @@
   cursor: pointer;
   text-decoration: underline;
 }
+
+
+.wishlistPage__browse:focus-visible,
+.wishlistPage__emptyCta:focus-visible,
+.wishlistPage__filterSelect:focus-visible,
+.wishlistPage__ghostAction:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}

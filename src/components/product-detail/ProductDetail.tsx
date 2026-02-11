@@ -103,7 +103,11 @@ export default function ProductDetail({
   };
 
   return (
-    <section className={styles.productDetail}>
+    <section
+      className={`${styles.productDetail} ${
+        inModal ? styles["productDetail--modal"] : ""
+      }`}
+    >
       {/* Back navigation to the feed or modal close. */}
       {inModal ? (
         <button

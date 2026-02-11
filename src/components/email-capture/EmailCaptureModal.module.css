@@ -112,3 +112,10 @@
   font-size: 12px;
   cursor: pointer;
 }
+
+
+.emailCapture__submit:focus-visible,
+.emailCapture__skip:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}

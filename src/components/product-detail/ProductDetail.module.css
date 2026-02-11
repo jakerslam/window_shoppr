@@ -9,6 +9,11 @@
   gap: 20px;
 }
 
+.productDetail--modal {
+  min-height: 100%;
+}
+
+
 .productDetail__back {
   display: inline-flex;
   align-items: center;
@@ -77,8 +82,8 @@
 
 .productDetail__mainImage .productDetail__saveWrap {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 8px;
+  right: 10px;
   z-index: 2;
 }
 
@@ -87,9 +92,9 @@
   background: transparent;
   color: var(--color-primary-strong);
   border-radius: 999px;
-  width: 44px;
-  height: 44px;
-  font-size: 18px;
+  width: 50px;
+  height: 50px;
+  font-size: 20px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -105,7 +110,7 @@
 
 .productDetail__save--saved {
   color: var(--color-accent);
-  transform: rotate(144deg);
+  transform: rotate(144deg) scale(1.1);
   filter: brightness(1.12);
   animation: star-pop 220ms ease;
 }
@@ -116,11 +121,11 @@
     filter: brightness(1);
   }
   60% {
-    transform: rotate(144deg) scale(1.12);
+    transform: rotate(144deg) scale(1.18);
     filter: brightness(1.12);
   }
   100% {
-    transform: rotate(144deg) scale(1);
+    transform: rotate(144deg) scale(1.1);
     filter: brightness(1.12);
   }
 }
@@ -342,4 +347,15 @@
 .productDetail__tag:hover {
   opacity: 0.9;
   transform: translateY(-1px);
+}
+
+
+.productDetail__back:focus-visible,
+.productDetail__cta:focus-visible,
+.productDetail__descriptionToggle:focus-visible,
+.productDetail__thumb:focus-visible,
+.productDetail__save:focus-visible,
+.productDetail__tag:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
 }

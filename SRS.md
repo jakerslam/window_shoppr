@@ -50,8 +50,8 @@
 - [ ] R24: Cookie consent + privacy/affiliate disclosure
 
 ## UX & Accessibility
-- [NEXT] 🔵 R15: Accessibility baseline (focus states, contrast, keyboard nav)
-- [ ] R16: Responsive layout pass (mobile/tablet polish)
+- [x] R15: Accessibility baseline (focus states, contrast, keyboard nav)
+- [NEXT] 🔵 R16: Responsive layout pass (mobile/tablet polish)
 - [ ] R17: Empty states + loading states
 - [ ] R18.1: Custom styled filter dropdown
 

@@ -446,6 +446,8 @@ export default function HomeFeed({
     [recentlyViewedIds, shouldPersonalize, sortedProducts],
   );
 
+  const resultsLabel = `Browse ${sortedProducts.length} ${subtitleLabel}`; // Accessible count label.
+
   const columnCount = 5; // Desktop column count for the animated feed.
   const baseDurations = [38, 46, 54, 62, 70]; // Unique speeds for each column.
   const durationScale = speedMode === "quick" ? 0.7 : 1; // Adjust speeds per toggle.
@@ -470,7 +472,7 @@ export default function HomeFeed({
     };
 
   return (
-    <section className={styles.homeFeed}>
+    <section className={styles.homeFeed} aria-label={resultsLabel}>
       {/* Header with title and controls. */}
       <div className={styles.homeFeed__header}>
         {/* Title and helper text. */}

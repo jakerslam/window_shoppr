@@ -41,6 +41,7 @@ export default function WishlistSaveButton({
   const longPressTimeoutRef = useRef<number | null>(null);
   const suppressClickRef = useRef(false);
   const isItemSaved = isSaved(productId); // Any-list membership for star state.
+  const menuId = `wishlist-menu-${productId}`; // Unique id for the dropdown menu.
 
   // Defer removal callbacks to avoid render-phase updates.
   const notifyRemoval = useCallback(
@@ -235,7 +236,7 @@ export default function WishlistSaveButton({
     >
       {/* Save button with long-press and double-click support. */}
       <button
-        className={`${buttonClassName} ${
+        className={`${styles.wishlistSave__button} ${buttonClassName} ${
           isItemSaved && savedClassName ? savedClassName : ""
         }`}
         type="button"
@@ -243,6 +244,9 @@ export default function WishlistSaveButton({
         aria-label={
           isItemSaved ? "Remove from wishlist" : "Save to wishlist"
         }
+        aria-haspopup="menu"
+        aria-expanded={isMenuOpen}
+        aria-controls={menuId}
         onClick={handleClick} // Toggle wishlist on click.
         onDoubleClick={handleDoubleClick} // Open list menu on double click.
         onPointerDown={handlePointerDown} // Start long press timer.
@@ -250,12 +254,13 @@ export default function WishlistSaveButton({
         onPointerLeave={handlePointerUp} // Clear timer when pointer leaves.
         onPointerCancel={handlePointerUp} // Clear timer on cancel.
       >
-        {isItemSaved ? "★" : "☆"}
+        <span className={styles.wishlistSave__icon}>{isItemSaved ? "★" : "☆"}</span>
       </button>
 
       {/* Dropdown menu for list selection and creation. */}
       {isMenuOpen ? (
         <div
+          id={menuId}
           className={styles.wishlistSave__menu}
           role="menu"
           onClick={(event) => event.stopPropagation()} // Keep menu clicks local.
@@ -275,6 +280,7 @@ export default function WishlistSaveButton({
                     isActive ? styles["wishlistSave__menuItem--active"] : ""
                   }`}
                   type="button"
+                  role="menuitem"
                   onClick={() => handleSelectList(listName)} // Save/remove with list selection.
                 >
                   <span>{listName}</span>
@@ -299,6 +305,7 @@ export default function WishlistSaveButton({
             <button
               className={styles.wishlistSave__createButton}
               type="button"
+              role="menuitem"
               onClick={handleCreateList} // Create list and save item.
               aria-label="Add list"
             >

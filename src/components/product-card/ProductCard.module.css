@@ -143,7 +143,7 @@
 
 .productCard__wishlist--saved {
   color: var(--color-accent);
-  transform: rotate(144deg);
+  transform: rotate(144deg) scale(1.1);
   filter: brightness(1.12);
   animation: star-pop 220ms ease;
 }
@@ -154,11 +154,11 @@
     filter: brightness(1);
   }
   60% {
-    transform: rotate(144deg) scale(1.12);
+    transform: rotate(144deg) scale(1.18);
     filter: brightness(1.12);
   }
   100% {
-    transform: rotate(144deg) scale(1);
+    transform: rotate(144deg) scale(1.1);
     filter: brightness(1.12);
   }
 }
@@ -174,4 +174,9 @@
 
 .productCard__wishlistWrap {
   --wishlist-menu-right-offset: -16px;
+}
+
+.productCard__wishlist:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
 }
