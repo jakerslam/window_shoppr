@@ -23,14 +23,15 @@
 - [x] R9: Email capture popup UI (delayed) with backend stubs
 - [x] R10: SEO baseline (metadata, Open Graph, schema.org, sitemap, robots)
 - [x] R11: Personalization stubs (recently viewed tracking/cookies)
-- [ ] R11.1: Personalization display rules (use cookies/recently viewed to tailor content)
+- [NEXT] 🔵 R11.1: Personalization display rules (use cookies/recently viewed to tailor content)
 - [x] R11.2: Product tags + tag-based search/filter + clickable tag chips
 - [x] R12: Wishlist UI stub and placeholder page
 - [x] R12.1: Wishlist save menu (hover/long-press list selection)
-- [NEXT] 🔵 R13: Animation system for mesmerizing scrolling columns (hover pause)
-- [ ] R14: Navigation menu with hover unfurl (categories -> subcategories)
+- [x] R13: Animation system for mesmerizing scrolling columns (hover pause)
+- [x] R14: Navigation menu with hover unfurl (categories -> subcategories)
 
 ## SEO & Growth
+- [ ] R22.5: Category + subcategory landing pages with SEO metadata, schema, and slug routing
 - [ ] R25 (Phase 2 Optional): AI-curated blog engine with intent-to-product mapping (pillar templates, FAQ schema)
 - [ ] R20: SEO structured data (Product/Offer JSON-LD)
 - [ ] R21: Sitemap, robots, and canonical URLs

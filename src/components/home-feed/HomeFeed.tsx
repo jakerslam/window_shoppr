@@ -59,49 +59,169 @@ const ScrollingColumn = ({
   deck,
   duration,
   onOpen,
+  isModalOpen,
 }: {
   deck: Product[];
   duration: number;
   onOpen: (product: Product) => () => void;
+  isModalOpen: boolean;
 }) => {
-  const [isPaused, setIsPaused] = useState(false);
-  const [speedScale, setSpeedScale] = useState(1);
-  const resumeTimers = useRef<number[]>([]);
+  const trackRef = useRef<HTMLDivElement | null>(null);
+  const animationRef = useRef<number | null>(null);
+  const lastTimeRef = useRef<number | null>(null);
+  const positionRef = useRef(0);
+  const loopHeightRef = useRef(0);
+  const baseSpeedRef = useRef(0);
+  const speedRef = useRef(0);
+  const targetSpeedRef = useRef(0);
+  const isPausedRef = useRef(false);
+  const isHoveringRef = useRef(false);
+  const isModalOpenRef = useRef(false);
+  const durationRef = useRef(duration);
 
   const loopedDeck = useMemo(() => [...deck, ...deck], [deck]);
-  const effectiveDuration = Math.max(duration * speedScale, 1); // Keep duration usable.
 
-  // Clear any pending resume timers.
-  const clearResumeTimers = useCallback(() => {
-    resumeTimers.current.forEach((timer) => window.clearTimeout(timer));
-    resumeTimers.current = [];
+  /**
+   * Measure the track height and recompute the scroll speed.
+   */
+  const syncMetrics = useCallback(() => {
+    const track = trackRef.current;
+
+    if (!track) {
+      return; // Skip when the track is not mounted yet.
+    }
+
+    const totalHeight = track.getBoundingClientRect().height; // Full height of the looped deck.
+    const loopHeight = totalHeight / 2; // One full deck height.
+
+    if (!loopHeight) {
+      return; // Skip when layout has no measurable height.
+    }
+
+    const wasPaused = isPausedRef.current; // Preserve hover pause state.
+
+    loopHeightRef.current = loopHeight; // Cache the loop height for animation.
+    baseSpeedRef.current = loopHeight / durationRef.current; // Compute pixels per second.
+    targetSpeedRef.current = wasPaused ? 0 : baseSpeedRef.current; // Keep pause state intact.
+
+    if (wasPaused) {
+      speedRef.current = 0; // Ensure the track stays stopped when paused.
+    }
   }, []);
 
-  // Pause animation on hover.
+  /**
+   * Animate the column by translating the track on each frame.
+   */
+  const animate = useCallback((time: number) => {
+    if (lastTimeRef.current === null) {
+      lastTimeRef.current = time; // Seed the previous time for delta math.
+    }
+
+    const deltaSeconds = (time - lastTimeRef.current) / 1000; // Convert to seconds.
+    lastTimeRef.current = time; // Store the current frame time.
+
+    const loopHeight = loopHeightRef.current; // Height of a full deck loop.
+    const track = trackRef.current; // DOM node to move.
+
+    if (track && loopHeight > 0) {
+      const speedDelta = (targetSpeedRef.current - speedRef.current) * 0.08; // Ease toward target speed.
+      const nextSpeed = speedRef.current + speedDelta; // Apply speed easing.
+      const nextPosition = (positionRef.current + nextSpeed * deltaSeconds) % loopHeight; // Wrap position.
+
+      speedRef.current = nextSpeed; // Update the current speed.
+      positionRef.current = nextPosition; // Cache the current position.
+      track.style.transform = `translateY(-${nextPosition}px)`; // Move the track.
+    }
+
+    animationRef.current = window.requestAnimationFrame(animate); // Schedule next frame.
+  }, []);
+
+  /**
+   * Pause the scroll while the pointer is over the column.
+   */
   const handleMouseEnter = () => {
-    clearResumeTimers(); // Stop queued speed ramps.
-    setIsPaused(true); // Pause the scrolling motion.
+    isHoveringRef.current = true; // Track hover state for modal coordination.
+    isPausedRef.current = true; // Track pause state for resizes.
+    targetSpeedRef.current = 0; // Ease to a stop on hover.
   };
 
-  // Resume with a gentle speed ramp.
+  /**
+   * Resume the scroll with a gentle speed ramp.
+   */
   const handleMouseLeave = () => {
-    clearResumeTimers(); // Reset any existing timers.
-    setIsPaused(false); // Resume the scrolling motion.
-    setSpeedScale(1.35); // Restart slowly for a softer return.
-    resumeTimers.current.push(
-      window.setTimeout(() => setSpeedScale(1.15), 300), // Speed up a bit.
-    );
-    resumeTimers.current.push(
-      window.setTimeout(() => setSpeedScale(1), 650), // Return to normal speed.
-    );
+    isHoveringRef.current = false; // Track hover state for modal coordination.
+
+    if (isModalOpenRef.current) {
+      isPausedRef.current = true; // Keep paused when a modal is open.
+      targetSpeedRef.current = 0; // Stay stopped until modal closes.
+      return;
+    }
+
+    isPausedRef.current = false; // Track resume state for resizes.
+    targetSpeedRef.current = baseSpeedRef.current; // Ease back to the base speed.
   };
 
-  // Clean up timers on unmount.
+  // Pause the scroll whenever a modal is open.
   useEffect(() => {
-    return () => {
-      clearResumeTimers(); // Avoid stale timers after unmount.
+    isModalOpenRef.current = isModalOpen; // Keep modal state in sync.
+
+    if (isModalOpen) {
+      isPausedRef.current = true; // Pause while a modal is open.
+      targetSpeedRef.current = 0; // Stop moving under the modal.
+      return;
+    }
+
+    if (!isHoveringRef.current) {
+      isPausedRef.current = false; // Resume if the user is not hovering.
+      targetSpeedRef.current = baseSpeedRef.current; // Return to base speed.
+    }
+  }, [isModalOpen]);
+
+  // Update scroll speed whenever the duration changes.
+  useEffect(() => {
+    durationRef.current = duration; // Track the latest duration value.
+    syncMetrics(); // Recompute speeds without resetting position.
+  }, [duration, syncMetrics]);
+
+  // Reset position whenever the deck changes.
+  useEffect(() => {
+    positionRef.current = 0; // Start new decks at the top.
+    lastTimeRef.current = null; // Reset timing for smooth restarts.
+  }, [deck]);
+
+  // Run the animation loop and keep it in sync with layout changes.
+  useEffect(() => {
+    if (deck.length === 0) {
+      return undefined; // Skip animation when there are no cards.
+    }
+
+    if (typeof window === "undefined") {
+      return undefined; // Skip animation on the server.
+    }
+
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    if (mediaQuery.matches) {
+      return undefined; // Respect reduced motion preferences.
+    }
+
+    syncMetrics(); // Measure the track before starting.
+
+    const handleResize = () => {
+      syncMetrics(); // Recompute metrics after layout changes.
     };
-  }, [clearResumeTimers]);
+
+    window.addEventListener("resize", handleResize); // Keep sizes current.
+    animationRef.current = window.requestAnimationFrame(animate); // Start the animation loop.
+
+    return () => {
+      if (animationRef.current) {
+        window.cancelAnimationFrame(animationRef.current); // Stop the animation loop.
+      }
+
+      window.removeEventListener("resize", handleResize); // Clean up resize listener.
+    };
+  }, [animate, deck.length, syncMetrics]);
 
   if (deck.length === 0) {
     return null; // Skip empty columns when there are no cards.
@@ -113,14 +233,7 @@ const ScrollingColumn = ({
       onMouseEnter={handleMouseEnter} // Pause when hovering the column.
       onMouseLeave={handleMouseLeave} // Resume when leaving the column.
     >
-      <div
-        className={`${styles.homeFeed__columnTrack} ${
-          isPaused ? styles.homeFeed__columnTrackPaused : ""
-        }`}
-        style={{
-          "--scroll-duration": `${effectiveDuration}s`, // Control scroll speed per column.
-        } as React.CSSProperties}
-      >
+      <div ref={trackRef} className={styles.homeFeed__columnTrack}>
         {loopedDeck.map((product, index) => (
           <ProductCard
             key={`${product.id}-${index}`}
@@ -138,7 +251,7 @@ const ScrollingColumn = ({
  */
 export default function HomeFeed({
   products,
-  title = "Today's Window Finds",
+  title = "Today's Finds",
   subtitleLabel = "curated picks and cozy deals.",
 }: {
   products: Product[];
@@ -147,8 +260,32 @@ export default function HomeFeed({
 }) {
   const router = useRouter(); // Router for modal navigation.
   const [sortOption, setSortOption] = useState<SortOption>("newest");
+  const [speedMode, setSpeedMode] = useState<"cozy" | "quick">("cozy");
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { selectedCategory, selectedSubCategory, searchQuery } =
     useCategoryFilter(); // Shared category filter + search query.
+
+  useEffect(() => {
+    const handleModalToggle = (event: Event) => {
+      const customEvent = event as CustomEvent<{ open?: boolean }>;
+      setIsModalOpen(Boolean(customEvent.detail?.open)); // Track modal open state.
+    };
+
+    window.addEventListener("modal:toggle", handleModalToggle); // Listen for modal open/close.
+
+    return () => {
+      window.removeEventListener("modal:toggle", handleModalToggle); // Clean up listener.
+    };
+  }, []);
+
+  const categorySource = selectedSubCategory || selectedCategory || ""; // Prefer subcategory for the header.
+  const formattedCategory = categorySource.replace(/-/g, " "); // Normalize slug spacing.
+  const displayCategory = formattedCategory.replace(/\b\w/g, (char) =>
+    char.toUpperCase(),
+  ); // Title-case the category label.
+  const effectiveTitle = categorySource
+    ? `Today's ${displayCategory} Finds`
+    : title; // Fall back when no category filter is selected.
 
   const filteredProducts = useMemo(() => {
     const normalizedQuery = normalizeText(searchQuery); // Normalize input for matching.
@@ -213,7 +350,9 @@ export default function HomeFeed({
   );
 
   const columnCount = 5; // Desktop column count for the animated feed.
-  const columnDurations = [38, 46, 54, 62, 70]; // Unique speeds for each column.
+  const baseDurations = [38, 46, 54, 62, 70]; // Unique speeds for each column.
+  const durationScale = speedMode === "quick" ? 0.7 : 1; // Adjust speeds per toggle.
+  const columnDurations = baseDurations.map((value) => value * durationScale);
   const minimumPerColumn = Math.min(
     7,
     Math.max(4, Math.ceil(rankedProducts.length / columnCount)),
@@ -239,15 +378,43 @@ export default function HomeFeed({
       <div className={styles.homeFeed__header}>
         {/* Title and helper text. */}
         <div className={styles.homeFeed__titleGroup}>
-          <h1 className={styles.homeFeed__title}>{title}</h1>
-          {/* Subtitle reflects the active result count. */}
-          <p className={styles.homeFeed__subtitle}>
-            Browse {sortedProducts.length} {subtitleLabel}
-          </p>
+          <h1 className={styles.homeFeed__title}>{effectiveTitle}</h1>
         </div>
 
         {/* Sort controls (search lives in the top bar). */}
         <div className={styles.homeFeed__controls}>
+          <button
+            className={`${styles.homeFeed__speedToggle} ${
+              speedMode === "quick" ? styles["homeFeed__speedToggle--quick"] : ""
+            }`}
+            type="button"
+            onClick={() =>
+              setSpeedMode((prev) => (prev === "cozy" ? "quick" : "cozy"))
+            } // Toggle between cozy and quick speeds.
+            aria-pressed={speedMode === "quick"}
+            aria-label={
+              speedMode === "quick"
+                ? "Switch to cozy scroll speed"
+                : "Switch to quick scroll speed"
+            }
+          >
+            <span className={styles.homeFeed__speedThumb} aria-hidden="true" />
+            <span
+              className={styles.homeFeed__speedIcon}
+              data-side="left"
+              aria-hidden="true"
+            >
+              🐢
+            </span>
+            <span
+              className={styles.homeFeed__speedIcon}
+              data-side="right"
+              aria-hidden="true"
+            >
+              🐇
+            </span>
+          </button>
+
           <select
             className={styles.homeFeed__select}
             value={sortOption}
@@ -270,6 +437,7 @@ export default function HomeFeed({
             deck={deck}
             duration={columnDurations[index % columnDurations.length]}
             onOpen={handleCardOpen}
+            isModalOpen={isModalOpen}
           />
         ))}
       </div>

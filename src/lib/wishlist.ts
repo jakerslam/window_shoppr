@@ -138,7 +138,9 @@ const broadcastWishlistChange = () => {
     return; // Skip event dispatch during SSR.
   }
 
-  window.dispatchEvent(new CustomEvent(WISHLIST_EVENT)); // Notify local listeners.
+  window.setTimeout(() => {
+    window.dispatchEvent(new CustomEvent(WISHLIST_EVENT)); // Notify local listeners.
+  }, 0); // Defer to avoid render-phase state updates.
 };
 
 /**

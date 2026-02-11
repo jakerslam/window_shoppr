@@ -47,11 +47,13 @@ export default function Modal({
     document.documentElement.style.overflow = "hidden"; // Lock html scrolling for modals.
     document.body.style.overflow = "hidden"; // Prevent background scroll while open.
     window.addEventListener("keydown", handleKeyDown); // Listen for escape key events.
+    window.dispatchEvent(new CustomEvent("modal:toggle", { detail: { open: true } })); // Pause feed when modal opens.
 
     return () => {
       document.documentElement.style.overflow = ""; // Restore html scroll after closing.
       document.body.style.overflow = ""; // Restore scroll after closing.
       window.removeEventListener("keydown", handleKeyDown); // Clean up escape handler.
+      window.dispatchEvent(new CustomEvent("modal:toggle", { detail: { open: false } })); // Resume feed after modal closes.
     };
   }, [handleClose]);
 
