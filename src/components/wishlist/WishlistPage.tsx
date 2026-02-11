@@ -1,12 +1,13 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import productsJson from "@/data/products.json";
 import { Product } from "@/lib/types";
 import { DEFAULT_WISHLIST_NAME, useWishlist } from "@/lib/wishlist";
-import ProductCard from "@/components/product-card/ProductCard";
+import WishlistHeader from "@/components/wishlist/WishlistHeader";
+import WishlistGrid from "@/components/wishlist/WishlistGrid";
+import WishlistEmpty from "@/components/wishlist/WishlistEmpty";
 import styles from "@/components/wishlist/WishlistPage.module.css";
 
 /**
@@ -34,7 +35,7 @@ type RemovedItem = {
  */
 export default function WishlistPage() {
   const router = useRouter();
-  const { listNames, isSaved, isSavedInList, saveToList } = useWishlist(); // Pull wishlist state from storage.
+  const { listNames, isSaved, isSavedInList, saveToList } = useWishlist();
   const [activeList, setActiveList] = useState(ALL_LIST_LABEL);
   const [removedItems, setRemovedItems] = useState<RemovedItem[]>([]);
 
@@ -46,14 +47,19 @@ export default function WishlistPage() {
     [],
   ); // Cache product ordering for ghost placeholders.
 
+  const displayLists = useMemo(
+    () => [ALL_LIST_LABEL, ...listNames],
+    [listNames],
+  ); // Include the All filter at the top.
+
   const filteredProducts = useMemo(() => {
     if (activeList === ALL_LIST_LABEL) {
-      return ALL_PRODUCTS.filter((product) => isSaved(product.id)); // Show anything saved to any list.
+      return ALL_PRODUCTS.filter((product) => isSaved(product.id));
     }
 
     return ALL_PRODUCTS.filter((product) =>
       isSavedInList(product.id, activeList),
-    ); // Filter to the active list.
+    );
   }, [activeList, isSaved, isSavedInList]);
 
   const activeGhosts = useMemo(() => {
@@ -87,12 +93,10 @@ export default function WishlistPage() {
 
   const hasItems = combinedItems.length > 0; // Determine whether to show empty state.
 
-  // Navigate to the product detail view when a card is opened.
   const handleOpen = (slug: string) => {
     router.push(`/product/${slug}`); // Route to the full product detail page.
   };
 
-  // Register a ghost item when it is removed from a list in this view.
   const handleListRemoval = useCallback(
     (productId: string, listName: string) => {
       const lookup = productLookup.get(productId);
@@ -124,7 +128,6 @@ export default function WishlistPage() {
     [productLookup],
   );
 
-  // Undo a removal by re-saving the item into the previous list.
   const handleUndo = useCallback(
     (entry: RemovedItem) => {
       const targetList =
@@ -145,81 +148,22 @@ export default function WishlistPage() {
 
   return (
     <section className={styles.wishlistPage}>
-      {/* Header section with title and quick navigation. */}
-      <header className={styles.wishlistPage__header}>
-        {/* Title group describing the wishlist view. */}
-        <div className={styles.wishlistPage__titleGroup}>
-          <h1 className={styles.wishlistPage__title}>Your Wishlist</h1>
-          <p className={styles.wishlistPage__subtitle}>
-            Saved finds for quick, cozy browsing.
-          </p>
-        </div>
+      <WishlistHeader
+        listNames={displayLists}
+        activeList={activeList}
+        onListChange={setActiveList}
+      />
 
-        {/* Action row with navigation and list filtering. */}
-        <div className={styles.wishlistPage__actions}>
-          <Link className={styles.wishlistPage__browse} href="/">
-            &larr; Feed
-          </Link>
-
-          <div className={styles.wishlistPage__filters}>
-            <select
-              className={styles.wishlistPage__filterSelect}
-              value={activeList}
-              onChange={(event) => setActiveList(event.target.value)} // Switch list filter.
-              aria-label="Filter wishlist by list"
-            >
-              <option value={ALL_LIST_LABEL}>{ALL_LIST_LABEL}</option>
-              {listNames.map((listName) => (
-                <option key={listName} value={listName}>
-                  {listName}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-      </header>
-
-      {/* Wishlist grid when items are saved. */}
       {hasItems ? (
-        <div className={styles.wishlistPage__grid}>
-          {combinedItems.map((item) =>
-            item.type === "product" ? (
-              <ProductCard
-                key={item.product.id}
-                product={item.product}
-                onOpen={() => handleOpen(item.product.slug)}
-                variant="compact"
-                activeListName={activeList}
-                onListRemoval={handleListRemoval}
-              />
-            ) : (
-              <div
-                key={`ghost-${item.entry.productId}-${item.entry.listName}`}
-                className={styles.wishlistPage__ghostCard}
-              >
-                <span className={styles.wishlistPage__ghostTitle}>
-                  Removed from {item.entry.listName}
-                </span>
-                <button
-                  className={styles.wishlistPage__ghostAction}
-                  type="button"
-                  onClick={() => handleUndo(item.entry)} // Restore the removed item.
-                >
-                  Click to undo
-                </button>
-              </div>
-            ),
-          )}
-        </div>
+        <WishlistGrid
+          items={combinedItems}
+          activeList={activeList}
+          onOpen={handleOpen}
+          onListRemoval={handleListRemoval}
+          onUndo={handleUndo}
+        />
       ) : (
-        <div className={styles.wishlistPage__empty}>
-          <p className={styles.wishlistPage__emptyText}>
-            Your wishlist is empty. Start saving the finds you love most.
-          </p>
-          <Link className={styles.wishlistPage__emptyCta} href="/">
-            &larr; Feed
-          </Link>
-        </div>
+        <WishlistEmpty />
       )}
     </section>
   );
