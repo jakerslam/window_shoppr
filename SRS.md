@@ -23,7 +23,7 @@
 - [x] R9: Email capture popup UI (delayed) with backend stubs
 - [x] R10: SEO baseline (metadata, Open Graph, schema.org, sitemap, robots)
 - [x] R11: Personalization stubs (recently viewed tracking/cookies)
-- [NEXT] 🔵 R11.1: Personalization display rules (use cookies/recently viewed to tailor content)
+- [x] R11.1: Personalization display rules (use cookies/recently viewed to tailor content)
 - [x] R11.2: Product tags + tag-based search/filter + clickable tag chips
 - [x] R12: Wishlist UI stub and placeholder page
 - [x] R12.1: Wishlist save menu (hover/long-press list selection)
@@ -50,7 +50,7 @@
 - [ ] R24: Cookie consent + privacy/affiliate disclosure
 
 ## UX & Accessibility
-- [ ] R15: Accessibility baseline (focus states, contrast, keyboard nav)
+- [NEXT] 🔵 R15: Accessibility baseline (focus states, contrast, keyboard nav)
 - [ ] R16: Responsive layout pass (mobile/tablet polish)
 - [ ] R17: Empty states + loading states
 - [ ] R18.1: Custom styled filter dropdown

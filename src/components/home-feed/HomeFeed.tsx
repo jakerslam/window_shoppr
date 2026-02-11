@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCategoryFilter } from "@/components/category-filter/CategoryFilterProvider";
+import { getRecentlyViewedIds } from "@/lib/recently-viewed";
 import { Product } from "@/lib/types";
 import { toCategorySlug } from "@/lib/categories";
 import ProductCard from "@/components/product-card/ProductCard";
@@ -19,10 +20,92 @@ type SortOption = "top-rated" | "newest" | "price-low" | "price-high";
 const normalizeText = (value: string) => value.trim().toLowerCase();
 
 /**
- * Rank products for each user (cookie- + preference-driven in a later pass).
+ * Build a weighted preference map from recently viewed products.
  */
-const rankProductsForUser = (products: Product[]) =>
-  products; // TODO: apply personalization weights from cookies/preferences.
+const buildPreferenceWeights = (
+  recentlyViewedIds: string[],
+  productLookup: Map<string, Product>,
+) => {
+  const categoryWeights = new Map<string, number>();
+  const subCategoryWeights = new Map<string, number>();
+  const tagWeights = new Map<string, number>();
+
+  recentlyViewedIds.forEach((id, index) => {
+    const product = productLookup.get(id);
+
+    if (!product) {
+      return; // Skip IDs that are not in the current catalog.
+    }
+
+    const recencyBoost = (recentlyViewedIds.length - index) / recentlyViewedIds.length; // Weight newer views higher.
+    const categoryKey = product.category.toLowerCase();
+    const subCategoryKey = product.subCategory?.toLowerCase();
+
+    categoryWeights.set(
+      categoryKey,
+      (categoryWeights.get(categoryKey) ?? 0) + 3 * recencyBoost,
+    ); // Emphasize matched categories.
+
+    if (subCategoryKey) {
+      subCategoryWeights.set(
+        subCategoryKey,
+        (subCategoryWeights.get(subCategoryKey) ?? 0) + 2 * recencyBoost,
+      ); // Emphasize matched subcategories.
+    }
+
+    (product.tags ?? []).forEach((tag) => {
+      const tagKey = tag.toLowerCase();
+      tagWeights.set(tagKey, (tagWeights.get(tagKey) ?? 0) + 1 * recencyBoost); // Light tag weight.
+    });
+  });
+
+  return { categoryWeights, subCategoryWeights, tagWeights };
+};
+
+/**
+ * Rank products for each user using recently viewed preferences.
+ */
+const rankProductsForUser = (
+  products: Product[],
+  recentlyViewedIds: string[],
+  applyPersonalization: boolean,
+) => {
+  if (!applyPersonalization || recentlyViewedIds.length === 0) {
+    return products; // Respect explicit sorting when personalization is off.
+  }
+
+  const productLookup = new Map(products.map((product) => [product.id, product]));
+  const { categoryWeights, subCategoryWeights, tagWeights } =
+    buildPreferenceWeights(recentlyViewedIds, productLookup); // Build weighted preferences.
+
+  return products
+    .map((product, index) => {
+      const categoryKey = product.category.toLowerCase();
+      const subCategoryKey = product.subCategory?.toLowerCase();
+      const tagScore = (product.tags ?? []).reduce(
+        (total, tag) => total + (tagWeights.get(tag.toLowerCase()) ?? 0),
+        0,
+      ); // Sum tag weights for the product.
+      const score =
+        (categoryWeights.get(categoryKey) ?? 0) +
+        (subCategoryKey ? subCategoryWeights.get(subCategoryKey) ?? 0 : 0) +
+        Math.min(tagScore, 3); // Cap tag contribution for balance.
+
+      return {
+        product,
+        score,
+        index,
+      };
+    })
+    .sort((a, b) => {
+      if (b.score !== a.score) {
+        return b.score - a.score; // Higher personalization score first.
+      }
+
+      return a.index - b.index; // Preserve original ordering for ties.
+    })
+    .map((entry) => entry.product);
+};
 
 /**
  * Split products into column decks for the animated feed.
@@ -262,13 +345,20 @@ export default function HomeFeed({
   const [sortOption, setSortOption] = useState<SortOption>("newest");
   const [speedMode, setSpeedMode] = useState<"cozy" | "quick">("cozy");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [personalizationSeed, setPersonalizationSeed] = useState(0);
   const { selectedCategory, selectedSubCategory, searchQuery } =
     useCategoryFilter(); // Shared category filter + search query.
 
   useEffect(() => {
     const handleModalToggle = (event: Event) => {
       const customEvent = event as CustomEvent<{ open?: boolean }>;
-      setIsModalOpen(Boolean(customEvent.detail?.open)); // Track modal open state.
+      const isOpen = Boolean(customEvent.detail?.open);
+
+      setIsModalOpen(isOpen); // Track modal open state.
+
+      if (!isOpen) {
+        setPersonalizationSeed((prev) => prev + 1); // Refresh personalization after closing.
+      }
     };
 
     window.addEventListener("modal:toggle", handleModalToggle); // Listen for modal open/close.
@@ -286,6 +376,13 @@ export default function HomeFeed({
   const effectiveTitle = categorySource
     ? `Today's ${displayCategory} Finds`
     : title; // Fall back when no category filter is selected.
+
+  const recentlyViewedIds = useMemo(
+    () => getRecentlyViewedIds(),
+    [personalizationSeed],
+  ); // Pull recent IDs when the seed changes.
+
+  const shouldPersonalize = sortOption === "newest"; // Only personalize the default sort.
 
   const filteredProducts = useMemo(() => {
     const normalizedQuery = normalizeText(searchQuery); // Normalize input for matching.
@@ -345,8 +442,8 @@ export default function HomeFeed({
   }, [filteredProducts, sortOption]);
 
   const rankedProducts = useMemo(
-    () => rankProductsForUser(sortedProducts),
-    [sortedProducts],
+    () => rankProductsForUser(sortedProducts, recentlyViewedIds, shouldPersonalize),
+    [recentlyViewedIds, shouldPersonalize, sortedProducts],
   );
 
   const columnCount = 5; // Desktop column count for the animated feed.
