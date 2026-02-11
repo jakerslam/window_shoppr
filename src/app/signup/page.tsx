@@ -1,4 +1,4 @@
-import SignupForm from "@/components/signup/SignupForm";
+import SignupForm from "@/features/auth/SignupForm";
 import styles from "@/app/signup/page.module.css";
 
 /**

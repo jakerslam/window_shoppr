@@ -1,5 +1,5 @@
-import Modal from "@/components/modal/Modal";
-import LoginForm from "@/components/login/LoginForm";
+import Modal from "@/shared/components/modal/Modal";
+import LoginForm from "@/features/auth/LoginForm";
 import styles from "@/app/@modal/(.)login/page.module.css";
 
 /**

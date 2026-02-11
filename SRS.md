@@ -6,6 +6,9 @@
 - [NEXT] Selected next requirement
 
 ## Core Requirements
+- [ ] R36: Add schema validation (Zod) for product data + env config
+- [ ] R37: Add basic security headers (CSP, HSTS, etc.)
+- [ ] R38: Add baseline analytics events (search, wishlist save, affiliate click)
 - [x] R12.2: Login modal/page UI with auth handler stubs
 - [x] R1: Initialize architecture (Next.js + TypeScript scaffold) and baseline project structure
 - [x] R2: Define core data model and JSON fallback loading strategy (with SQL stubs)
@@ -58,10 +61,22 @@
 ## Theme
 - [ ] R15.1: Theme system (light/dark) applied to components
 
+## Later-Stage Polish
+- [ ] R39: Error monitoring + performance tracing (Sentry or similar)
+- [ ] R40: ISR/edge caching strategy for product pages
+- [ ] R41: Feature flags for safe UI experiments
+- [ ] R42: Accessibility audit tooling (axe/Lighthouse CI)
+- [ ] R31: Add automated tests + CI/lint pipeline
+- [ ] R32: Reduce verbose inline comments (keep only essential intent)
+- [ ] R33: Add feature public APIs (index exports) for cleaner imports
+- [ ] R34: Add comprehensive error boundaries + loading states
+- [ ] R35: Add architecture/structure documentation (docs/ARCHITECTURE.md)
+
 ## Optional Optimizations & Refactors
 - [ ] O1: Extract product sorting/filtering into reusable helpers
 - [ ] O2: Add search weighting and relevance scoring
 - [ ] O3: Add pagination/virtualization for large product sets
+- [x] O4: Refactor folder structure into features/ + shared/ for enterprise organization
 - [ ] R26: Wishlist search input (filter saved items)
 - [ ] R27: Wishlist list deletion (remove list entirely)
 

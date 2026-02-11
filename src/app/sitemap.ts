@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
-import { fetchProducts } from "@/lib/data";
-import { SITE_URL } from "@/lib/seo";
+import { fetchProducts } from "@/shared/lib/data";
+import { SITE_URL } from "@/shared/lib/seo";
 
 /**
  * Build a sitemap with the homepage and product detail routes.
