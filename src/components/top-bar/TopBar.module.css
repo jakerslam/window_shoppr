@@ -117,13 +117,16 @@
   width: 100%;
 }
 
-.topBar__menuGroup:hover .topBar__subMenu {
+
+
+
+.topBar__menuGroup:focus-within .topBar__subMenu {
   opacity: 1;
   transform: translateX(0);
   pointer-events: auto;
 }
 
-.topBar__menuGroup:focus-within .topBar__subMenu {
+.topBar__subMenu--open {
   opacity: 1;
   transform: translateX(0);
   pointer-events: auto;
@@ -149,10 +152,6 @@
   z-index: 40;
 }
 
-.topBar__subMenu:hover {
-  opacity: 1;
-  pointer-events: auto;
-}
 
 .topBar__subMenuItem {
   text-align: left;

@@ -1,10 +1,12 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useRef, useState } from "react";
-import { CATEGORY_TREE, toCategorySlug } from "@/lib/categories";
+import { useCallback } from "react";
 import { useCategoryFilter } from "@/components/category-filter/CategoryFilterProvider";
+import TopBarBrand from "@/components/top-bar/TopBarBrand";
+import TopBarMenu from "@/components/top-bar/TopBarMenu";
+import TopBarSearch from "@/components/top-bar/TopBarSearch";
+import TopBarActions from "@/components/top-bar/TopBarActions";
 import styles from "@/components/top-bar/TopBar.module.css";
 
 /**
@@ -13,240 +15,46 @@ import styles from "@/components/top-bar/TopBar.module.css";
 export default function TopBar() {
   const router = useRouter();
   const pathname = usePathname();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement | null>(null);
-  const triggerRef = useRef<HTMLButtonElement | null>(null);
-  const firstItemRef = useRef<HTMLButtonElement | null>(null);
-  const {
-    selectedCategory,
-    selectedSubCategory,
-    searchQuery,
-    setSearchQuery,
-    setCategory,
-    setSubCategory,
-    clearFilters,
-  } = useCategoryFilter(); // Pull shared category filter state.
+  const { selectedCategory, selectedSubCategory, searchQuery, setSearchQuery } =
+    useCategoryFilter(); // Pull shared category filter state.
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const nextValue = event.target.value; // Capture the latest query value.
-    setSearchQuery(nextValue); // Update the shared search query.
-  };
+  const isOnAllCategories =
+    pathname === "/" && !selectedCategory && !selectedSubCategory; // Track main feed default state.
 
-  const handleSearchSubmit = () => {
+  /**
+   * Keep search text in sync with the shared filter state.
+   */
+  const handleSearchChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const nextValue = event.target.value; // Capture the latest query value.
+      setSearchQuery(nextValue); // Update the shared search query.
+    },
+    [setSearchQuery],
+  );
+
+  /**
+   * Route back to the feed when submitting a search from another page.
+   */
+  const handleSearchSubmit = useCallback(() => {
     if (pathname !== "/" && searchQuery.trim()) {
       router.push("/"); // Jump back to the feed when search is submitted.
     }
-  };
-
-  const handleMenuOpen = () => {
-    setIsMenuOpen(true); // Open the categories menu.
-  };
-
-  const handleMenuClose = () => {
-    setIsMenuOpen(false); // Close the categories menu.
-  };
-
-  const handleTriggerKeyDown = (
-    event: React.KeyboardEvent<HTMLButtonElement>,
-  ) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      setIsMenuOpen((prev) => !prev); // Toggle on keyboard activation.
-      if (!isMenuOpen) {
-        window.setTimeout(() => firstItemRef.current?.focus(), 0); // Focus first item.
-      }
-    }
-
-    if (event.key === "ArrowDown") {
-      event.preventDefault();
-      handleMenuOpen(); // Open menu on arrow down.
-      window.setTimeout(() => firstItemRef.current?.focus(), 0); // Focus first item.
-    }
-
-    if (event.key === "Escape") {
-      handleMenuClose(); // Close menu on escape.
-      triggerRef.current?.focus(); // Return focus to trigger.
-    }
-  };
-
-  const handleMenuBlur = (event: React.FocusEvent<HTMLDivElement>) => {
-    if (!event.currentTarget.contains(event.relatedTarget as Node)) {
-      handleMenuClose(); // Close menu when focus leaves the menu.
-    }
-  };
-
-  const handleMenuKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === "Escape") {
-      handleMenuClose(); // Close menu from inside.
-      triggerRef.current?.focus(); // Return focus to trigger.
-    }
-  };
+  }, [pathname, router, searchQuery]);
 
   return (
     <header className={styles.topBar}>
-      {/* Left section with brand + categories dropdown. */}
       <div className={styles.topBar__left}>
-        {/* Brand block for identity and home navigation. */}
-        <div className={styles.topBar__brand}>
-          <Link className={styles.topBar__logo} href="/">
-            <span>Window</span>
-            <span>Shoppr</span>
-          </Link>
-        </div>
-
-        {/* Categories dropdown trigger and menu. */}
-        <div
-          className={styles.topBar__categories}
-          onMouseEnter={handleMenuOpen}
-          onMouseLeave={handleMenuClose}
-          onFocus={handleMenuOpen}
-          onBlur={handleMenuBlur}
-          onKeyDown={handleMenuKeyDown}
-        >
-          <button
-            ref={triggerRef}
-            className={styles.topBar__categoriesTrigger}
-            type="button"
-            aria-haspopup="menu"
-            aria-expanded={isMenuOpen}
-            aria-controls="topbar-categories-menu"
-            onClick={() => setIsMenuOpen((prev) => !prev)}
-            onKeyDown={handleTriggerKeyDown}
-          >
-            Categories
-          </button>
-
-          <div
-            ref={menuRef}
-            id="topbar-categories-menu"
-            className={`${styles.topBar__menu} ${isMenuOpen ? styles["topBar__menu--open"] : ""}`}
-            role="menu"
-            aria-label="Product categories"
-          >
-            {/* Clear filter option. */}
-            <button
-              ref={firstItemRef}
-              className={`${styles.topBar__menuItem} ${
-                !selectedCategory ? styles["topBar__menuItem--active"] : ""
-              }`}
-              type="button"
-              role="menuitem"
-              onClick={() => {
-                clearFilters(); // Reset filters.
-                setIsMenuOpen(false); // Close menu after selection.
-                if (pathname !== "/") {
-                  router.push("/"); // Return to feed for category filtering.
-                }
-              }}
-            >
-              All Categories
-            </button>
-
-            {CATEGORY_TREE.map((category) => {
-              const categorySlug = toCategorySlug(category.label); // Normalize category slug.
-              const isActive = selectedCategory === categorySlug; // Track active category.
-
-              return (
-                <div key={category.label} className={styles.topBar__menuGroup}>
-                  {/* Category item with nested subcategory menu. */}
-                  <button
-                    className={`${styles.topBar__menuItem} ${
-                      isActive && !selectedSubCategory
-                        ? styles["topBar__menuItem--active"]
-                        : ""
-                    }`}
-                    type="button"
-                    role="menuitem"
-                    onClick={() => {
-                      setCategory(categorySlug); // Filter by category.
-                      setIsMenuOpen(false); // Close menu after selection.
-                      if (pathname !== "/") {
-                        router.push("/"); // Return to feed for category filtering.
-                      }
-                    }}
-                  >
-                    {category.label}
-                  </button>
-
-                  {/* Subcategory hover menu for the category. */}
-                  {category.subCategories.length > 0 ? (
-                    <div className={styles.topBar__subMenu} role="menu" aria-label="Subcategories">
-                      {category.subCategories.map((subCategory) => {
-                        const subSlug = toCategorySlug(subCategory); // Normalize subcategory slug.
-                        const isSubActive =
-                          isActive && selectedSubCategory === subSlug; // Track active subcategory.
-
-                        return (
-                          <button
-                            key={subCategory}
-                            className={`${styles.topBar__subMenuItem} ${
-                              isSubActive
-                                ? styles["topBar__subMenuItem--active"]
-                                : ""
-                            }`}
-                            type="button"
-                            role="menuitem"
-                            onClick={() => {
-                              setSubCategory(categorySlug, subSlug); // Filter by subcategory.
-                              setIsMenuOpen(false); // Close menu after selection.
-                              if (pathname !== "/") {
-                                router.push("/"); // Return to feed for subcategory filtering.
-                              }
-                            }}
-                          >
-                            {subCategory}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  ) : null}
-                </div>
-              );
-            })}
-          </div>
-        </div>
+        <TopBarBrand isOnAllCategories={isOnAllCategories} />
+        <TopBarMenu />
       </div>
 
-      {/* Search input for client-side filtering. */}
-      <div className={styles.topBar__search}>
-        <div className={styles.topBar__searchField}>
-          <input
-            className={styles.topBar__searchInput}
-            type="search"
-            placeholder="Search window finds"
-            aria-label="Search products"
-            value={searchQuery}
-            onChange={handleSearchChange}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") {
-                handleSearchSubmit(); // Navigate to feed on enter.
-              }
-            }}
-          />
+      <TopBarSearch
+        searchQuery={searchQuery}
+        onSearchChange={handleSearchChange}
+        onSearchSubmit={handleSearchSubmit}
+      />
 
-          <button
-            className={styles.topBar__searchButton}
-            type="button"
-            onClick={handleSearchSubmit}
-            aria-label="Submit search"
-          >
-            🔍
-          </button>
-        </div>
-      </div>
-
-      {/* Action area for wishlist and login placeholders. */}
-      <div className={styles.topBar__actions}>
-        {/* Wishlist link for saved items. */}
-        <Link className={styles.topBar__actionButton} href="/wishlist">
-          Wishlist
-        </Link>
-
-        {/* Login action linking to modal/page. */}
-        <Link className={styles.topBar__actionButton} href="/login">
-          Login
-        </Link>
-      </div>
+      <TopBarActions />
     </header>
   );
 }
