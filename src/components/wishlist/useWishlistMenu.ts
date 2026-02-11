@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { DEFAULT_WISHLIST_NAME, useWishlist } from "@/lib/wishlist";
+import { DEFAULT_WISHLIST_NAME } from "@/components/wishlist/wishlist-constants";
+import { useWishlist } from "@/lib/wishlist";
 
 const LONG_PRESS_DELAY = 260; // Slightly above an average click duration for easier discovery.
 const CLICK_DELAY = 220; // Delay to distinguish single click from double click.

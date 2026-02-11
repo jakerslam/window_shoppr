@@ -2,23 +2,19 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import productsJson from "@/data/products.json";
 import { Product } from "@/lib/types";
-import { DEFAULT_WISHLIST_NAME, useWishlist } from "@/lib/wishlist";
-import WishlistHeader from "@/components/wishlist/WishlistHeader";
-import WishlistGrid from "@/components/wishlist/WishlistGrid";
-import WishlistEmpty from "@/components/wishlist/WishlistEmpty";
+import { FALLBACK_PRODUCTS } from "@/lib/products";
+import { ALL_LIST_LABEL, DEFAULT_WISHLIST_NAME } from "@/components/wishlist/wishlist-constants";
+import { useWishlist } from "@/lib/wishlist";
+import WishlistHeader from "@/components/wishlist/wishlist-page/WishlistHeader";
+import WishlistGrid from "@/components/wishlist/wishlist-page/WishlistGrid";
+import WishlistEmpty from "@/components/wishlist/wishlist-page/WishlistEmpty";
 import styles from "@/components/wishlist/WishlistPage.module.css";
 
 /**
  * Static product catalog fallback for wishlist rendering.
  */
-const ALL_PRODUCTS = productsJson as Product[]; // Use JSON fallback until SQL wiring.
-
-/**
- * Label for showing items from every list.
- */
-const ALL_LIST_LABEL = "All"; // Filter label for all lists.
+const ALL_PRODUCTS = FALLBACK_PRODUCTS; // Use JSON fallback until SQL wiring.
 
 /**
  * Local ghost item metadata for temporary undo actions.

@@ -74,6 +74,7 @@ export default function ProductDetail({
           showDealBadge={showDealBadge}
           dealLabel={dealLabel}
           onTagClick={handleTagClick}
+          hasDeal={hasDeal}
         />
       </div>
     </section>

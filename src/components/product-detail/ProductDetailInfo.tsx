@@ -13,15 +13,14 @@ export default function ProductDetailInfo({
   showDealBadge,
   dealLabel,
   onTagClick,
+  hasDeal,
 }: {
   product: Product;
   showDealBadge: boolean;
   dealLabel: string | null;
   onTagClick: (tag: string) => void;
+  hasDeal: boolean;
 }) {
-  const hasDeal =
-    typeof product.originalPrice === "number" &&
-    product.originalPrice > product.price; // Determine if strike price should show.
   const ratingValue = product.rating ?? 0; // Default to zero for fill calculations.
   const ratingPercent = clamp((ratingValue / 5) * 100, 0, 100); // Convert rating to percent.
   const ratingText = product.rating

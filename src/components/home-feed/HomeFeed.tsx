@@ -6,6 +6,7 @@ import { useCategoryFilter } from "@/components/category-filter/CategoryFilterPr
 import { getRecentlyViewedIds } from "@/lib/recently-viewed";
 import { Product } from "@/lib/types";
 import { toCategorySlug } from "@/lib/categories";
+import { formatCategoryLabel } from "@/components/home-feed/home-feed-utils";
 import ScrollingColumn from "@/components/home-feed/ScrollingColumn";
 import {
   buildCardDecks,
@@ -59,10 +60,7 @@ export default function HomeFeed({
   }, []);
 
   const categorySource = selectedSubCategory || selectedCategory || ""; // Prefer subcategory for the header.
-  const formattedCategory = categorySource.replace(/-/g, " "); // Normalize slug spacing.
-  const displayCategory = formattedCategory.replace(/\b\w/g, (char) =>
-    char.toUpperCase(),
-  ); // Title-case the category label.
+  const displayCategory = formatCategoryLabel(categorySource); // Format slug for the header.
   const effectiveTitle = categorySource
     ? `Today's ${displayCategory} Finds`
     : title; // Fall back when no category filter is selected.

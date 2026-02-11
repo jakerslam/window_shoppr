@@ -14,7 +14,6 @@ export default function TopBarMenu() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
-  const menuRef = useRef<HTMLDivElement | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const firstItemRef = useRef<HTMLButtonElement | null>(null);
   const {
@@ -113,7 +112,6 @@ export default function TopBarMenu() {
       </button>
 
       <div
-        ref={menuRef}
         id="topbar-categories-menu"
         className={`${styles.topBar__menu} ${isMenuOpen ? styles["topBar__menu--open"] : ""}`}
         role="menu"

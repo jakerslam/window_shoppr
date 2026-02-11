@@ -1,11 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  DEFAULT_WISHLIST_NAME,
+  WISHLIST_EVENT,
+  WISHLIST_LEGACY_STORAGE_KEY,
+  WISHLIST_LISTS_STORAGE_KEY,
+} from "@/components/wishlist/wishlist-constants";
 
-export const DEFAULT_WISHLIST_NAME = "Wish List"; // Default list label for new saves.
-const WISHLIST_LISTS_STORAGE_KEY = "windowShopprWishlistLists"; // Storage key for list metadata.
-const WISHLIST_LEGACY_STORAGE_KEY = "windowShopprWishlist"; // Legacy storage key for default list.
-const WISHLIST_EVENT = "wishlist:change"; // Custom event for same-tab sync.
 
 /**
  * Wishlist list data persisted in storage.
