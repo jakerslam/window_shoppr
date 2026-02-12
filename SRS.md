@@ -48,8 +48,8 @@
 
 ## Backend & Data
 - [ ] R29.6: Guest wishlist persistence + future account sync (local-first saves; later sync across devices)
-- [NEXT] 🔵 R29.1: Product source metadata + idempotency (source, externalId, lastSeenAt, lastPriceCheckAt)
-- [ ] R29: Agent ingestion API stub (authenticated upsert endpoint + schema validation + draft/publish state)
+- [x] R29.1: Product source metadata + idempotency (source, externalId, lastSeenAt, lastPriceCheckAt)
+- [NEXT] 🔵 R29: Agent ingestion API stub (authenticated upsert endpoint + schema validation + draft/publish state)
 - [ ] R12.3: Account management wiring (backend/auth integration)
 - [ ] R30: SQL data layer wiring (products, wishlist, email capture submissions)
 

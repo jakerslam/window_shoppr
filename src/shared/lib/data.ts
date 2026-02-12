@@ -1,10 +1,17 @@
 import productsJson from "@/data/products.json";
 import { Product } from "@/shared/lib/types";
+import { normalizeCatalogSource, normalizeProductSource } from "@/shared/lib/products";
 
 const DEV_LOADING_DELAY_MS = 400; // Artificial delay to preview loading UI in dev.
 
+/**
+ * Async delay helper for dev-only loading previews.
+ */
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+/**
+ * Determine whether to add dev-only delays.
+ */
 const shouldDelay = () => process.env.NODE_ENV === "development"; // Only delay in dev.
 
 
@@ -35,10 +42,10 @@ export const fetchProducts = async (): Promise<Product[]> => {
   const sqlProducts = await fetchProductsFromSql(); // Prefer SQL when available.
 
   if (sqlProducts && sqlProducts.length > 0) {
-    return sqlProducts; // Use SQL results when present.
+    return normalizeCatalogSource(sqlProducts, "sql"); // Normalize SQL source metadata.
   }
 
-  return productsJson as Product[]; // Fall back to local JSON.
+  return normalizeCatalogSource(productsJson as Product[], "json"); // Normalize JSON source metadata.
 };
 
 /**
@@ -53,10 +60,14 @@ export const fetchProductBySlug = async (
   const sqlProduct = await fetchProductBySlugFromSql(slug); // Prefer SQL when available.
 
   if (sqlProduct) {
-    return sqlProduct; // Use SQL result when present.
+    return normalizeProductSource(sqlProduct, "sql"); // Normalize SQL source metadata.
   }
 
   const jsonProducts = productsJson as Product[]; // Fall back to local JSON.
 
-  return jsonProducts.find((product) => product.slug === slug) ?? null; // Match by slug.
+  const jsonProduct = jsonProducts.find((product) => product.slug === slug) ?? null; // Match by slug.
+
+  return jsonProduct
+    ? normalizeProductSource(jsonProduct, "json")
+    : null; // Normalize JSON metadata when present.
 };

@@ -3,6 +3,10 @@
  */
 export type Product = {
   id: string;
+  source?: string;
+  externalId?: string;
+  lastSeenAt?: string;
+  lastPriceCheckAt?: string;
   slug: string;
   name: string;
   category: string;
