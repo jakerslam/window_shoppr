@@ -41,9 +41,9 @@
 - [ ] R21: Sitemap, robots, and canonical URLs
 
 ## Performance & Stability
-- [NEXT] 🔵 R22: Image optimization and lazy-loading
+- [x] R22: Image optimization and lazy-loading
 - [x] R18: Error boundaries and graceful fallback UI
-- [ ] R19: Performance hooks (memoization/callbacks) where proven beneficial
+- [NEXT] 🔵 R19: Performance hooks (memoization/callbacks) where proven beneficial
 
 ## Backend & Data
 - [ ] R29.6: Guest wishlist persistence + future account sync (local-first saves; later sync across devices)
@@ -61,6 +61,9 @@
 - [ ] R24: Cookie consent + privacy/affiliate disclosure
 
 ## UX & Accessibility
+- [ ] R43: Notifications UI (feed + badge + placeholder list)
+- [ ] R44: Profile settings section (account + security preferences)
+- [ ] R45: Content preferences section (category taste + email frequency)
 - [ ] R29.10: Preference capture (optional onboarding quiz + trickle questions; build a local-first taste profile with privacy controls)
 - [ ] R29.7: Product comments (community notes + moderation hooks later)
 - [x] R17.1: Loading UI (global spinner/skeletons for route + modal transitions)

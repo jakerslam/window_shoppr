@@ -72,11 +72,10 @@
   background-size: cover;
 }
 
-.productDetail__mainImage img {
+.productDetail__mainImageMedia {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
 }
 
 
@@ -170,11 +169,10 @@
   box-shadow: 0 0 0 2px rgba(111, 69, 41, 0.2);
 }
 
-.productDetail__thumb img {
+.productDetail__thumbImage {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
 }
 
 .productDetail__thumbLabel {

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useMemo, useState } from "react";
 import WishlistSaveButton from "@/features/wishlist/WishlistSaveButton";
 import styles from "@/features/product-detail/ProductDetail.module.css";
@@ -86,7 +87,13 @@ export default function ProductMediaGallery({
             {item.type === "video" ? (
               <span className={styles.productDetail__thumbLabel}>Video</span>
             ) : (
-              <img src={item.src} alt={name} />
+              <Image
+                className={styles.productDetail__thumbImage}
+                src={item.src}
+                alt={name}
+                width={56}
+                height={56}
+              />
             )}
           </button>
         ))}
@@ -119,9 +126,12 @@ export default function ProductMediaGallery({
             />
           )
         ) : (
-          <img
+          <Image
+            className={styles.productDetail__mainImageMedia}
             src={activeItem?.src ?? "/images/sample-01.svg"}
             alt={name}
+            fill
+            sizes="(max-width: 720px) 92vw, (max-width: 1200px) 60vw, 640px"
           />
         )}
       </div>
