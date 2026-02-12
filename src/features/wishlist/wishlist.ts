@@ -196,7 +196,11 @@ export const useWishlist = () => {
     [listState.order],
   ); // Use normalized list order for menus.
 
-  const defaultIds = listState.lists[DEFAULT_WISHLIST_NAME] ?? []; // Default list ids.
+  // Memoize default list ids to avoid recreating arrays on every render.
+  const defaultIds = useMemo(
+    () => listState.lists[DEFAULT_WISHLIST_NAME] ?? [],
+    [listState.lists],
+  );
   const savedIds = useMemo(
     () => new Set(defaultIds),
     [defaultIds],

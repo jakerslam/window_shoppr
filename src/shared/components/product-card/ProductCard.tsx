@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Product } from "@/shared/lib/types";
 import styles from "@/shared/components/product-card/ProductCard.module.css";
 
@@ -92,10 +93,12 @@ export default function ProductCard({
         {showDealBadge && (
           <span className={styles.productCard__badge}>Deal</span>
         )}
-        <img
+        <Image
           className={styles.productCard__image}
           src={imageSrc}
           alt={product.name}
+          fill
+          sizes="(max-width: 600px) 160px, (max-width: 1024px) 200px, 240px"
         />
       </div>
 

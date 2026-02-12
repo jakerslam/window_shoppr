@@ -34,21 +34,24 @@
 - [x] R14: Navigation menu with hover unfurl (categories -> subcategories)
 
 ## SEO & Growth
-- [ ] R28: Category/subcategory gating (hide nav items + noindex pages until content threshold is met)
+- [x] R28: Category/subcategory gating (hide nav items + noindex pages until content threshold is met)
 - [ ] R22.5: Category + subcategory landing pages with SEO metadata, schema, and slug routing
+- [ ] R22.6: Category slug routing + canonical pages (category + subcategory)
 - [ ] R25 (Phase 2 Optional): AI-curated blog engine with intent-to-product mapping (pillar templates, FAQ schema)
-- [ ] R20: SEO structured data (Product/Offer JSON-LD)
-- [ ] R21: Sitemap, robots, and canonical URLs
+- [x] R20: SEO structured data (Product/Offer JSON-LD)
+- [x] R21: Sitemap, robots, and canonical URLs
 
 ## Performance & Stability
-- [ ] R22: Image optimization and lazy-loading
-- [NEXT] 🔵 R18: Error boundaries and graceful fallback UI
-- [ ] R19: Performance hooks (memoization/callbacks) where proven beneficial
+- [x] R22: Image optimization and lazy-loading
+- [x] R18: Error boundaries and graceful fallback UI
+- [x] R19: Performance hooks (memoization/callbacks) where proven beneficial
 
 ## Backend & Data
+- [ ] R29.12: User report inputs + moderation queue stub (agent-reviewed)
+- [ ] R29.13: Agent API documentation (skill file for ingestion/moderation)
 - [ ] R29.6: Guest wishlist persistence + future account sync (local-first saves; later sync across devices)
-- [ ] R29.1: Product source metadata + idempotency (source, externalId, lastSeenAt, lastPriceCheckAt)
-- [ ] R29: Agent ingestion API stub (authenticated upsert endpoint + schema validation + draft/publish state)
+- [x] R29.1: Product source metadata + idempotency (source, externalId, lastSeenAt, lastPriceCheckAt)
+- [NEXT] 🔵 R29: Agent ingestion API stub (authenticated upsert endpoint + schema validation + draft/publish state)
 - [ ] R12.3: Account management wiring (backend/auth integration)
 - [ ] R30: SQL data layer wiring (products, wishlist, email capture submissions)
 
@@ -57,11 +60,15 @@
 - [ ] R29.8: Social proof counts (display save count on product pages + cards)
 - [ ] R29.5: User-submitted deals (submission flow + moderation + optional revenue share later)
 - [ ] R29.4: Native ad cards (occasional sponsored cards in feed, non-disruptive)
-- [ ] R23: Click tracking for affiliate links
-- [ ] R24: Cookie consent + privacy/affiliate disclosure
+- [x] R23: Click tracking for affiliate links
+- [x] R24: Cookie consent + privacy/affiliate disclosure (accept all + essential only)
 
 ## UX & Accessibility
+- [ ] R43: Notifications UI (feed + badge + placeholder list)
+- [ ] R44: Profile settings section (account + security preferences + theme toggle)
+- [ ] R45: Content preferences section (category taste + email frequency)
 - [ ] R29.10: Preference capture (optional onboarding quiz + trickle questions; build a local-first taste profile with privacy controls)
+- [ ] R29.11: List-based recommendations (use a selected list to bias feed)
 - [ ] R29.7: Product comments (community notes + moderation hooks later)
 - [x] R17.1: Loading UI (global spinner/skeletons for route + modal transitions)
 - [ ] R29.3: Gamification (window shop points + streaks + redemption hook later)
@@ -69,10 +76,10 @@
 - [x] R15: Accessibility baseline (focus states, contrast, keyboard nav)
 - [x] R16: Responsive layout pass (mobile/tablet polish)
 - [x] R17: Empty states + loading states
-- [ ] R18.1: Custom styled filter dropdown
+- [x] R18.1: Custom styled filter dropdown
 
 ## Theme
-- [ ] R15.1: Theme system (light/dark) applied to components
+- [x] R15.1: Theme system (light/dark) applied to components
 
 ## Later-Stage Polish
 - [ ] R39: Error monitoring + performance tracing (Sentry or similar)
@@ -92,7 +99,8 @@
 - [x] O4: Refactor folder structure into features/ + shared/ for enterprise organization
 - [ ] R26: Wishlist search input (filter saved items)
 - [ ] R26.1: Wishlist search integration (mobile search targets wishlist on /wishlist; desktop wishlist search bar)
-- [ ] R27: Wishlist list deletion (remove list entirely)
+- [ ] R27: Wishlist list deletion (delete list button + confirm)
+- [ ] R27.1: Manage/view lists entry in save menu (opens list manager modal)
 
 
 ## Notes

@@ -1,21 +1,28 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Cormorant, Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import TopBar from "@/features/top-bar/TopBar";
 import MobileBottomNav from "@/features/top-bar/MobileBottomNav";
 import CategoryFilterProvider from "@/features/category-filter/CategoryFilterProvider";
 import Footer from "@/shared/components/footer/Footer";
 import EmailCaptureModal from "@/features/email-capture/EmailCaptureModal";
+import CookieConsent from "@/shared/components/privacy/CookieConsent";
 import { SITE_URL } from "@/shared/lib/seo";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const jakartaSans = Plus_Jakarta_Sans({
+  variable: "--font-sans",
   subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const cormorant = Cormorant({
+  variable: "--font-display",
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
 });
 
 /**
@@ -45,9 +52,6 @@ export const metadata: Metadata = {
   },
   description: siteDescription, // Shared SEO description.
   applicationName: "Window Shoppr", // App name for installable contexts.
-  alternates: {
-    canonical: "/", // Canonical path for the homepage.
-  },
   openGraph: {
     title: "Window Shoppr", // Open Graph title.
     description: siteDescription, // Open Graph description.
@@ -87,7 +91,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       {/* Page body with shared global layout. */}
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body className={`${jakartaSans.variable} ${geistMono.variable} ${cormorant.variable}`}>
         <div className="site-shell">
           {/* Shared filters for navigation + feed. */}
           <CategoryFilterProvider>
@@ -102,6 +106,9 @@ export default function RootLayout({
 
             {/* Delayed email capture prompt. */}
             <EmailCaptureModal />
+
+            {/* Cookie consent + affiliate disclosure banner. */}
+            <CookieConsent />
 
             {/* Modal slot for intercepting routes. */}
             {modal}

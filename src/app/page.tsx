@@ -1,6 +1,16 @@
+import type { Metadata } from "next";
 import HomeFeed from "@/features/home-feed/HomeFeed";
 import { fetchProducts } from "@/shared/lib/data";
 import styles from "@/app/page.module.css";
+
+/**
+ * Canonical metadata for this route.
+ */
+export const metadata: Metadata = {
+  alternates: {
+    canonical: "/",
+  },
+};
 
 /**
  * Home page that loads product data and renders the feed.

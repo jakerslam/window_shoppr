@@ -15,6 +15,13 @@
   --color-text-muted: #6b6259;
   --color-text-inverse: #ffffff;
 
+  --color-hover-bg: rgba(217, 165, 107, 0.24);
+  --color-hover-border: rgba(217, 165, 107, 0.45);
+  --color-hover-text: var(--color-primary-strong);
+
+  --color-save-active: #d9a56b;
+  --color-save-inactive: #6f4529;
+
   /* Status */
   --color-success: #2f8f64;
   --color-warning: #c07a2b;
@@ -22,26 +29,89 @@
 
   /* Layout */
   --mobile-nav-height: 0px;
+  --mobile-nav-offset: 0px;
 }
 
-/* Dark theme placeholders (activated later) */
+/* System dark theme defaults (manual override added later). */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #0f1115;
+    --color-fg: #e6e8ee;
+    --color-surface: #161a22;
+    --color-surface-muted: #1f2430;
+    --color-border: #2a2f3a;
+
+    --color-primary: #8ab4f8;
+    --color-primary-strong: #5f8de8;
+    --color-accent: #9bbcff;
+
+    --color-text-muted: #a3a8b3;
+    --color-text-inverse: #0f1115;
+
+  --color-hover-bg: rgba(138, 180, 248, 0.32);
+  --color-hover-border: rgba(138, 180, 248, 0.5);
+  --color-hover-text: var(--color-fg);
+
+  --color-save-active: #d9a56b;
+  --color-save-inactive: #e6e8ee;
+
+    --color-success: #3fb950;
+    --color-warning: #f2c94c;
+    --color-danger: #f47067;
+  }
+}
+
+/* Manual theme overrides (settings toggle will set data-theme). */
+:root[data-theme="light"] {
+  --color-bg: #fffaf4;
+  --color-fg: #1b1b1b;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f4efe8;
+  --color-border: #e4dccf;
+
+  --color-primary: #8b5e3c;
+  --color-primary-strong: #6f4529;
+  --color-accent: #d9a56b;
+
+  --color-text-muted: #6b6259;
+  --color-text-inverse: #ffffff;
+
+  --color-hover-bg: rgba(217, 165, 107, 0.24);
+  --color-hover-border: rgba(217, 165, 107, 0.45);
+  --color-hover-text: var(--color-primary-strong);
+
+  --color-save-active: #d9a56b;
+  --color-save-inactive: #6f4529;
+
+  --color-success: #2f8f64;
+  --color-warning: #c07a2b;
+  --color-danger: #b8433e;
+}
+
 :root[data-theme="dark"] {
-  --color-bg: #0f0d0b;
-  --color-fg: #f2ede6;
-  --color-surface: #1a1512;
-  --color-surface-muted: #2a221d;
-  --color-border: #3a2f28;
+  --color-bg: #0f1115;
+  --color-fg: #e6e8ee;
+  --color-surface: #161a22;
+  --color-surface-muted: #1f2430;
+  --color-border: #2a2f3a;
 
-  --color-primary: #e0b27a;
-  --color-primary-strong: #c68f54;
-  --color-accent: #f0c795;
+  --color-primary: #8ab4f8;
+  --color-primary-strong: #5f8de8;
+  --color-accent: #9bbcff;
 
-  --color-text-muted: #c3b7ad;
-  --color-text-inverse: #0f0d0b;
+  --color-text-muted: #a3a8b3;
+  --color-text-inverse: #0f1115;
 
-  --color-success: #58b88b;
-  --color-warning: #e0a25a;
-  --color-danger: #e07a72;
+  --color-hover-bg: rgba(138, 180, 248, 0.32);
+  --color-hover-border: rgba(138, 180, 248, 0.5);
+  --color-hover-text: var(--color-fg);
+
+  --color-save-active: #d9a56b;
+  --color-save-inactive: #e6e8ee;
+
+  --color-success: #3fb950;
+  --color-warning: #f2c94c;
+  --color-danger: #f47067;
 }
 
 html,
@@ -53,7 +123,7 @@ body {
 body {
   color: var(--color-fg);
   background: var(--color-bg);
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -92,6 +162,23 @@ a {
   }
 
   .site-shell {
-    padding-bottom: var(--mobile-nav-height);
+    padding-bottom: calc(var(--mobile-nav-height) + var(--mobile-nav-offset));
+  }
+}
+
+/* Display font for main headings. */
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display), var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Safari UI offset for bottom nav clearance. */
+@supports (-webkit-touch-callout: none) {
+  @media (hover: none) and (pointer: coarse) {
+    :root {
+      --mobile-nav-offset: 16px;
+    }
   }
 }
