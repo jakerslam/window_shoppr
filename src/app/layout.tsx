@@ -51,9 +51,6 @@ export const metadata: Metadata = {
   },
   description: siteDescription, // Shared SEO description.
   applicationName: "Window Shoppr", // App name for installable contexts.
-  alternates: {
-    canonical: "/", // Canonical path for the homepage.
-  },
   openGraph: {
     title: "Window Shoppr", // Open Graph title.
     description: siteDescription, // Open Graph description.

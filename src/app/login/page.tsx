@@ -1,5 +1,15 @@
+import type { Metadata } from "next";
 import LoginForm from "@/features/auth/LoginForm";
 import styles from "@/app/login/page.module.css";
+
+/**
+ * Canonical metadata for this route.
+ */
+export const metadata: Metadata = {
+  alternates: {
+    canonical: "/login",
+  },
+};
 
 /**
  * Login page route for full-page authentication flow.
