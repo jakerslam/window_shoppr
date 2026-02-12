@@ -54,18 +54,18 @@ export default function CookieConsent() {
         </p>
         <div className={styles.cookieConsent__actions}>
           <button
-            className={styles.cookieConsent__button}
-            type="button"
-            onClick={handleEssentialOnly}
-          >
-            Essential only
-          </button>
-          <button
             className={`${styles.cookieConsent__button} ${styles["cookieConsent__button--primary"]}`}
             type="button"
             onClick={handleAcceptAll}
           >
             Accept all
+          </button>
+          <button
+            className={styles.cookieConsent__button}
+            type="button"
+            onClick={handleEssentialOnly}
+          >
+            Essential only
           </button>
         </div>
       </div>
