@@ -1,5 +1,12 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
+## Progress
+Overall: 40/81 (49.4%) ██████████░░░░░░░░░░
+Frontend: 30/57 (52.6%) ███████████░░░░░░░░░
+Backend: 9/21 (42.9%) █████████░░░░░░░░░░░
+Automation: 0/4 (0.0%) ░░░░░░░░░░░░░░░░░░░░
+
+
 ## Legend
 - [ ] Not started
 - [x] Done
