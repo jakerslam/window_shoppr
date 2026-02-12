@@ -164,3 +164,11 @@ a {
     padding-bottom: var(--mobile-nav-height);
   }
 }
+
+/* Display font for main headings. */
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display), var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}

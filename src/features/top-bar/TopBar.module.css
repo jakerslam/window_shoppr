@@ -28,6 +28,7 @@
   font-size: 18px;
   font-weight: 700;
   color: var(--color-primary-strong);
+  font-family: var(--font-display), var(--font-geist-sans), Arial, Helvetica, sans-serif;
   letter-spacing: 0.3px;
   display: inline-flex;
   flex-direction: column;

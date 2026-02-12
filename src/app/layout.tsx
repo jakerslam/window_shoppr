@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Fraunces, Geist, Geist_Mono } from "next/font/google";
 import TopBar from "@/features/top-bar/TopBar";
 import MobileBottomNav from "@/features/top-bar/MobileBottomNav";
 import CategoryFilterProvider from "@/features/category-filter/CategoryFilterProvider";
@@ -16,6 +16,12 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const fraunces = Fraunces({
+  variable: "--font-display",
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
 });
 
 /**
@@ -87,7 +93,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       {/* Page body with shared global layout. */}
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable}`}>
         <div className="site-shell">
           {/* Shared filters for navigation + feed. */}
           <CategoryFilterProvider>
