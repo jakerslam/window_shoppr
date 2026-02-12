@@ -167,7 +167,7 @@ export default function HomeFeed({
    */
   const handleCardOpen = useCallback(
     (product: Product) => () => {
-      router.push({ pathname: "/product/[slug]", query: { slug: product.slug } }); // Navigate to the product detail page.
+      router.push(`/product/${product.slug}/`); // Navigate to the product detail page (static export friendly).
     },
     [router],
   );

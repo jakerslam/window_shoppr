@@ -99,7 +99,7 @@ export default function WishlistPage() {
   const emptyCtaLabel = isAllList ? "← Feed" : "View all lists"; // Provide a clear action label.
 
   const handleOpen = (slug: string) => {
-    router.push({ pathname: "/product/[slug]", query: { slug } }); // Route to the full product detail page.
+    router.push(`/product/${slug}/`); // Route to the full product detail page (static export friendly).
   };
 
   const handleListRemoval = useCallback(
