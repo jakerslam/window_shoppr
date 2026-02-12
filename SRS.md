@@ -42,7 +42,7 @@
 
 ## Performance & Stability
 - [ ] R22: Image optimization and lazy-loading
-- [NEXT] 🔵 R18: Error boundaries and graceful fallback UI
+- [x] R18: Error boundaries and graceful fallback UI
 - [ ] R19: Performance hooks (memoization/callbacks) where proven beneficial
 
 ## Backend & Data
@@ -69,7 +69,7 @@
 - [x] R15: Accessibility baseline (focus states, contrast, keyboard nav)
 - [x] R16: Responsive layout pass (mobile/tablet polish)
 - [x] R17: Empty states + loading states
-- [ ] R18.1: Custom styled filter dropdown
+- [NEXT] 🔵 R18.1: Custom styled filter dropdown
 
 ## Theme
 - [ ] R15.1: Theme system (light/dark) applied to components
