@@ -24,7 +24,48 @@
   --mobile-nav-height: 0px;
 }
 
-/* Dark theme placeholders (activated later) */
+/* System dark theme defaults (manual override added later). */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #0f0d0b;
+    --color-fg: #f2ede6;
+    --color-surface: #1a1512;
+    --color-surface-muted: #2a221d;
+    --color-border: #3a2f28;
+
+    --color-primary: #e0b27a;
+    --color-primary-strong: #c68f54;
+    --color-accent: #f0c795;
+
+    --color-text-muted: #c3b7ad;
+    --color-text-inverse: #0f0d0b;
+
+    --color-success: #58b88b;
+    --color-warning: #e0a25a;
+    --color-danger: #e07a72;
+  }
+}
+
+/* Manual theme overrides (settings toggle will set data-theme). */
+:root[data-theme="light"] {
+  --color-bg: #fffaf4;
+  --color-fg: #1b1b1b;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f4efe8;
+  --color-border: #e4dccf;
+
+  --color-primary: #8b5e3c;
+  --color-primary-strong: #6f4529;
+  --color-accent: #d9a56b;
+
+  --color-text-muted: #6b6259;
+  --color-text-inverse: #ffffff;
+
+  --color-success: #2f8f64;
+  --color-warning: #c07a2b;
+  --color-danger: #b8433e;
+}
+
 :root[data-theme="dark"] {
   --color-bg: #0f0d0b;
   --color-fg: #f2ede6;

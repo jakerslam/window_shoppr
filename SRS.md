@@ -62,7 +62,7 @@
 
 ## UX & Accessibility
 - [ ] R43: Notifications UI (feed + badge + placeholder list)
-- [ ] R44: Profile settings section (account + security preferences)
+- [ ] R44: Profile settings section (account + security preferences + theme toggle)
 - [ ] R45: Content preferences section (category taste + email frequency)
 - [ ] R29.10: Preference capture (optional onboarding quiz + trickle questions; build a local-first taste profile with privacy controls)
 - [ ] R29.7: Product comments (community notes + moderation hooks later)
@@ -75,7 +75,7 @@
 - [x] R18.1: Custom styled filter dropdown
 
 ## Theme
-- [ ] R15.1: Theme system (light/dark) applied to components
+- [x] R15.1: Theme system (light/dark) applied to components
 
 ## Later-Stage Polish
 - [ ] R39: Error monitoring + performance tracing (Sentry or similar)
