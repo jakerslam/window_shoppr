@@ -38,11 +38,21 @@ export default function HomeFeed({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [personalizationSeed, setPersonalizationSeed] = useState(0);
   const [recentlyViewedIds, setRecentlyViewedIds] = useState<string[]>([]);
-  const { selectedCategory, selectedSubCategory, searchQuery } =
+  const { selectedCategory, selectedSubCategory, searchQuery, clearFilters } =
     useCategoryFilter(); // Shared category filter + search query.
 
   useEffect(() => {
-    setRecentlyViewedIds(getRecentlyViewedIds()); // Sync recently viewed IDs after mount.
+    if (typeof window === "undefined") {
+      return undefined; // Skip storage sync during SSR.
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setRecentlyViewedIds(getRecentlyViewedIds()); // Sync recently viewed IDs after mount.
+    }, 0); // Defer to avoid hydration mismatches and render-phase lint warnings.
+
+    return () => {
+      window.clearTimeout(timeoutId); // Clean up deferred sync when re-running.
+    };
   }, [personalizationSeed]);
 
   useEffect(() => {
@@ -247,7 +257,20 @@ export default function HomeFeed({
       {/* Empty state for no results. */}
       {sortedProducts.length === 0 && (
         <div className={styles.homeFeed__empty}>
-          No results yet. Try a different search.
+          {/* Empty state headline. */}
+          <p className={styles.homeFeed__emptyTitle}>No results yet.</p>
+
+          {/* Empty state helper copy. */}
+          <p className={styles.homeFeed__emptyText}>Try clearing filters or searching something new.</p>
+
+          {/* Action to reset filters. */}
+          <button
+            className={styles.homeFeed__emptyAction}
+            type="button"
+            onClick={() => clearFilters()} // Reset filters + search when empty.
+          >
+            Clear filters
+          </button>
         </div>
       )}
     </section>

@@ -32,6 +32,8 @@ export default function ScrollingColumn({
   const isHoveringRef = useRef(false);
   const isModalOpenRef = useRef(false);
   const durationRef = useRef(duration);
+  const animateRef = useRef<(time: number) => void>(() => undefined);
+
 
   const loopedDeck = useMemo(() => [...deck, ...deck], [deck]);
 
@@ -88,8 +90,15 @@ export default function ScrollingColumn({
       track.style.transform = `translateY(-${nextPosition}px)`; // Move the track.
     }
 
-    animationRef.current = window.requestAnimationFrame(animate); // Schedule next frame.
+    animationRef.current = window.requestAnimationFrame((nextTime) =>
+      animateRef.current(nextTime),
+    ); // Schedule next frame via ref to satisfy hook linting.
   }, []);
+
+  // Keep the animation ref synced to the latest callback.
+  useEffect(() => {
+    animateRef.current = animate; // Allow requestAnimationFrame recursion without direct self-reference.
+  }, [animate]);
 
   /**
    * Pause the scroll while the pointer is over the column.
@@ -167,7 +176,9 @@ export default function ScrollingColumn({
     };
 
     window.addEventListener("resize", handleResize); // Keep sizes current.
-    animationRef.current = window.requestAnimationFrame(animate); // Start the animation loop.
+    animationRef.current = window.requestAnimationFrame((nextTime) =>
+      animateRef.current(nextTime),
+    ); // Schedule next frame via ref to satisfy hook linting.
 
     return () => {
       if (animationRef.current) {

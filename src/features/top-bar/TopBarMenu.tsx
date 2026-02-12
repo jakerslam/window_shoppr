@@ -88,7 +88,7 @@ export default function TopBarMenu() {
   };
 
   const handleMenuFocus = (event: React.FocusEvent<HTMLDivElement>) => {
-    if (event.target === triggerRef.current) {
+    if (triggerRef.current && (event.target as HTMLElement) === triggerRef.current) {
       handleMenuOpen(); // Only open on trigger focus for keyboard users.
     }
   };

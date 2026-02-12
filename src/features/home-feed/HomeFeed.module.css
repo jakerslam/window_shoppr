@@ -301,6 +301,12 @@
 }
 
 .homeFeed__empty {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+
   padding: 32px;
   border-radius: 16px;
   border: 1px dashed var(--color-border);
@@ -320,3 +326,31 @@
 }
 
 
+
+.homeFeed__emptyTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-primary-strong);
+}
+
+.homeFeed__emptyText {
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.homeFeed__emptyAction {
+  margin-top: 8px;
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-muted);
+  color: var(--color-primary-strong);
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 150ms ease;
+}
+
+.homeFeed__emptyAction:hover {
+  opacity: 0.8;
+}

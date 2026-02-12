@@ -159,7 +159,11 @@ export const useWishlist = () => {
   }, []);
 
   useEffect(() => {
-    syncFromStorage(); // Hydrate from storage on mount.
+    if (typeof window !== "undefined") {
+      window.setTimeout(() => {
+        syncFromStorage(); // Hydrate from storage on mount.
+      }, 0); // Defer to avoid render-phase lint warnings.
+    }
 
     if (typeof window === "undefined") {
       return undefined; // Skip event wiring during SSR.
