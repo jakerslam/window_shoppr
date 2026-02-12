@@ -47,6 +47,8 @@
 - [x] R19: Performance hooks (memoization/callbacks) where proven beneficial
 
 ## Backend & Data
+- [ ] R29.12: User report inputs + moderation queue stub (agent-reviewed)
+- [ ] R29.13: Agent API documentation (skill file for ingestion/moderation)
 - [ ] R29.6: Guest wishlist persistence + future account sync (local-first saves; later sync across devices)
 - [x] R29.1: Product source metadata + idempotency (source, externalId, lastSeenAt, lastPriceCheckAt)
 - [NEXT] 🔵 R29: Agent ingestion API stub (authenticated upsert endpoint + schema validation + draft/publish state)
