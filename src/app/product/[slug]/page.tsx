@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ProductDetail from "@/features/product-detail/ProductDetail";
-import { fetchProductBySlug } from "@/shared/lib/data";
+import { fetchProductBySlug, fetchProducts } from "@/shared/lib/data";
 import { buildMetaDescription, SITE_URL } from "@/shared/lib/seo";
 import { Product } from "@/shared/lib/types";
 
@@ -47,6 +47,17 @@ const buildProductSchema = (product: Product) => {
 
   return schema;
 };
+
+export const dynamicParams = false; // Pre-render all product routes for static export.
+
+/**
+ * Generate static params for all product slugs.
+ */
+export async function generateStaticParams() {
+  const products = await fetchProducts(); // Load product slugs for static export.
+  return products.map((product) => ({ slug: product.slug }));
+}
+
 
 /**
  * Generate metadata for product detail pages.

@@ -1,7 +1,18 @@
 import Modal from "@/shared/components/modal/Modal";
 import ProductDetail from "@/features/product-detail/ProductDetail";
-import { fetchProductBySlug } from "@/shared/lib/data";
+import { fetchProductBySlug, fetchProducts } from "@/shared/lib/data";
 import styles from "@/app/@modal/(.)product/[slug]/page.module.css";
+
+
+export const dynamicParams = false; // Pre-render modal routes for static export.
+
+/**
+ * Generate static params for all modal product slugs.
+ */
+export async function generateStaticParams() {
+  const products = await fetchProducts(); // Load product slugs for static export.
+  return products.map((product) => ({ slug: product.slug }));
+}
 
 /**
  * Modal overlay for product details when navigating from the feed.
