@@ -37,8 +37,8 @@
 - [ ] R28: Category/subcategory gating (hide nav items + noindex pages until content threshold is met)
 - [ ] R22.5: Category + subcategory landing pages with SEO metadata, schema, and slug routing
 - [ ] R25 (Phase 2 Optional): AI-curated blog engine with intent-to-product mapping (pillar templates, FAQ schema)
-- [NEXT] 🔵 R20: SEO structured data (Product/Offer JSON-LD)
-- [ ] R21: Sitemap, robots, and canonical URLs
+- [x] R20: SEO structured data (Product/Offer JSON-LD)
+- [NEXT] 🔵 R21: Sitemap, robots, and canonical URLs
 
 ## Performance & Stability
 - [x] R22: Image optimization and lazy-loading
