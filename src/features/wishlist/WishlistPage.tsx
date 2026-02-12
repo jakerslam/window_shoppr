@@ -125,7 +125,7 @@ export default function WishlistPage() {
   );
 
   const handleUndo = useCallback(
-    (entry: RemovedItem) => {
+    (entry: { productId: string; listName: string }) => {
       const targetList =
         entry.listName === ALL_LIST_LABEL
           ? DEFAULT_WISHLIST_NAME

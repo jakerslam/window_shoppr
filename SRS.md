@@ -63,12 +63,12 @@
 ## UX & Accessibility
 - [ ] R29.10: Preference capture (optional onboarding quiz + trickle questions; build a local-first taste profile with privacy controls)
 - [ ] R29.7: Product comments (community notes + moderation hooks later)
-- [NEXT] 🔵 R17.1: Loading UI (global spinner/skeletons for route + modal transitions)
+- [x] R17.1: Loading UI (global spinner/skeletons for route + modal transitions)
 - [ ] R29.3: Gamification (window shop points + streaks + redemption hook later)
 - [ ] R29.2: Finite feed UX ("end of deck" messaging + optional reward hook)
 - [x] R15: Accessibility baseline (focus states, contrast, keyboard nav)
 - [x] R16: Responsive layout pass (mobile/tablet polish)
-- [ ] R17: Empty states + loading states
+- [NEXT] 🔵 R17: Empty states + loading states
 - [ ] R18.1: Custom styled filter dropdown
 
 ## Theme

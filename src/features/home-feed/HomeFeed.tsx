@@ -42,7 +42,17 @@ export default function HomeFeed({
     useCategoryFilter(); // Shared category filter + search query.
 
   useEffect(() => {
-    setRecentlyViewedIds(getRecentlyViewedIds()); // Sync recently viewed IDs after mount.
+    if (typeof window === "undefined") {
+      return undefined; // Skip storage sync during SSR.
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setRecentlyViewedIds(getRecentlyViewedIds()); // Sync recently viewed IDs after mount.
+    }, 0); // Defer to avoid hydration mismatches and render-phase lint warnings.
+
+    return () => {
+      window.clearTimeout(timeoutId); // Clean up deferred sync when re-running.
+    };
   }, [personalizationSeed]);
 
   useEffect(() => {
