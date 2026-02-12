@@ -15,6 +15,9 @@
   --color-text-muted: #6b6259;
   --color-text-inverse: #ffffff;
 
+  --color-save-active: #d9a56b;
+  --color-save-inactive: #6f4529;
+
   /* Status */
   --color-success: #2f8f64;
   --color-warning: #c07a2b;
@@ -40,6 +43,9 @@
     --color-text-muted: #a3a8b3;
     --color-text-inverse: #0f1115;
 
+  --color-save-active: #d9a56b;
+  --color-save-inactive: #e6e8ee;
+
     --color-success: #3fb950;
     --color-warning: #f2c94c;
     --color-danger: #f47067;
@@ -61,6 +67,9 @@
   --color-text-muted: #6b6259;
   --color-text-inverse: #ffffff;
 
+  --color-save-active: #d9a56b;
+  --color-save-inactive: #6f4529;
+
   --color-success: #2f8f64;
   --color-warning: #c07a2b;
   --color-danger: #b8433e;
@@ -79,6 +88,9 @@
 
   --color-text-muted: #a3a8b3;
   --color-text-inverse: #0f1115;
+
+  --color-save-active: #d9a56b;
+  --color-save-inactive: #e6e8ee;
 
   --color-success: #3fb950;
   --color-warning: #f2c94c;
