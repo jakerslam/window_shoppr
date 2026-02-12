@@ -66,6 +66,7 @@
 - [ ] R44: Profile settings section (account + security preferences + theme toggle)
 - [ ] R45: Content preferences section (category taste + email frequency)
 - [ ] R29.10: Preference capture (optional onboarding quiz + trickle questions; build a local-first taste profile with privacy controls)
+- [ ] R29.11: List-based recommendations (use a selected list to bias feed)
 - [ ] R29.7: Product comments (community notes + moderation hooks later)
 - [x] R17.1: Loading UI (global spinner/skeletons for route + modal transitions)
 - [ ] R29.3: Gamification (window shop points + streaks + redemption hook later)
@@ -96,7 +97,8 @@
 - [x] O4: Refactor folder structure into features/ + shared/ for enterprise organization
 - [ ] R26: Wishlist search input (filter saved items)
 - [ ] R26.1: Wishlist search integration (mobile search targets wishlist on /wishlist; desktop wishlist search bar)
-- [ ] R27: Wishlist list deletion (remove list entirely)
+- [ ] R27: Wishlist list deletion (delete list button + confirm)
+- [ ] R27.1: Manage/view lists entry in save menu (opens list manager modal)
 
 
 ## Notes
