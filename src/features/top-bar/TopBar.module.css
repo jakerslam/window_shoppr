@@ -78,7 +78,7 @@
 }
 
 .topBar__menu--open {
-  opacity: 1;
+  opacity: 0.9;
   transform: translateY(0);
   pointer-events: auto;
 }
@@ -138,6 +138,7 @@
   border: 1px solid var(--color-border);
   background: var(--color-surface);
   box-shadow: 0 16px 40px rgba(25, 18, 12, 0.15);
+  opacity: 0.9;
   z-index: 40;
 }
 
@@ -506,7 +507,7 @@
 
 .mobileSearch__bar--open {
   transform: translateY(0);
-  opacity: 1;
+  opacity: 0.9;
 }
 
 .mobileSearch__input {
@@ -542,18 +543,18 @@
   }
   60% {
     transform: translateY(-2px);
-    opacity: 1;
+    opacity: 0.9;
   }
   100% {
     transform: translateY(0);
-    opacity: 1;
+    opacity: 0.9;
   }
 }
 
 
 .mobileNav__item--active {
   color: var(--color-primary-strong);
-  opacity: 1;
+  opacity: 0.9;
 }
 
 .mobileNav__item--active .mobileNav__icon {
@@ -576,6 +577,6 @@
 }
 
 .mobileNav__item--active .mobileNav__dot {
-  opacity: 1;
+  opacity: 0.9;
   transform: translateY(0);
 }
