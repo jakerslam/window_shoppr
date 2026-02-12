@@ -4,7 +4,6 @@ import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Product } from "@/shared/lib/types";
 import { FALLBACK_PRODUCTS } from "@/shared/lib/products";
-import { buildProductHref } from "@/shared/lib/routes";
 import { ALL_LIST_LABEL, DEFAULT_WISHLIST_NAME } from "@/features/wishlist/wishlist-constants";
 import { useWishlist } from "@/features/wishlist/wishlist";
 import WishlistHeader from "@/features/wishlist/wishlist-page/WishlistHeader";
@@ -100,7 +99,7 @@ export default function WishlistPage() {
   const emptyCtaLabel = isAllList ? "← Feed" : "View all lists"; // Provide a clear action label.
 
   const handleOpen = (slug: string) => {
-    router.push(buildProductHref(slug)); // Route to the full product detail page.
+    router.push({ pathname: "/product/[slug]", query: { slug } }); // Route to the full product detail page.
   };
 
   const handleListRemoval = useCallback(

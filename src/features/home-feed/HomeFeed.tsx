@@ -7,7 +7,6 @@ import { getRecentlyViewedIds } from "@/shared/lib/recently-viewed";
 import { Product } from "@/shared/lib/types";
 import { toCategorySlug } from "@/shared/lib/categories";
 import { formatCategoryLabel } from "@/features/home-feed/home-feed-utils";
-import { buildProductHref } from "@/shared/lib/routes";
 import SortDropdown, { SortOption } from "@/features/home-feed/SortDropdown";
 import ScrollingColumn from "@/features/home-feed/ScrollingColumn";
 import {
@@ -168,7 +167,7 @@ export default function HomeFeed({
    */
   const handleCardOpen = useCallback(
     (product: Product) => () => {
-      router.push(buildProductHref(product.slug)); // Navigate to the product detail page.
+      router.push({ pathname: "/product/[slug]", query: { slug: product.slug } }); // Navigate to the product detail page.
     },
     [router],
   );
