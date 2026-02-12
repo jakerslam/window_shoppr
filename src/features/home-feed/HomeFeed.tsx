@@ -38,7 +38,7 @@ export default function HomeFeed({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [personalizationSeed, setPersonalizationSeed] = useState(0);
   const [recentlyViewedIds, setRecentlyViewedIds] = useState<string[]>([]);
-  const { selectedCategory, selectedSubCategory, searchQuery } =
+  const { selectedCategory, selectedSubCategory, searchQuery, clearFilters } =
     useCategoryFilter(); // Shared category filter + search query.
 
   useEffect(() => {
@@ -257,7 +257,20 @@ export default function HomeFeed({
       {/* Empty state for no results. */}
       {sortedProducts.length === 0 && (
         <div className={styles.homeFeed__empty}>
-          No results yet. Try a different search.
+          {/* Empty state headline. */}
+          <p className={styles.homeFeed__emptyTitle}>No results yet.</p>
+
+          {/* Empty state helper copy. */}
+          <p className={styles.homeFeed__emptyText}>Try clearing filters or searching something new.</p>
+
+          {/* Action to reset filters. */}
+          <button
+            className={styles.homeFeed__emptyAction}
+            type="button"
+            onClick={() => clearFilters()} // Reset filters + search when empty.
+          >
+            Clear filters
+          </button>
         </div>
       )}
     </section>

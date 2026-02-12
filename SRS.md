@@ -42,7 +42,7 @@
 
 ## Performance & Stability
 - [ ] R22: Image optimization and lazy-loading
-- [ ] R18: Error boundaries and graceful fallback UI
+- [NEXT] 🔵 R18: Error boundaries and graceful fallback UI
 - [ ] R19: Performance hooks (memoization/callbacks) where proven beneficial
 
 ## Backend & Data
@@ -68,7 +68,7 @@
 - [ ] R29.2: Finite feed UX ("end of deck" messaging + optional reward hook)
 - [x] R15: Accessibility baseline (focus states, contrast, keyboard nav)
 - [x] R16: Responsive layout pass (mobile/tablet polish)
-- [NEXT] 🔵 R17: Empty states + loading states
+- [x] R17: Empty states + loading states
 - [ ] R18.1: Custom styled filter dropdown
 
 ## Theme

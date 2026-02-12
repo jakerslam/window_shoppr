@@ -89,6 +89,15 @@ export default function WishlistPage() {
 
   const hasItems = combinedItems.length > 0; // Determine whether to show empty state.
 
+  const isAllList = activeList === ALL_LIST_LABEL; // Track if the all-list filter is active.
+  const emptyTitle = isAllList
+    ? "Your wishlist is empty."
+    : `No saves in ${activeList} yet.`; // Tailor empty state headline to the active filter.
+  const emptyMessage = isAllList
+    ? "Start saving the finds you love most."
+    : "Try another list or save a new find."; // Tailor empty state helper copy.
+  const emptyCtaLabel = isAllList ? "← Feed" : "View all lists"; // Provide a clear action label.
+
   const handleOpen = (slug: string) => {
     router.push(`/product/${slug}`); // Route to the full product detail page.
   };
@@ -159,7 +168,13 @@ export default function WishlistPage() {
           onUndo={handleUndo}
         />
       ) : (
-        <WishlistEmpty />
+        <WishlistEmpty
+          title={emptyTitle}
+          message={emptyMessage}
+          ctaLabel={emptyCtaLabel}
+          ctaHref={isAllList ? "/" : undefined}
+          onCtaClick={isAllList ? undefined : () => setActiveList(ALL_LIST_LABEL)}
+        />
       )}
     </section>
   );
