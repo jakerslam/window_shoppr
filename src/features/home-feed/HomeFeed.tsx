@@ -167,12 +167,7 @@ export default function HomeFeed({
    */
   const handleCardOpen = useCallback(
     (product: Product) => () => {
-      if (window.matchMedia("(max-width: 900px)").matches) {
-        window.location.href = `/product/${product.slug}`; // Mobile navigates to full page.
-        return;
-      }
-
-      router.push(`/product/${product.slug}`); // Open modal detail view with slug.
+      router.push(`/product/${product.slug}`); // Navigate to the product detail page.
     },
     [router],
   );
