@@ -85,13 +85,18 @@ export const buildCategoryAvailability = (products: Array<{
   return { categoryCounts, subCategoryCounts };
 };
 
+type AvailableCategory = {
+  label: string;
+  subCategories: string[];
+};
+
 /**
  * Filter category config based on product availability threshold.
  */
 export const getAvailableCategories = (
   products: Array<{ category: string; subCategory?: string }>,
   minItems: number = CATEGORY_MIN_ITEMS,
-) => {
+): AvailableCategory[] => {
   const { categoryCounts, subCategoryCounts } = buildCategoryAvailability(products);
 
   return CATEGORY_TREE.map((category) => {
@@ -110,5 +115,5 @@ export const getAvailableCategories = (
       label: category.label,
       subCategories: availableSubCategories,
     };
-  }).filter(Boolean);
+  }).filter((category): category is AvailableCategory => Boolean(category));
 };
