@@ -1,5 +1,7 @@
 # Window Shoppr
 
+Live app preview: [GitHub Pages](https://jakerslam.github.io/window_shoppr/)
+
 Window Shoppr is a modern, SEO‑focused deal discovery site built with Next.js and TypeScript. The product experience centers on a visually engaging feed of curated products, rich product detail pages, and a wishlist system designed for window‑shopping and later conversion.
 
 ## Highlights
