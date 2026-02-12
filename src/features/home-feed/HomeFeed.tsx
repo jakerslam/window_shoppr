@@ -7,6 +7,7 @@ import { getRecentlyViewedIds } from "@/shared/lib/recently-viewed";
 import { Product } from "@/shared/lib/types";
 import { toCategorySlug } from "@/shared/lib/categories";
 import { formatCategoryLabel } from "@/features/home-feed/home-feed-utils";
+import SortDropdown, { SortOption } from "@/features/home-feed/SortDropdown";
 import ScrollingColumn from "@/features/home-feed/ScrollingColumn";
 import {
   buildCardDecks,
@@ -14,11 +15,6 @@ import {
   rankProductsForUser,
 } from "@/features/home-feed/deck-utils";
 import styles from "@/features/home-feed/HomeFeed.module.css";
-
-/**
- * Sort options available for the home feed.
- */
-type SortOption = "top-rated" | "newest" | "price-low" | "price-high";
 
 /**
  * Client-side feed renderer with sorting and search.
@@ -227,17 +223,11 @@ export default function HomeFeed({
             </span>
           </button>
 
-          <select
-            className={styles.homeFeed__select}
+          {/* Styled sort dropdown. */}
+          <SortDropdown
             value={sortOption}
-            onChange={(event) => setSortOption(event.target.value as SortOption)}
-            aria-label="Sort products"
-          >
-            <option value="newest">Newest</option>
-            <option value="top-rated">Top rated</option>
-            <option value="price-low">Price low to high</option>
-            <option value="price-high">Price high to low</option>
-          </select>
+            onChange={setSortOption} // Update the selected sort option.
+          />
         </div>
       </div>
 
