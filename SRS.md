@@ -3,7 +3,7 @@
 ## Legend
 - [ ] Not started
 - [x] Done
-- [NEXT] Selected next requirement
+- [ ] Selected next requirement
 
 ## Core Requirements
 - [ ] R36: Add schema validation (Zod) for product data + env config
@@ -34,6 +34,7 @@
 - [x] R14: Navigation menu with hover unfurl (categories -> subcategories)
 
 ## SEO & Growth
+- [ ] R28: Category/subcategory gating (hide nav items + noindex pages until content threshold is met)
 - [ ] R22.5: Category + subcategory landing pages with SEO metadata, schema, and slug routing
 - [ ] R25 (Phase 2 Optional): AI-curated blog engine with intent-to-product mapping (pillar templates, FAQ schema)
 - [ ] R20: SEO structured data (Product/Offer JSON-LD)
@@ -45,16 +46,28 @@
 - [ ] R19: Performance hooks (memoization/callbacks) where proven beneficial
 
 ## Backend & Data
+- [ ] R29.6: Guest wishlist persistence + future account sync (local-first saves; later sync across devices)
+- [ ] R29.1: Product source metadata + idempotency (source, externalId, lastSeenAt, lastPriceCheckAt)
+- [ ] R29: Agent ingestion API stub (authenticated upsert endpoint + schema validation + draft/publish state)
 - [ ] R12.3: Account management wiring (backend/auth integration)
 - [ ] R30: SQL data layer wiring (products, wishlist, email capture submissions)
 
 ## Analytics & Revenue
+- [ ] R29.9: Post-click purchase confirmation prompt ("Did you buy this?" + review reminder hook)
+- [ ] R29.8: Social proof counts (display save count on product pages + cards)
+- [ ] R29.5: User-submitted deals (submission flow + moderation + optional revenue share later)
+- [ ] R29.4: Native ad cards (occasional sponsored cards in feed, non-disruptive)
 - [ ] R23: Click tracking for affiliate links
 - [ ] R24: Cookie consent + privacy/affiliate disclosure
 
 ## UX & Accessibility
+- [ ] R29.10: Preference capture (optional onboarding quiz + trickle questions; build a local-first taste profile with privacy controls)
+- [ ] R29.7: Product comments (community notes + moderation hooks later)
+- [NEXT] 🔵 R17.1: Loading UI (global spinner/skeletons for route + modal transitions)
+- [ ] R29.3: Gamification (window shop points + streaks + redemption hook later)
+- [ ] R29.2: Finite feed UX ("end of deck" messaging + optional reward hook)
 - [x] R15: Accessibility baseline (focus states, contrast, keyboard nav)
-- [NEXT] 🔵 R16: Responsive layout pass (mobile/tablet polish)
+- [x] R16: Responsive layout pass (mobile/tablet polish)
 - [ ] R17: Empty states + loading states
 - [ ] R18.1: Custom styled filter dropdown
 
@@ -78,10 +91,14 @@
 - [ ] O3: Add pagination/virtualization for large product sets
 - [x] O4: Refactor folder structure into features/ + shared/ for enterprise organization
 - [ ] R26: Wishlist search input (filter saved items)
+- [ ] R26.1: Wishlist search integration (mobile search targets wishlist on /wishlist; desktop wishlist search bar)
 - [ ] R27: Wishlist list deletion (remove list entirely)
 
 
 ## Notes
+- Positioning (later): "Yelp for products" across retailers (cross-site reviews + community trust layer)
+- Positioning: "Pinterest-like saves" (a cozy place to collect finds for later; saving does not require buying today)
+- Positioning: "Target vs Walmart" (pleasant, curated, trust-first shopping; deals are additive, not the whole identity; woman-leaning tone)
 - Branding target: "Window Shoppr" (finalized)
 - CSS approach: BEM naming with vanilla CSS (no framework)
 - Frontend: Next.js + TypeScript (App Router)

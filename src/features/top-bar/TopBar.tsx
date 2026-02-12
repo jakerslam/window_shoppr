@@ -59,6 +59,7 @@ export default function TopBar() {
 
   return (
     <header className={styles.topBar}>
+      {/* Brand + categories cluster. */}
       <div className={styles.topBar__left}>
         <TopBarBrand
           isOnAllCategories={isOnAllCategories}
@@ -67,12 +68,14 @@ export default function TopBar() {
         <TopBarMenu />
       </div>
 
+      {/* Feed search input (desktop + mobile). */}
       <TopBarSearch
         searchQuery={searchQuery}
         onSearchChange={handleSearchChange}
         onSearchSubmit={handleSearchSubmit}
       />
 
+      {/* Right-side actions (desktop + mobile bell). */}
       <TopBarActions />
     </header>
   );

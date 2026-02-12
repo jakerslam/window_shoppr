@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import TopBar from "@/features/top-bar/TopBar";
+import MobileBottomNav from "@/features/top-bar/MobileBottomNav";
 import CategoryFilterProvider from "@/features/category-filter/CategoryFilterProvider";
 import Footer from "@/shared/components/footer/Footer";
 import EmailCaptureModal from "@/features/email-capture/EmailCaptureModal";
@@ -95,6 +96,9 @@ export default function RootLayout({
 
             {/* Main content area for route content. */}
             <main className="site-shell__content">{children}</main>
+
+            {/* Mobile-only bottom navigation for quick access. */}
+            <MobileBottomNav />
 
             {/* Delayed email capture prompt. */}
             <EmailCaptureModal />

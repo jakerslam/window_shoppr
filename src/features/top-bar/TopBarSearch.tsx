@@ -16,7 +16,9 @@ export default function TopBarSearch({
 }) {
   return (
     <div className={styles.topBar__search}>
+      {/* Search field wrapper. */}
       <div className={styles.topBar__searchField}>
+        {/* Text input for query entry. */}
         <input
           className={styles.topBar__searchInput}
           type="search"
@@ -31,10 +33,11 @@ export default function TopBarSearch({
           }}
         />
 
+        {/* Submit button for keyboard-free search. */}
         <button
           className={styles.topBar__searchButton}
           type="button"
-          onClick={onSearchSubmit}
+          onClick={onSearchSubmit} // Submit the current query.
           aria-label="Submit search"
         >
           🔍

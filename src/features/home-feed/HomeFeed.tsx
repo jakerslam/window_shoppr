@@ -37,8 +37,13 @@ export default function HomeFeed({
   const [speedMode, setSpeedMode] = useState<"cozy" | "quick">("cozy");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [personalizationSeed, setPersonalizationSeed] = useState(0);
+  const [recentlyViewedIds, setRecentlyViewedIds] = useState<string[]>([]);
   const { selectedCategory, selectedSubCategory, searchQuery } =
     useCategoryFilter(); // Shared category filter + search query.
+
+  useEffect(() => {
+    setRecentlyViewedIds(getRecentlyViewedIds()); // Sync recently viewed IDs after mount.
+  }, [personalizationSeed]);
 
   useEffect(() => {
     const handleModalToggle = (event: Event) => {
@@ -65,10 +70,6 @@ export default function HomeFeed({
     ? `Today's ${displayCategory} Finds`
     : title; // Fall back when no category filter is selected.
 
-  const recentlyViewedIds = useMemo(
-    () => getRecentlyViewedIds(),
-    [personalizationSeed],
-  ); // Pull recent IDs when the seed changes.
 
   const shouldPersonalize = sortOption === "newest"; // Only personalize the default sort.
 
@@ -168,8 +169,22 @@ export default function HomeFeed({
           <h1 className={styles.homeFeed__title}>{effectiveTitle}</h1>
         </div>
 
-        {/* Sort controls (search lives in the top bar). */}
+        {/* Browse controls (categories, speed, sort). */}
         <div className={styles.homeFeed__controls}>
+          {/* Category shortcut for mobile browsing. */}
+          <button
+            className={styles.homeFeed__categoryTrigger}
+            type="button"
+            onClick={() =>
+              window.dispatchEvent(
+                new CustomEvent("mobile:categories", { detail: { open: true } }),
+              )
+            } // Open mobile categories sheet.
+            aria-label="Browse categories"
+          >
+            ☰ Categories
+          </button>
+
           <button
             className={`${styles.homeFeed__speedToggle} ${
               speedMode === "quick" ? styles["homeFeed__speedToggle--quick"] : ""
