@@ -2,6 +2,8 @@ import type { MetadataRoute } from "next";
 import { fetchProducts } from "@/shared/lib/data";
 import { SITE_URL } from "@/shared/lib/seo";
 
+export const dynamic = "force-static"; // Required for static export.
+
 /**
  * Build a sitemap with the homepage and product detail routes.
  */
