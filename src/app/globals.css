@@ -27,22 +27,22 @@
 /* System dark theme defaults (manual override added later). */
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-bg: #0f0d0b;
-    --color-fg: #f2ede6;
-    --color-surface: #1a1512;
-    --color-surface-muted: #2a221d;
-    --color-border: #3a2f28;
+    --color-bg: #0f1115;
+    --color-fg: #e6e8ee;
+    --color-surface: #161a22;
+    --color-surface-muted: #1f2430;
+    --color-border: #2a2f3a;
 
-    --color-primary: #e0b27a;
-    --color-primary-strong: #c68f54;
-    --color-accent: #f0c795;
+    --color-primary: #8ab4f8;
+    --color-primary-strong: #5f8de8;
+    --color-accent: #9bbcff;
 
-    --color-text-muted: #c3b7ad;
-    --color-text-inverse: #0f0d0b;
+    --color-text-muted: #a3a8b3;
+    --color-text-inverse: #0f1115;
 
-    --color-success: #58b88b;
-    --color-warning: #e0a25a;
-    --color-danger: #e07a72;
+    --color-success: #3fb950;
+    --color-warning: #f2c94c;
+    --color-danger: #f47067;
   }
 }
 
@@ -67,22 +67,22 @@
 }
 
 :root[data-theme="dark"] {
-  --color-bg: #0f0d0b;
-  --color-fg: #f2ede6;
-  --color-surface: #1a1512;
-  --color-surface-muted: #2a221d;
-  --color-border: #3a2f28;
+  --color-bg: #0f1115;
+  --color-fg: #e6e8ee;
+  --color-surface: #161a22;
+  --color-surface-muted: #1f2430;
+  --color-border: #2a2f3a;
 
-  --color-primary: #e0b27a;
-  --color-primary-strong: #c68f54;
-  --color-accent: #f0c795;
+  --color-primary: #8ab4f8;
+  --color-primary-strong: #5f8de8;
+  --color-accent: #9bbcff;
 
-  --color-text-muted: #c3b7ad;
-  --color-text-inverse: #0f0d0b;
+  --color-text-muted: #a3a8b3;
+  --color-text-inverse: #0f1115;
 
-  --color-success: #58b88b;
-  --color-warning: #e0a25a;
-  --color-danger: #e07a72;
+  --color-success: #3fb950;
+  --color-warning: #f2c94c;
+  --color-danger: #f47067;
 }
 
 html,
