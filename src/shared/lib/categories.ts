@@ -99,11 +99,11 @@ export const getAvailableCategories = (
 ): AvailableCategory[] => {
   const { categoryCounts, subCategoryCounts } = buildCategoryAvailability(products);
 
-  return CATEGORY_TREE.map((category) => {
+  return CATEGORY_TREE.reduce<AvailableCategory[]>((acc, category) => {
     const categorySlug = toCategorySlug(category.label);
     const categoryCount = categoryCounts.get(categorySlug) ?? 0;
     if (categoryCount < minItems) {
-      return null;
+      return acc; // Skip categories below threshold.
     }
 
     const availableSubCategories = category.subCategories.filter((subCategory) => {
@@ -111,9 +111,11 @@ export const getAvailableCategories = (
       return (subCategoryCounts.get(`${categorySlug}:${subSlug}`) ?? 0) >= minItems;
     });
 
-    return {
+    acc.push({
       label: category.label,
       subCategories: availableSubCategories,
-    };
-  }).filter((category): category is AvailableCategory => Boolean(category));
+    });
+
+    return acc;
+  }, []);
 };
