@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { CATEGORY_TREE, toCategorySlug } from "@/shared/lib/categories";
+import { getAvailableCategories, toCategorySlug } from "@/shared/lib/categories";
+import { getProductCatalog } from "@/shared/lib/products";
 import { useCategoryFilter } from "@/features/category-filter/CategoryFilterProvider";
 import styles from "@/features/top-bar/TopBar.module.css";
 
@@ -15,6 +16,10 @@ export default function MobileBottomNav() {
   const pathname = usePathname();
   const { clearFilters, clearCategories, setCategory, setSubCategory, searchQuery, setSearchQuery } =
     useCategoryFilter();
+  const availableCategories = getAvailableCategories(
+    getProductCatalog(),
+  ); // Filter category list based on available products.
+
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
   const [openCategory, setOpenCategory] = useState<string | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -218,7 +223,7 @@ export default function MobileBottomNav() {
             </button>
 
             {/* Category list with expandable subcategories. */}
-            {CATEGORY_TREE.map((category) => {
+            {availableCategories.map((category) => {
               const categorySlug = toCategorySlug(category.label);
               const hasSubCategories = category.subCategories.length > 0;
               const isOpen = openCategory === categorySlug;

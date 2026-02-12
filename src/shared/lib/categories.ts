@@ -50,3 +50,65 @@ export const toCategorySlug = (value: string) =>
 export const getCategoryBySlug = (slug: string) =>
   CATEGORY_TREE.find((category) => toCategorySlug(category.label) === slug) ??
   null;
+
+/**
+ * Default minimum products required to surface a category.
+ */
+export const CATEGORY_MIN_ITEMS = 3;
+
+/**
+ * Count products per category and subcategory.
+ */
+export const buildCategoryAvailability = (products: Array<{
+  category: string;
+  subCategory?: string;
+}>) => {
+  const categoryCounts = new Map<string, number>();
+  const subCategoryCounts = new Map<string, number>();
+
+  products.forEach((product) => {
+    const categorySlug = toCategorySlug(product.category);
+    categoryCounts.set(
+      categorySlug,
+      (categoryCounts.get(categorySlug) ?? 0) + 1,
+    );
+
+    if (product.subCategory) {
+      const subSlug = toCategorySlug(product.subCategory);
+      subCategoryCounts.set(
+        `${categorySlug}:${subSlug}`,
+        (subCategoryCounts.get(`${categorySlug}:${subSlug}`) ?? 0) + 1,
+      );
+    }
+  });
+
+  return { categoryCounts, subCategoryCounts };
+};
+
+/**
+ * Filter category config based on product availability threshold.
+ */
+export const getAvailableCategories = (
+  products: Array<{ category: string; subCategory?: string }>,
+  minItems: number = CATEGORY_MIN_ITEMS,
+) => {
+  const { categoryCounts, subCategoryCounts } = buildCategoryAvailability(products);
+
+  return CATEGORY_TREE.map((category) => {
+    const categorySlug = toCategorySlug(category.label);
+    const categoryCount = categoryCounts.get(categorySlug) ?? 0;
+    if (categoryCount < minItems) {
+      return null;
+    }
+
+    const availableSubCategories = category.subCategories.filter((subCategory) => {
+      const subSlug = toCategorySlug(subCategory);
+      return (subCategoryCounts.get(`${categorySlug}:${subSlug}`) ?? 0) >= minItems;
+    });
+
+    return {
+      label: category.label,
+      subCategories: availableSubCategories,
+    };
+  }).filter(Boolean);
+};

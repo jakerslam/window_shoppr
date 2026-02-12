@@ -2,7 +2,8 @@
 
 import { useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { CATEGORY_TREE, toCategorySlug } from "@/shared/lib/categories";
+import { getAvailableCategories, toCategorySlug } from "@/shared/lib/categories";
+import { getProductCatalog } from "@/shared/lib/products";
 import { useCategoryFilter } from "@/features/category-filter/CategoryFilterProvider";
 import styles from "@/features/top-bar/TopBar.module.css";
 
@@ -16,6 +17,10 @@ export default function TopBarMenu() {
   const [openCategory, setOpenCategory] = useState<string | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const firstItemRef = useRef<HTMLButtonElement | null>(null);
+  const availableCategories = getAvailableCategories(
+    getProductCatalog(),
+  ); // Filter category list based on available products.
+
   const {
     selectedCategory,
     selectedSubCategory,
@@ -151,7 +156,7 @@ export default function TopBarMenu() {
           All Categories
         </button>
 
-        {CATEGORY_TREE.map((category) => {
+        {availableCategories.map((category) => {
           const categorySlug = toCategorySlug(category.label); // Normalize category slug.
           const isActive = selectedCategory === categorySlug; // Track active category.
 

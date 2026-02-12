@@ -34,7 +34,7 @@
 - [x] R14: Navigation menu with hover unfurl (categories -> subcategories)
 
 ## SEO & Growth
-- [NEXT] 🔵 R28: Category/subcategory gating (hide nav items + noindex pages until content threshold is met)
+- [x] R28: Category/subcategory gating (hide nav items + noindex pages until content threshold is met)
 - [ ] R22.5: Category + subcategory landing pages with SEO metadata, schema, and slug routing
 - [ ] R22.6: Category slug routing + canonical pages (category + subcategory)
 - [ ] R25 (Phase 2 Optional): AI-curated blog engine with intent-to-product mapping (pillar templates, FAQ schema)
@@ -48,7 +48,7 @@
 
 ## Backend & Data
 - [ ] R29.6: Guest wishlist persistence + future account sync (local-first saves; later sync across devices)
-- [ ] R29.1: Product source metadata + idempotency (source, externalId, lastSeenAt, lastPriceCheckAt)
+- [NEXT] 🔵 R29.1: Product source metadata + idempotency (source, externalId, lastSeenAt, lastPriceCheckAt)
 - [ ] R29: Agent ingestion API stub (authenticated upsert endpoint + schema validation + draft/publish state)
 - [ ] R12.3: Account management wiring (backend/auth integration)
 - [ ] R30: SQL data layer wiring (products, wishlist, email capture submissions)
