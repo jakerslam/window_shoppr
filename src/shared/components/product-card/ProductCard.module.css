@@ -79,13 +79,15 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .productCard__priceColumn {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  flex: 1;
+  min-width: 0;
 }
 
 .productCard__priceRow {
@@ -132,6 +134,8 @@
   line-height: 1;
   font-weight: 600;
   cursor: pointer;
+  flex-shrink: 0;
+  margin-left: auto;
   transition: opacity 150ms ease, color 200ms ease, filter 200ms ease;
 }
 

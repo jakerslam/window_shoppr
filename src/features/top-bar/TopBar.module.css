@@ -352,6 +352,7 @@
   max-height: min(70vh, 560px);
   background: var(--color-surface);
   border-radius: 18px 18px 0 0;
+  opacity: 0.9;
   padding: 18px 18px 24px;
   display: flex;
   flex-direction: column;
