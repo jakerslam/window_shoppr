@@ -5,6 +5,7 @@ import MobileBottomNav from "@/features/top-bar/MobileBottomNav";
 import CategoryFilterProvider from "@/features/category-filter/CategoryFilterProvider";
 import Footer from "@/shared/components/footer/Footer";
 import EmailCaptureModal from "@/features/email-capture/EmailCaptureModal";
+import CookieConsent from "@/shared/components/privacy/CookieConsent";
 import { SITE_URL } from "@/shared/lib/seo";
 import "./globals.css";
 
@@ -105,6 +106,9 @@ export default function RootLayout({
 
             {/* Delayed email capture prompt. */}
             <EmailCaptureModal />
+
+            {/* Cookie consent + affiliate disclosure banner. */}
+            <CookieConsent />
 
             {/* Modal slot for intercepting routes. */}
             {modal}
