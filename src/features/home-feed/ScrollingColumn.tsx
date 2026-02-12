@@ -7,6 +7,34 @@ import WishlistSaveButton from "@/features/wishlist/WishlistSaveButton";
 import styles from "@/features/home-feed/HomeFeed.module.css";
 
 /**
+ * Render props for the wishlist save button.
+ */
+type SaveButtonRenderProps = {
+  buttonClassName: string;
+  savedClassName: string;
+  wrapperClassName: string;
+};
+
+/**
+ * Create a named renderer to satisfy display-name linting.
+ */
+const createSaveRenderer = (productId: string) =>
+  function SaveButtonRenderer({
+    buttonClassName,
+    savedClassName,
+    wrapperClassName,
+  }: SaveButtonRenderProps) {
+    return (
+      <WishlistSaveButton
+        productId={productId}
+        buttonClassName={buttonClassName} // Match card button styling.
+        savedClassName={savedClassName} // Apply saved-state styling.
+        wrapperClassName={wrapperClassName} // Preserve card layout spacing.
+      />
+    );
+  };
+
+/**
  * Scrolling column of product cards with hover pause + smooth resume.
  */
 export default function ScrollingColumn({
@@ -36,6 +64,18 @@ export default function ScrollingColumn({
 
 
   const loopedDeck = useMemo(() => [...deck, ...deck], [deck]);
+
+  // Memoize open handlers so cards do not receive new callbacks on every render.
+  const openHandlers = useMemo(
+    () => loopedDeck.map((product) => onOpen(product)),
+    [loopedDeck, onOpen],
+  );
+
+  // Memoize save button renderers to avoid recreating per-card callbacks.
+  const saveButtonRenderers = useMemo(
+    () => loopedDeck.map((product) => createSaveRenderer(product.id)),
+    [loopedDeck],
+  );
 
   /**
    * Measure the track height and recompute the scroll speed.
@@ -204,19 +244,8 @@ export default function ScrollingColumn({
           <ProductCard
             key={`${product.id}-${index}`}
             product={product}
-            onOpen={onOpen(product)} // Open modal/full page on click.
-            renderSaveButton={({
-              buttonClassName,
-              savedClassName,
-              wrapperClassName,
-            }) => (
-              <WishlistSaveButton
-                productId={product.id}
-                buttonClassName={buttonClassName} // Match card button styling.
-                savedClassName={savedClassName} // Apply saved-state styling.
-                wrapperClassName={wrapperClassName} // Preserve card layout spacing.
-              />
-            )}
+            onOpen={openHandlers[index]} // Open modal/full page on click.
+            renderSaveButton={saveButtonRenderers[index]} // Reuse memoized save button renderers.
           />
         ))}
       </div>

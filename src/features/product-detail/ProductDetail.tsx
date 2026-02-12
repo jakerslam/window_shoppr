@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useCategoryFilter } from "@/features/category-filter/CategoryFilterProvider";
 import { trackRecentlyViewed } from "@/shared/lib/recently-viewed";
@@ -33,25 +33,31 @@ export default function ProductDetail({
     trackRecentlyViewed(product.id); // Persist recently viewed state.
   }, [product.id]);
 
-  const handleBack = () => {
+  /**
+   * Navigate back when the detail view is in a modal.
+   */
+  const handleBack = useCallback(() => {
     if (inModal) {
       router.back(); // Close modal by returning to the previous page.
     }
-  };
+  }, [inModal, router]);
 
   /**
    * Send a tag to the shared search bar and return to the feed.
    */
-  const handleTagClick = (tag: string) => {
-    setSearchQuery(tag); // Mirror the tag into the search input.
+  const handleTagClick = useCallback(
+    (tag: string) => {
+      setSearchQuery(tag); // Mirror the tag into the search input.
 
-    if (inModal) {
-      router.back(); // Close the modal when the feed is already behind it.
-      return;
-    }
+      if (inModal) {
+        router.back(); // Close the modal when the feed is already behind it.
+        return;
+      }
 
-    router.push("/"); // Navigate to the feed when coming from a full page.
-  };
+      router.push("/"); // Navigate to the feed when coming from a full page.
+    },
+    [inModal, router, setSearchQuery],
+  );
 
   return (
     <section

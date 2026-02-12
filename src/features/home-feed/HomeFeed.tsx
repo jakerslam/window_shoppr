@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCategoryFilter } from "@/features/category-filter/CategoryFilterProvider";
 import { getRecentlyViewedIds } from "@/shared/lib/recently-viewed";
@@ -15,6 +15,8 @@ import {
   rankProductsForUser,
 } from "@/features/home-feed/deck-utils";
 import styles from "@/features/home-feed/HomeFeed.module.css";
+
+const BASE_COLUMN_DURATIONS = [38, 46, 54, 62, 70]; // Base scroll speeds per column.
 
 /**
  * Client-side feed renderer with sorting and search.
@@ -144,19 +146,26 @@ export default function HomeFeed({
   const resultsLabel = `Browse ${sortedProducts.length} ${subtitleLabel}`; // Accessible count label.
 
   const columnCount = 5; // Desktop column count for the animated feed.
-  const baseDurations = [38, 46, 54, 62, 70]; // Unique speeds for each column.
   const durationScale = speedMode === "quick" ? 0.7 : 1; // Adjust speeds per toggle.
-  const columnDurations = baseDurations.map((value) => value * durationScale);
-  const minimumPerColumn = Math.min(
-    7,
-    Math.max(4, Math.ceil(rankedProducts.length / columnCount)),
-  ); // Scale deck size with available inventory.
+  // Memoize column durations so scroll speeds remain stable between renders.
+  const columnDurations = useMemo(
+    () => BASE_COLUMN_DURATIONS.map((value) => value * durationScale),
+    [durationScale],
+  );
+  // Memoize deck sizing to avoid recalculating on unrelated renders.
+  const minimumPerColumn = useMemo(
+    () => Math.min(7, Math.max(4, Math.ceil(rankedProducts.length / columnCount))),
+    [rankedProducts.length, columnCount],
+  );
   const columnDecks = useMemo(
     () => buildCardDecks(rankedProducts, columnCount, minimumPerColumn),
     [rankedProducts, minimumPerColumn],
   );
 
-  const handleCardOpen =
+  /**
+   * Build a stable open handler for a given product card.
+   */
+  const handleCardOpen = useCallback(
     (product: Product) => () => {
       if (window.matchMedia("(max-width: 900px)").matches) {
         window.location.href = `/product/${product.slug}`; // Mobile navigates to full page.
@@ -164,7 +173,9 @@ export default function HomeFeed({
       }
 
       router.push(`/product/${product.slug}`); // Open modal detail view with slug.
-    };
+    },
+    [router],
+  );
 
   return (
     <section className={styles.homeFeed} aria-label={resultsLabel}>

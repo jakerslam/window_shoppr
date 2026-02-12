@@ -37,13 +37,13 @@
 - [ ] R28: Category/subcategory gating (hide nav items + noindex pages until content threshold is met)
 - [ ] R22.5: Category + subcategory landing pages with SEO metadata, schema, and slug routing
 - [ ] R25 (Phase 2 Optional): AI-curated blog engine with intent-to-product mapping (pillar templates, FAQ schema)
-- [ ] R20: SEO structured data (Product/Offer JSON-LD)
+- [NEXT] 🔵 R20: SEO structured data (Product/Offer JSON-LD)
 - [ ] R21: Sitemap, robots, and canonical URLs
 
 ## Performance & Stability
 - [x] R22: Image optimization and lazy-loading
 - [x] R18: Error boundaries and graceful fallback UI
-- [NEXT] 🔵 R19: Performance hooks (memoization/callbacks) where proven beneficial
+- [x] R19: Performance hooks (memoization/callbacks) where proven beneficial
 
 ## Backend & Data
 - [ ] R29.6: Guest wishlist persistence + future account sync (local-first saves; later sync across devices)
