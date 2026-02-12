@@ -1,10 +1,10 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 40/81 (49.4%) ██████████░░░░░░░░░░
+Overall: 40/81 (49.4%)  ██████████░░░░░░░░░░
 Frontend: 30/57 (52.6%) ███████████░░░░░░░░░
-Backend: 9/21 (42.9%) █████████░░░░░░░░░░░
-Automation: 0/4 (0.0%) ░░░░░░░░░░░░░░░░░░░░
+Backend: 9/21 (42.9%)   █████████░░░░░░░░░░░
+Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░░░
 
 
 ## Legend
@@ -109,6 +109,14 @@ Automation: 0/4 (0.0%) ░░░░░░░░░░░░░░░░░░░
 - [ ] R27: Wishlist list deletion (delete list button + confirm)
 - [ ] R27.1: Manage/view lists entry in save menu (opens list manager modal)
 
+
+
+## Deployment
+- [ ] D1: Hosting + build pipeline (Vercel or equivalent)
+- [ ] D2: Environment config (SITE_URL, API keys, affiliate IDs)
+- [ ] D3: Custom domain + SSL
+- [ ] D4: Production data source (switch JSON → SQL/API)
+- [ ] D5: Monitoring + error reporting (Sentry or similar)
 
 ## Notes
 - Positioning (later): "Yelp for products" across retailers (cross-site reviews + community trust layer)
