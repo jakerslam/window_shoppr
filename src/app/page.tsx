@@ -1,5 +1,5 @@
-import HomeFeed from "@/components/home-feed/HomeFeed";
-import { fetchProducts } from "@/lib/data";
+import HomeFeed from "@/features/home-feed/HomeFeed";
+import { fetchProducts } from "@/shared/lib/data";
 import styles from "@/app/page.module.css";
 
 /**

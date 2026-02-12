@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import TopBar from "@/components/top-bar/TopBar";
-import CategoryFilterProvider from "@/components/category-filter/CategoryFilterProvider";
-import Footer from "@/components/footer/Footer";
-import EmailCaptureModal from "@/components/email-capture/EmailCaptureModal";
-import { SITE_URL } from "@/lib/seo";
+import TopBar from "@/features/top-bar/TopBar";
+import MobileBottomNav from "@/features/top-bar/MobileBottomNav";
+import CategoryFilterProvider from "@/features/category-filter/CategoryFilterProvider";
+import Footer from "@/shared/components/footer/Footer";
+import EmailCaptureModal from "@/features/email-capture/EmailCaptureModal";
+import { SITE_URL } from "@/shared/lib/seo";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -96,16 +97,19 @@ export default function RootLayout({
             {/* Main content area for route content. */}
             <main className="site-shell__content">{children}</main>
 
+            {/* Mobile-only bottom navigation for quick access. */}
+            <MobileBottomNav />
+
             {/* Delayed email capture prompt. */}
             <EmailCaptureModal />
+
+            {/* Modal slot for intercepting routes. */}
+            {modal}
           </CategoryFilterProvider>
 
           {/* Footer stub for future links and info. */}
           <Footer />
         </div>
-
-        {/* Modal slot for intercepting routes. */}
-        {modal}
       </body>
     </html>
   );

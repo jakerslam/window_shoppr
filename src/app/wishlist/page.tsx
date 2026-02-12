@@ -1,4 +1,4 @@
-import WishlistPage from "@/components/wishlist/WishlistPage";
+import WishlistPage from "@/features/wishlist/WishlistPage";
 
 /**
  * Wishlist route entry for saved products.

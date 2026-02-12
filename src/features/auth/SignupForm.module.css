@@ -1,0 +1,171 @@
+.signupForm {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 28px;
+  border-radius: 20px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  box-shadow: 0 18px 48px rgba(25, 18, 12, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.signupForm__header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: center;
+}
+
+.signupForm__title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-primary-strong);
+}
+
+.signupForm__subtitle {
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.signupForm__socialRow {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.signupForm__socialButton {
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-muted);
+  color: var(--color-primary-strong);
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 150ms ease;
+}
+
+.signupForm__socialButton:hover {
+  opacity: 0.7;
+}
+
+.signupForm__divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+.signupForm__dividerLine {
+  flex: 1;
+  height: 1px;
+  background: var(--color-border);
+}
+
+.signupForm__dividerText {
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.signupForm__form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.signupForm__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.signupForm__label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-primary-strong);
+}
+
+.signupForm__input {
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-muted);
+  color: var(--color-primary-strong);
+  font-weight: 600;
+}
+
+.signupForm__input:focus {
+  outline: none;
+  border-color: var(--color-primary-strong);
+  box-shadow: 0 0 0 2px rgba(111, 69, 41, 0.18);
+}
+
+.signupForm__checkboxRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.signupForm__checkbox {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-primary-strong);
+}
+
+.signupForm__checkboxLabel {
+  font-weight: 500;
+}
+
+.signupForm__submit {
+  height: 42px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-primary-strong);
+  color: var(--color-text-inverse);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 150ms ease;
+}
+
+.signupForm__submit:hover {
+  opacity: 0.7;
+}
+
+.signupForm__status {
+  margin: 0;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.signupForm__switchRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.signupForm__switchText {
+  font-weight: 500;
+}
+
+.signupForm__switchLink {
+  font-weight: 700;
+  color: var(--color-primary-strong);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.signupForm__switchLink:hover {
+  opacity: 0.7;
+}

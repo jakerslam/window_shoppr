@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import ProductDetail from "@/components/product-detail/ProductDetail";
-import { fetchProductBySlug } from "@/lib/data";
-import { buildMetaDescription, SITE_URL } from "@/lib/seo";
-import { Product } from "@/lib/types";
+import ProductDetail from "@/features/product-detail/ProductDetail";
+import { fetchProductBySlug } from "@/shared/lib/data";
+import { buildMetaDescription, SITE_URL } from "@/shared/lib/seo";
+import { Product } from "@/shared/lib/types";
 
 /**
  * Build JSON-LD schema data for a product detail page.

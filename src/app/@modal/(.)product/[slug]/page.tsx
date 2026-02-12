@@ -1,6 +1,6 @@
-import Modal from "@/components/modal/Modal";
-import ProductDetail from "@/components/product-detail/ProductDetail";
-import { fetchProductBySlug } from "@/lib/data";
+import Modal from "@/shared/components/modal/Modal";
+import ProductDetail from "@/features/product-detail/ProductDetail";
+import { fetchProductBySlug } from "@/shared/lib/data";
 import styles from "@/app/@modal/(.)product/[slug]/page.module.css";
 
 /**
