@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fraunces, Geist, Geist_Mono } from "next/font/google";
+import { Cormorant, Geist, Geist_Mono } from "next/font/google";
 import TopBar from "@/features/top-bar/TopBar";
 import MobileBottomNav from "@/features/top-bar/MobileBottomNav";
 import CategoryFilterProvider from "@/features/category-filter/CategoryFilterProvider";
@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const fraunces = Fraunces({
+const cormorant = Cormorant({
   variable: "--font-display",
   subsets: ["latin"],
   weight: ["400", "600", "700"],
@@ -93,7 +93,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       {/* Page body with shared global layout. */}
-      <body className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable}`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${cormorant.variable}`}>
         <div className="site-shell">
           {/* Shared filters for navigation + feed. */}
           <CategoryFilterProvider>
