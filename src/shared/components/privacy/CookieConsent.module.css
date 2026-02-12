@@ -51,3 +51,19 @@
     bottom: calc(var(--mobile-nav-height) + var(--mobile-nav-offset) + 72px);
   }
 }
+
+.cookieConsent__actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cookieConsent__button--primary {
+  background: var(--color-primary-strong);
+  color: var(--color-text-inverse);
+  border-color: transparent;
+}
+
+.cookieConsent__button--primary:hover {
+  opacity: 0.85;
+}

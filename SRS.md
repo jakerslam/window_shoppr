@@ -59,7 +59,7 @@
 - [ ] R29.5: User-submitted deals (submission flow + moderation + optional revenue share later)
 - [ ] R29.4: Native ad cards (occasional sponsored cards in feed, non-disruptive)
 - [x] R23: Click tracking for affiliate links
-- [x] R24: Cookie consent + privacy/affiliate disclosure
+- [x] R24: Cookie consent + privacy/affiliate disclosure (accept all + essential only)
 
 ## UX & Accessibility
 - [ ] R43: Notifications UI (feed + badge + placeholder list)

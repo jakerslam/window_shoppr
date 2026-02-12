@@ -4,6 +4,13 @@ import { useEffect, useState } from "react";
 import styles from "@/shared/components/privacy/CookieConsent.module.css";
 
 const CONSENT_KEY = "window_shoppr_cookie_consent"; // Local storage key for consent.
+const CONSENT_MODE_KEY = "window_shoppr_cookie_mode"; // Stores consent choice.
+
+const CONSENT_MODES = {
+  all: "all",
+  essential: "essential",
+} as const;
+
 
 /**
  * Cookie consent banner with disclosure and acknowledgment controls.
@@ -20,8 +27,15 @@ export default function CookieConsent() {
     setIsVisible(!stored); // Show banner until consent is stored.
   }, []);
 
-  const handleAccept = () => {
+  const handleAcceptAll = () => {
     window.localStorage.setItem(CONSENT_KEY, new Date().toISOString());
+    window.localStorage.setItem(CONSENT_MODE_KEY, CONSENT_MODES.all);
+    setIsVisible(false);
+  };
+
+  const handleEssentialOnly = () => {
+    window.localStorage.setItem(CONSENT_KEY, new Date().toISOString());
+    window.localStorage.setItem(CONSENT_MODE_KEY, CONSENT_MODES.essential);
     setIsVisible(false);
   };
 
@@ -38,13 +52,22 @@ export default function CookieConsent() {
           links are affiliate links, which may earn us a commission at no extra
           cost to you.
         </p>
-        <button
-          className={styles.cookieConsent__button}
-          type="button"
-          onClick={handleAccept}
-        >
-          Got it
-        </button>
+        <div className={styles.cookieConsent__actions}>
+          <button
+            className={styles.cookieConsent__button}
+            type="button"
+            onClick={handleEssentialOnly}
+          >
+            Essential only
+          </button>
+          <button
+            className={`${styles.cookieConsent__button} ${styles["cookieConsent__button--primary"]}`}
+            type="button"
+            onClick={handleAcceptAll}
+          >
+            Accept all
+          </button>
+        </div>
       </div>
     </div>
   );
