@@ -29,6 +29,7 @@
 
   /* Layout */
   --mobile-nav-height: 0px;
+  --mobile-nav-offset: 0px;
 }
 
 /* System dark theme defaults (manual override added later). */
@@ -161,7 +162,7 @@ a {
   }
 
   .site-shell {
-    padding-bottom: var(--mobile-nav-height);
+    padding-bottom: calc(var(--mobile-nav-height) + var(--mobile-nav-offset));
   }
 }
 
@@ -171,4 +172,13 @@ h2,
 h3,
 h4 {
   font-family: var(--font-display), var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Safari UI offset for bottom nav clearance. */
+@supports (-webkit-touch-callout: none) {
+  @media (hover: none) and (pointer: coarse) {
+    :root {
+      --mobile-nav-offset: 16px;
+    }
+  }
 }

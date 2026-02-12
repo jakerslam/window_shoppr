@@ -296,7 +296,7 @@
   position: fixed;
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: var(--mobile-nav-offset);
   height: calc(64px + env(safe-area-inset-bottom));
   padding: 8px 16px calc(10px + env(safe-area-inset-bottom));
   display: none;
@@ -486,7 +486,7 @@
   position: fixed;
   left: 0;
   right: 0;
-  bottom: var(--mobile-nav-height);
+  bottom: calc(var(--mobile-nav-height) + var(--mobile-nav-offset));
   padding: 8px 16px 12px;
   display: flex;
   justify-content: center;
