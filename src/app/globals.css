@@ -15,6 +15,10 @@
   --color-text-muted: #6b6259;
   --color-text-inverse: #ffffff;
 
+  --color-hover-bg: rgba(217, 165, 107, 0.24);
+  --color-hover-border: rgba(217, 165, 107, 0.45);
+  --color-hover-text: var(--color-primary-strong);
+
   --color-save-active: #d9a56b;
   --color-save-inactive: #6f4529;
 
@@ -43,6 +47,10 @@
     --color-text-muted: #a3a8b3;
     --color-text-inverse: #0f1115;
 
+  --color-hover-bg: rgba(138, 180, 248, 0.32);
+  --color-hover-border: rgba(138, 180, 248, 0.5);
+  --color-hover-text: var(--color-fg);
+
   --color-save-active: #d9a56b;
   --color-save-inactive: #e6e8ee;
 
@@ -67,6 +75,10 @@
   --color-text-muted: #6b6259;
   --color-text-inverse: #ffffff;
 
+  --color-hover-bg: rgba(217, 165, 107, 0.24);
+  --color-hover-border: rgba(217, 165, 107, 0.45);
+  --color-hover-text: var(--color-primary-strong);
+
   --color-save-active: #d9a56b;
   --color-save-inactive: #6f4529;
 
@@ -88,6 +100,10 @@
 
   --color-text-muted: #a3a8b3;
   --color-text-inverse: #0f1115;
+
+  --color-hover-bg: rgba(138, 180, 248, 0.32);
+  --color-hover-border: rgba(138, 180, 248, 0.5);
+  --color-hover-text: var(--color-fg);
 
   --color-save-active: #d9a56b;
   --color-save-inactive: #e6e8ee;

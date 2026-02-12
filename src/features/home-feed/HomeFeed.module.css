@@ -114,8 +114,9 @@
 
 .homeFeed__dropdownItem:hover,
 .homeFeed__dropdownItem--active {
-  background: rgba(244, 239, 232, 0.6);
-  color: var(--color-primary-strong);
+  background: var(--color-hover-bg);
+  border-color: var(--color-hover-border);
+  color: var(--color-hover-text);
 }
 
 .homeFeed__dropdownItem--selected {

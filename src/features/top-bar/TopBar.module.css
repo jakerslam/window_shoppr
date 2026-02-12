@@ -107,8 +107,9 @@
 }
 
 .topBar__menuItem:hover {
-  background: rgba(244, 239, 232, 0.6);
-  color: var(--color-primary-strong);
+  background: var(--color-hover-bg);
+  border-color: var(--color-hover-border);
+  color: var(--color-hover-text);
 }
 
 .topBar__menuGroup {
@@ -164,8 +165,9 @@
 }
 
 .topBar__subMenuItem:hover {
-  background: rgba(244, 239, 232, 0.6);
-  color: var(--color-primary-strong);
+  background: var(--color-hover-bg);
+  border-color: var(--color-hover-border);
+  color: var(--color-hover-text);
 }
 
 .topBar__search {
@@ -580,4 +582,16 @@
 .mobileNav__item--active .mobileNav__dot {
   opacity: 0.9;
   transform: translateY(0);
+}
+
+.mobileNav__sheetItem:hover {
+  background: var(--color-hover-bg);
+  border-color: var(--color-hover-border);
+  color: var(--color-hover-text);
+}
+
+.mobileNav__sheetSubItem:hover {
+  background: var(--color-hover-bg);
+  border-color: var(--color-hover-border);
+  color: var(--color-hover-text);
 }
