@@ -36,6 +36,7 @@
 ## SEO & Growth
 - [ ] R28: Category/subcategory gating (hide nav items + noindex pages until content threshold is met)
 - [ ] R22.5: Category + subcategory landing pages with SEO metadata, schema, and slug routing
+- [ ] R22.6: Category slug routing + canonical pages (category + subcategory)
 - [ ] R25 (Phase 2 Optional): AI-curated blog engine with intent-to-product mapping (pillar templates, FAQ schema)
 - [x] R20: SEO structured data (Product/Offer JSON-LD)
 - [x] R21: Sitemap, robots, and canonical URLs
@@ -57,8 +58,8 @@
 - [ ] R29.8: Social proof counts (display save count on product pages + cards)
 - [ ] R29.5: User-submitted deals (submission flow + moderation + optional revenue share later)
 - [ ] R29.4: Native ad cards (occasional sponsored cards in feed, non-disruptive)
-- [NEXT] 🔵 R23: Click tracking for affiliate links
-- [ ] R24: Cookie consent + privacy/affiliate disclosure
+- [x] R23: Click tracking for affiliate links
+- [NEXT] 🔵 R24: Cookie consent + privacy/affiliate disclosure
 
 ## UX & Accessibility
 - [ ] R43: Notifications UI (feed + badge + placeholder list)

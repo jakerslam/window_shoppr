@@ -1,6 +1,7 @@
 "use client";
 
 import { Product, PRODUCT_UI } from "@/shared/lib/types";
+import { trackAffiliateClick } from "@/shared/lib/analytics";
 import DescriptionToggle from "@/features/product-detail/DescriptionToggle";
 import styles from "@/features/product-detail/ProductDetail.module.css";
 import { clamp, formatPrice } from "@/features/product-detail/product-detail-utils";
@@ -27,6 +28,18 @@ export default function ProductDetailInfo({
     ? `${product.rating.toFixed(1)} / 5 (${product.ratingCount ?? 0})`
     : "No ratings yet"; // Build rating label with reviews.
   const retailerLabel = product.retailer ?? "Retailer"; // Fall back when retailer is unknown.
+
+  /**
+   * Track outbound affiliate clicks for analytics.
+   */
+  const handleAffiliateClick = () => {
+    trackAffiliateClick({
+      productId: product.id,
+      productSlug: product.slug,
+      retailer: product.retailer,
+      affiliateUrl: product.affiliateUrl,
+    }); // Store click data for analytics.
+  };
 
   return (
     <div className={styles.productDetail__info}>
@@ -70,6 +83,7 @@ export default function ProductDetailInfo({
         href={product.affiliateUrl}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={handleAffiliateClick} // Track affiliate click before navigation.
       >
         Get deal at {retailerLabel}
       </a>
