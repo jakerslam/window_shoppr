@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cormorant, Geist, Geist_Mono } from "next/font/google";
+import { Cormorant, Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import TopBar from "@/features/top-bar/TopBar";
 import MobileBottomNav from "@/features/top-bar/MobileBottomNav";
 import CategoryFilterProvider from "@/features/category-filter/CategoryFilterProvider";
@@ -8,8 +8,8 @@ import EmailCaptureModal from "@/features/email-capture/EmailCaptureModal";
 import { SITE_URL } from "@/shared/lib/seo";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const jakartaSans = Plus_Jakarta_Sans({
+  variable: "--font-sans",
   subsets: ["latin"],
 });
 
@@ -93,7 +93,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       {/* Page body with shared global layout. */}
-      <body className={`${geistSans.variable} ${geistMono.variable} ${cormorant.variable}`}>
+      <body className={`${jakartaSans.variable} ${geistMono.variable} ${cormorant.variable}`}>
         <div className="site-shell">
           {/* Shared filters for navigation + feed. */}
           <CategoryFilterProvider>
