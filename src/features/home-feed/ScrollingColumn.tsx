@@ -30,7 +30,7 @@ const createSaveRenderer = (productId: string) =>
         buttonClassName={buttonClassName} // Match card button styling.
         savedClassName={savedClassName} // Apply saved-state styling.
         wrapperClassName={wrapperClassName} // Preserve card layout spacing.
-        openMenuOnMobileTap // Open list picker on tap for mobile feed cards.
+        enableListMenu={false} // Keep feed interactions simple: click-to-save only.
       />
     );
   };

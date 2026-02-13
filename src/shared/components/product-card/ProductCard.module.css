@@ -234,7 +234,7 @@
   }
 
   .productCard:not(.productCard--compact) .productCard__wishlist {
-    margin-left: 0;
+    margin-left: auto;
   }
 
   .productCard--compact {

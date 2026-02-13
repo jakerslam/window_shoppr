@@ -14,6 +14,7 @@ export default function WishlistSaveButton({
   onListRemoval,
   wrapperClassName,
   openMenuOnMobileTap = false,
+  enableListMenu = true,
 }: {
   productId: string;
   buttonClassName: string;
@@ -22,6 +23,7 @@ export default function WishlistSaveButton({
   onListRemoval?: (productId: string, listName: string) => void;
   wrapperClassName?: string;
   openMenuOnMobileTap?: boolean;
+  enableListMenu?: boolean;
 }) {
   const {
     DEFAULT_WISHLIST_NAME,
@@ -44,6 +46,7 @@ export default function WishlistSaveButton({
     activeListName,
     onListRemoval,
     openMenuOnMobileTap,
+    enableListMenu,
   });
 
   return (
@@ -62,12 +65,12 @@ export default function WishlistSaveButton({
         aria-label={
           isItemSaved ? "Remove from wishlist" : "Save to wishlist"
         }
-        aria-haspopup="menu"
-        aria-expanded={isMenuOpen}
-        aria-controls={menuId}
+        aria-haspopup={enableListMenu ? "menu" : undefined}
+        aria-expanded={enableListMenu ? isMenuOpen : undefined}
+        aria-controls={enableListMenu ? menuId : undefined}
         onClick={handleClick} // Toggle wishlist on click.
-        onDoubleClick={handleDoubleClick} // Open list menu on double click.
-        onPointerDown={handlePointerDown} // Start long press timer.
+        onDoubleClick={enableListMenu ? handleDoubleClick : undefined} // Open list menu on double click when enabled.
+        onPointerDown={enableListMenu ? handlePointerDown : undefined} // Start long press timer when enabled.
         onPointerUp={handlePointerUp} // Clear long press timer.
         onPointerLeave={handlePointerUp} // Clear timer when pointer leaves.
         onPointerCancel={handlePointerUp} // Clear timer on cancel.
@@ -76,7 +79,7 @@ export default function WishlistSaveButton({
       </button>
 
       {/* Dropdown menu for list selection and creation. */}
-      {isMenuOpen ? (
+      {isMenuOpen && enableListMenu ? (
         <div
           id={menuId}
           className={styles.wishlistSave__menu}

@@ -31,11 +31,13 @@ export default function useWishlistMenu({
   activeListName,
   onListRemoval,
   openMenuOnMobileTap,
+  enableListMenu,
 }: {
   productId: string;
   activeListName?: string;
   onListRemoval?: (productId: string, listName: string) => void;
   openMenuOnMobileTap?: boolean;
+  enableListMenu?: boolean;
 }) {
   const {
     isSaved,
@@ -59,7 +61,7 @@ export default function useWishlistMenu({
    * Detect whether taps should open the list menu on mobile feed cards.
    */
   const shouldOpenOnMobileTap = useCallback(() => {
-    if (!openMenuOnMobileTap) {
+    if (!enableListMenu || !openMenuOnMobileTap) {
       return false; // Keep default click behavior when disabled.
     }
 
@@ -68,7 +70,7 @@ export default function useWishlistMenu({
     }
 
     return window.matchMedia("(max-width: 820px)").matches; // Match mobile layout breakpoint.
-  }, [openMenuOnMobileTap]);
+  }, [enableListMenu, openMenuOnMobileTap]);
 
   /**
    * Defer removal callbacks to avoid render-phase updates.
@@ -90,6 +92,10 @@ export default function useWishlistMenu({
    * Open the list menu and suppress single-click toggles.
    */
   const openMenu = useCallback(() => {
+    if (!enableListMenu) {
+      return; // Skip list menu behavior when disabled for this context.
+    }
+
     suppressClickRef.current = true; // Prevent click toggles when menu opens.
 
     if (clickTimeoutRef.current) {
@@ -98,7 +104,7 @@ export default function useWishlistMenu({
     }
 
     setIsMenuOpen(true); // Show the list menu.
-  }, []);
+  }, [enableListMenu]);
 
   /**
    * Close the list menu and clear input state.
@@ -173,13 +179,21 @@ export default function useWishlistMenu({
    * Handle double click to open the list menu.
    */
   const handleDoubleClick = useCallback(() => {
+    if (!enableListMenu) {
+      return; // Skip menu open behavior when disabled.
+    }
+
     openMenu(); // Open list selection on double click.
-  }, [openMenu]);
+  }, [enableListMenu, openMenu]);
 
   /**
    * Handle long-press to open the list menu.
    */
   const handlePointerDown = useCallback(() => {
+    if (!enableListMenu) {
+      return; // Skip long-press menu behavior when disabled.
+    }
+
     if (longPressTimeoutRef.current) {
       window.clearTimeout(longPressTimeoutRef.current); // Clear previous long-press timer.
     }
@@ -187,7 +201,7 @@ export default function useWishlistMenu({
     longPressTimeoutRef.current = window.setTimeout(() => {
       openMenu(); // Open list selection after long press.
     }, LONG_PRESS_DELAY);
-  }, [openMenu]);
+  }, [enableListMenu, openMenu]);
 
   /**
    * Clear the long-press timer when releasing the pointer.
