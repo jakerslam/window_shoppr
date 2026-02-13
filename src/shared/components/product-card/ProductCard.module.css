@@ -222,8 +222,8 @@
 
   .productCard__wishlistWrap {
     --wishlist-wrapper-position: absolute;
-    --wishlist-wrapper-left: 8px;
     --wishlist-wrapper-bottom: 8px;
+    --wishlist-wrapper-right: 8px;
     --wishlist-wrapper-width: calc(100% - 16px);
     --wishlist-wrapper-z-index: 3;
     --wishlist-menu-right-offset: auto;
