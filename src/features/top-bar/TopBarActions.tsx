@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import styles from "@/features/top-bar/TopBar.module.css";
+import { BellIcon } from "@/features/top-bar/NavIcons";
 
 /**
  * Right-side action buttons for notifications and account shortcuts.
@@ -33,7 +34,7 @@ export default function TopBarActions() {
         onClick={handleNotifications} // Stub for notifications behavior.
         aria-label="Notifications"
       >
-        🔔
+        <BellIcon className={styles.topBar__iconGraphic} />
       </button>
     </div>
   );

@@ -1,5 +1,11 @@
 .wishlistSave {
-  position: relative;
+  position: var(--wishlist-wrapper-position, relative);
+  top: var(--wishlist-wrapper-top, auto);
+  right: var(--wishlist-wrapper-right, auto);
+  bottom: var(--wishlist-wrapper-bottom, auto);
+  left: var(--wishlist-wrapper-left, auto);
+  width: var(--wishlist-wrapper-width, auto);
+  z-index: var(--wishlist-wrapper-z-index, auto);
   display: inline-flex;
 }
 

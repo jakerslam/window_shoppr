@@ -7,6 +7,7 @@ import { getAvailableCategories, toCategorySlug } from "@/shared/lib/categories"
 import { getProductCatalog } from "@/shared/lib/products";
 import { useCategoryFilter } from "@/features/category-filter/CategoryFilterProvider";
 import styles from "@/features/top-bar/TopBar.module.css";
+import { HomeIcon, SearchIcon, StarIcon, UserIcon } from "@/features/top-bar/NavIcons";
 
 /**
  * Mobile bottom navigation with category sheet and search overlay.
@@ -316,7 +317,7 @@ export default function MobileBottomNav() {
               onClick={handleSearchSubmit} // Submit the current search.
               aria-label="Submit search"
             >
-              🔍
+              <SearchIcon className={styles.topBar__searchIcon} />
             </button>
           </div>
         </div>
@@ -331,7 +332,9 @@ export default function MobileBottomNav() {
           onClick={handleSearchToggle} // Show or hide search.
           aria-pressed={isSearchOpen}
         >
-          <span className={`${styles.mobileNav__icon} ${styles["mobileNav__icon--small"]}`}>🔍</span>
+          <span className={`${styles.mobileNav__icon} ${styles["mobileNav__icon--small"]}`}>
+            <SearchIcon className={styles.mobileNav__iconGraphic} />
+          </span>
           <span className={styles.mobileNav__label}>Search</span>
         </button>
 
@@ -341,21 +344,27 @@ export default function MobileBottomNav() {
           type="button"
           onClick={handleHome} // Return to the main feed.
         >
-          <span className={styles.mobileNav__icon}>⌂</span>
+          <span className={styles.mobileNav__icon}>
+            <HomeIcon className={styles.mobileNav__iconGraphic} />
+          </span>
           <span className={styles.mobileNav__label}>Home</span>
           <span className={styles.mobileNav__dot} aria-hidden="true" />
         </button>
 
         {/* Wishlist shortcut. */}
         <Link className={`${styles.mobileNav__item} ${isWishlistActive ? styles["mobileNav__item--active"] : ""}`} href="/wishlist">
-          <span className={styles.mobileNav__icon}>★</span>
+          <span className={styles.mobileNav__icon}>
+            <StarIcon className={styles.mobileNav__iconGraphic} />
+          </span>
           <span className={styles.mobileNav__label}>Wishlist</span>
           <span className={styles.mobileNav__dot} aria-hidden="true" />
         </Link>
 
         {/* Profile shortcut. */}
         <Link className={`${styles.mobileNav__item} ${isProfileActive ? styles["mobileNav__item--active"] : ""}`} href="/login">
-          <span className={styles.mobileNav__icon}>👤</span>
+          <span className={styles.mobileNav__icon}>
+            <UserIcon className={styles.mobileNav__iconGraphic} />
+          </span>
           <span className={styles.mobileNav__label}>Profile</span>
           <span className={styles.mobileNav__dot} aria-hidden="true" />
         </Link>

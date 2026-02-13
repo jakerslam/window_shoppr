@@ -6,6 +6,22 @@ import { useWishlist } from "@/features/wishlist/wishlist";
 
 const LONG_PRESS_DELAY = 260; // Slightly above an average click duration for easier discovery.
 const CLICK_DELAY = 220; // Delay to distinguish single click from double click.
+let openWishlistMenuCount = 0; // Track open menus globally to coordinate feed pause/resume.
+
+/**
+ * Broadcast current wishlist menu open state.
+ */
+const emitWishlistMenuState = () => {
+  if (typeof window === "undefined") {
+    return; // Skip events during SSR.
+  }
+
+  window.dispatchEvent(
+    new CustomEvent("wishlist-menu:toggle", {
+      detail: { open: openWishlistMenuCount > 0 },
+    }),
+  ); // Notify listeners when any wishlist menu opens/closes.
+};
 
 /**
  * Wishlist menu state and handlers for the save button UI.
@@ -254,6 +270,23 @@ export default function useWishlistMenu({
       window.removeEventListener("keydown", handleKeyDown); // Clean up listener.
     };
   }, [closeMenu, isMenuOpen]);
+
+  /**
+   * Broadcast menu open state so feed columns can pause while list pickers are visible.
+   */
+  useEffect(() => {
+    if (!isMenuOpen) {
+      return undefined; // Skip open-state wiring while closed.
+    }
+
+    openWishlistMenuCount += 1; // Track a newly opened menu.
+    emitWishlistMenuState(); // Broadcast updated open state.
+
+    return () => {
+      openWishlistMenuCount = Math.max(0, openWishlistMenuCount - 1); // Prevent negative counters.
+      emitWishlistMenuState(); // Broadcast updated close state.
+    };
+  }, [isMenuOpen]);
 
   /**
    * Clear timers when the component unmounts.

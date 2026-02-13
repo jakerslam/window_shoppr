@@ -60,6 +60,7 @@ export default function ScrollingColumn({
   const isPausedRef = useRef(false);
   const isHoveringRef = useRef(false);
   const isModalOpenRef = useRef(false);
+  const isWishlistMenuOpenRef = useRef(false);
   const durationRef = useRef(duration);
   const animateRef = useRef<(time: number) => void>(() => undefined);
 
@@ -86,6 +87,19 @@ export default function ScrollingColumn({
    */
   const canHover = () =>
     typeof window !== "undefined" && window.matchMedia("(hover: hover)").matches;
+
+  /**
+   * Sync animation pause state from hover, modal, and wishlist menu visibility.
+   */
+  const syncPauseState = useCallback(() => {
+    const shouldPause =
+      isHoveringRef.current ||
+      isModalOpenRef.current ||
+      isWishlistMenuOpenRef.current;
+
+    isPausedRef.current = shouldPause; // Keep state coherent for resize/metric sync.
+    targetSpeedRef.current = shouldPause ? 0 : baseSpeedRef.current; // Stop or resume toward base speed.
+  }, []);
 
   /**
    * Measure the track height and recompute the scroll speed.
@@ -166,9 +180,8 @@ export default function ScrollingColumn({
       return; // Ignore synthetic hover events from touch interactions.
     }
 
-    isHoveringRef.current = true; // Track hover state for modal coordination.
-    isPausedRef.current = true; // Track pause state for resizes.
-    targetSpeedRef.current = 0; // Ease to a stop on hover.
+    isHoveringRef.current = true; // Track hover state for modal/menu coordination.
+    syncPauseState(); // Pause while hovering.
   };
 
   /**
@@ -179,33 +192,30 @@ export default function ScrollingColumn({
       return; // Ignore synthetic hover events from touch interactions.
     }
 
-    isHoveringRef.current = false; // Track hover state for modal coordination.
-
-    if (isModalOpenRef.current) {
-      isPausedRef.current = true; // Keep paused when a modal is open.
-      targetSpeedRef.current = 0; // Stay stopped until modal closes.
-      return;
-    }
-
-    isPausedRef.current = false; // Track resume state for resizes.
-    targetSpeedRef.current = baseSpeedRef.current; // Ease back to the base speed.
+    isHoveringRef.current = false; // Track hover state for modal/menu coordination.
+    syncPauseState(); // Resume only when no other pause conditions are active.
   };
 
   // Pause the scroll whenever a modal is open.
   useEffect(() => {
     isModalOpenRef.current = isModalOpen; // Keep modal state in sync.
+    syncPauseState(); // Recompute pause behavior against hover/menu state.
+  }, [isModalOpen, syncPauseState]);
 
-    if (isModalOpen) {
-      isPausedRef.current = true; // Pause while a modal is open.
-      targetSpeedRef.current = 0; // Stop moving under the modal.
-      return;
-    }
+  // Pause the scroll while any wishlist list menu is open.
+  useEffect(() => {
+    const handleWishlistMenuToggle = (event: Event) => {
+      const customEvent = event as CustomEvent<{ open?: boolean }>;
+      isWishlistMenuOpenRef.current = Boolean(customEvent.detail?.open); // Track global wishlist menu state.
+      syncPauseState(); // Pause/resume based on global menu visibility.
+    };
 
-    if (!isHoveringRef.current) {
-      isPausedRef.current = false; // Resume if the user is not hovering.
-      targetSpeedRef.current = baseSpeedRef.current; // Return to base speed.
-    }
-  }, [isModalOpen]);
+    window.addEventListener("wishlist-menu:toggle", handleWishlistMenuToggle);
+
+    return () => {
+      window.removeEventListener("wishlist-menu:toggle", handleWishlistMenuToggle);
+    };
+  }, [syncPauseState]);
 
   // Update scroll speed whenever the duration changes.
   useEffect(() => {

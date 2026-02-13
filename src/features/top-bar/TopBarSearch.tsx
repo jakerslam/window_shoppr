@@ -1,6 +1,7 @@
 "use client";
 
 import styles from "@/features/top-bar/TopBar.module.css";
+import { SearchIcon } from "@/features/top-bar/NavIcons";
 
 /**
  * Search input for filtering the feed.
@@ -40,7 +41,7 @@ export default function TopBarSearch({
           onClick={onSearchSubmit} // Submit the current query.
           aria-label="Submit search"
         >
-          🔍
+          <SearchIcon className={styles.topBar__searchIcon} />
         </button>
       </div>
     </div>

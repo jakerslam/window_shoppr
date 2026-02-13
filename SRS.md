@@ -1,8 +1,8 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 40/81 (49.4%)  ██████████░░░░░░░░░░
-Frontend: 30/57 (52.6%) ███████████░░░░░░░░░
+Overall: 41/83 (49.4%)  ██████████░░░░░░░░░░
+Frontend: 31/59 (52.5%) ███████████░░░░░░░░░
 Backend: 9/21 (42.9%)   █████████░░░░░░░░░░░
 Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░░░
 
@@ -58,7 +58,7 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [ ] R29.13: Agent API documentation (skill file for ingestion/moderation)
 - [ ] R29.6: Guest wishlist persistence + future account sync (local-first saves; later sync across devices)
 - [x] R29.1: Product source metadata + idempotency (source, externalId, lastSeenAt, lastPriceCheckAt)
-- [NEXT] 🔵 R29: Agent ingestion API stub (authenticated upsert endpoint + schema validation + draft/publish state)
+- [ ] R29: Agent ingestion API stub (authenticated upsert endpoint + schema validation + draft/publish state)
 - [ ] R12.3: Account management wiring (backend/auth integration)
 - [ ] R30: SQL data layer wiring (products, wishlist, email capture submissions)
 
@@ -71,6 +71,8 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] R24: Cookie consent + privacy/affiliate disclosure (accept all + essential only)
 
 ## UX & Accessibility
+- [NEXT] 🔵 R43.1: Bell notifications dropdown menu (default empty state: "No notifications")
+- [x] R46: Refresh nav icon set (desktop + mobile) with cleaner, consistent iconography
 - [ ] R43: Notifications UI (feed + badge + placeholder list)
 - [ ] R44: Profile settings section (account + security preferences + theme toggle)
 - [ ] R45: Content preferences section (category taste + email frequency)
@@ -117,6 +119,13 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [ ] D3: Custom domain + SSL
 - [ ] D4: Production data source (switch JSON → SQL/API)
 - [ ] D5: Monitoring + error reporting (Sentry or similar)
+- [ ] D6: Restore modal routing (intercepting routes) after moving off GitHub Pages
+
+## Quickfixes
+- [x] Q1: Mobile feed card save star pinned to bottom-left corner
+- [x] Q2: Wishlist cards reduced in compact size to remove excess empty space
+- [x] Q3: Feed column animation pauses while wishlist list dropdown is open (resumes on close)
+- [x] Q4: Quick speed toggle set slightly faster
 
 ## Notes
 - Positioning (later): "Yelp for products" across retailers (cross-site reviews + community trust layer)
