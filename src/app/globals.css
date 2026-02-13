@@ -183,6 +183,18 @@ a {
     padding-bottom: calc(var(--mobile-nav-height) + 54px);
   }
 
+  input[type="text"],
+  input[type="search"],
+  input[type="email"],
+  input[type="password"],
+  input[type="url"],
+  input[type="tel"],
+  input[type="number"],
+  textarea,
+  select {
+    font-size: 16px; /* Prevent iOS Safari auto-zoom on focus for small text inputs. */
+  }
+
   body[data-home-feed-lock="true"] .site-shell__content {
     overflow-y: hidden; /* Let the feed columns own scrolling behavior on mobile home. */
     overscroll-behavior: none; /* Prevent iOS/Android bounce in the locked content area. */
