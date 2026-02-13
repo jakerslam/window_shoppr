@@ -10,7 +10,8 @@
   max-width: 240px;
   cursor: pointer;
   min-width: 0;
-  overflow: hidden;
+  overflow: visible;
+  position: relative;
 }
 
 .productCard:focus-visible {
@@ -183,6 +184,9 @@
 
 .productCard__wishlistWrap {
   --wishlist-menu-right-offset: -16px;
+  --wishlist-menu-min-width: 176px;
+  position: relative;
+  z-index: 3;
 }
 
 .productCard__wishlist:focus-visible {
