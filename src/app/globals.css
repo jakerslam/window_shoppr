@@ -182,6 +182,11 @@ a {
     padding-top: 56px;
     padding-bottom: calc(var(--mobile-nav-height) + 54px);
   }
+
+  body[data-home-feed-lock="true"] .site-shell__content {
+    overflow-y: hidden; /* Let the feed columns own scrolling behavior on mobile home. */
+    overscroll-behavior: none; /* Prevent iOS/Android bounce in the locked content area. */
+  }
 }
 
 /* Display font for main headings. */

@@ -63,6 +63,10 @@ export default function ScrollingColumn({
   const animateRef = useRef<(time: number) => void>(() => undefined);
 
   const loopedDeck = useMemo(() => [...deck, ...deck], [deck]);
+  const deckSignature = useMemo(
+    () => deck.map((product) => product.id).join("|"),
+    [deck],
+  ); // Track meaningful deck changes, not array identity churn.
 
   // Memoize open handlers so cards do not receive new callbacks on every render.
   const openHandlers = useMemo(
@@ -99,7 +103,15 @@ export default function ScrollingColumn({
       return; // Skip when layout has no measurable height.
     }
 
+    const previousLoopHeight = loopHeightRef.current; // Read previous loop height before updating.
     const wasPaused = isPausedRef.current; // Preserve hover pause state.
+
+    if (previousLoopHeight > 0 && previousLoopHeight !== loopHeight) {
+      const normalizedPosition =
+        (positionRef.current % previousLoopHeight) / previousLoopHeight; // Preserve visual progress across height changes.
+      positionRef.current = normalizedPosition * loopHeight; // Re-scale position for the new loop height.
+      track.style.transform = `translateY(-${positionRef.current}px)`; // Apply updated position immediately to prevent a jolt.
+    }
 
     loopHeightRef.current = loopHeight; // Cache the loop height for animation.
     baseSpeedRef.current = loopHeight / durationRef.current; // Compute pixels per second.
@@ -200,11 +212,17 @@ export default function ScrollingColumn({
     syncMetrics(); // Recompute speeds without resetting position.
   }, [duration, syncMetrics]);
 
-  // Reset position whenever the deck changes.
+  // Reset position only when card membership/order changes.
   useEffect(() => {
     positionRef.current = 0; // Start new decks at the top.
+    speedRef.current = 0; // Avoid carrying momentum between different decks.
     lastTimeRef.current = null; // Reset timing for smooth restarts.
-  }, [deck]);
+    targetSpeedRef.current = isPausedRef.current ? 0 : baseSpeedRef.current; // Respect paused state on reset.
+
+    if (trackRef.current) {
+      trackRef.current.style.transform = "translateY(0px)"; // Keep transform in sync with reset position.
+    }
+  }, [deckSignature]);
 
   // Run the animation loop and keep it in sync with layout changes.
   useEffect(() => {
@@ -227,8 +245,13 @@ export default function ScrollingColumn({
     const handleResize = () => {
       syncMetrics(); // Recompute metrics after layout changes.
     };
+    const resizeObserver =
+      "ResizeObserver" in window ? new ResizeObserver(syncMetrics) : null;
 
     window.addEventListener("resize", handleResize); // Keep sizes current.
+    if (trackRef.current && resizeObserver) {
+      resizeObserver.observe(trackRef.current); // Track content height changes (image load/layout shifts).
+    }
     animationRef.current = window.requestAnimationFrame((nextTime) =>
       animateRef.current(nextTime),
     ); // Schedule next frame via ref to satisfy hook linting.
@@ -238,6 +261,7 @@ export default function ScrollingColumn({
         window.cancelAnimationFrame(animationRef.current); // Stop the animation loop.
       }
 
+      resizeObserver?.disconnect(); // Clean up content resize observer.
       window.removeEventListener("resize", handleResize); // Clean up resize listener.
     };
   }, [animate, deck.length, syncMetrics]);

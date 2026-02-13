@@ -72,6 +72,21 @@ export default function HomeFeed({
     };
   }, []);
 
+  /**
+   * Lock the middle content scroller on mobile while the home feed auto-scrolls.
+   */
+  useEffect(() => {
+    if (typeof document === "undefined") {
+      return undefined; // Skip DOM mutations during SSR.
+    }
+
+    document.body.dataset.homeFeedLock = "true"; // Mark home feed lock state for global CSS.
+
+    return () => {
+      delete document.body.dataset.homeFeedLock; // Restore default scrolling on route change.
+    };
+  }, []);
+
   const categorySource = selectedSubCategory || selectedCategory || ""; // Prefer subcategory for the header.
   const displayCategory = formatCategoryLabel(categorySource); // Format slug for the header.
   const effectiveTitle = categorySource

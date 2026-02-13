@@ -76,6 +76,15 @@ export default function MobileBottomNav() {
   }, [isSearchOpen]);
 
   /**
+   * Close mobile overlays whenever the route changes.
+   */
+  useEffect(() => {
+    setIsSearchOpen(false); // Hide mobile search when navigating.
+    setIsCategoriesOpen(false); // Close category sheet when navigating.
+    setOpenCategory(null); // Reset submenu expansion on route change.
+  }, [normalizedPath]);
+
+  /**
    * Listen for feed-triggered category sheet requests.
    */
   useEffect(() => {
