@@ -14,10 +14,12 @@ export default function useWishlistMenu({
   productId,
   activeListName,
   onListRemoval,
+  openMenuOnMobileTap,
 }: {
   productId: string;
   activeListName?: string;
   onListRemoval?: (productId: string, listName: string) => void;
+  openMenuOnMobileTap?: boolean;
 }) {
   const {
     isSaved,
@@ -36,6 +38,21 @@ export default function useWishlistMenu({
   const suppressClickRef = useRef(false);
   const isItemSaved = isSaved(productId); // Any-list membership for star state.
   const menuId = `wishlist-menu-${productId}`; // Unique id for the dropdown menu.
+
+  /**
+   * Detect whether taps should open the list menu on mobile feed cards.
+   */
+  const shouldOpenOnMobileTap = useCallback(() => {
+    if (!openMenuOnMobileTap) {
+      return false; // Keep default click behavior when disabled.
+    }
+
+    if (typeof window === "undefined") {
+      return false; // Skip mobile checks during SSR.
+    }
+
+    return window.matchMedia("(max-width: 820px)").matches; // Match mobile layout breakpoint.
+  }, [openMenuOnMobileTap]);
 
   /**
    * Defer removal callbacks to avoid render-phase updates.
@@ -79,6 +96,11 @@ export default function useWishlistMenu({
    * Handle single click toggles with a delay to detect double clicks.
    */
   const handleClick = useCallback(() => {
+    if (shouldOpenOnMobileTap()) {
+      openMenu(); // Open list picker directly on mobile tap.
+      return;
+    }
+
     if (suppressClickRef.current) {
       suppressClickRef.current = false; // Reset suppression for next click.
       return;
@@ -127,6 +149,8 @@ export default function useWishlistMenu({
     removeFromList,
     saveToList,
     toggleSaved,
+    shouldOpenOnMobileTap,
+    openMenu,
   ]);
 
   /**
@@ -221,10 +245,12 @@ export default function useWishlistMenu({
     };
 
     window.addEventListener("mousedown", handlePointerDownOutside); // Detect outside clicks.
+    window.addEventListener("pointerdown", handlePointerDownOutside); // Detect touch/pointer outside clicks.
     window.addEventListener("keydown", handleKeyDown); // Listen for escape.
 
     return () => {
       window.removeEventListener("mousedown", handlePointerDownOutside); // Clean up listener.
+      window.removeEventListener("pointerdown", handlePointerDownOutside); // Clean up touch/pointer listener.
       window.removeEventListener("keydown", handleKeyDown); // Clean up listener.
     };
   }, [closeMenu, isMenuOpen]);

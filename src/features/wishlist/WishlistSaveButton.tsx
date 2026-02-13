@@ -13,6 +13,7 @@ export default function WishlistSaveButton({
   activeListName,
   onListRemoval,
   wrapperClassName,
+  openMenuOnMobileTap = false,
 }: {
   productId: string;
   buttonClassName: string;
@@ -20,6 +21,7 @@ export default function WishlistSaveButton({
   activeListName?: string;
   onListRemoval?: (productId: string, listName: string) => void;
   wrapperClassName?: string;
+  openMenuOnMobileTap?: boolean;
 }) {
   const {
     DEFAULT_WISHLIST_NAME,
@@ -41,6 +43,7 @@ export default function WishlistSaveButton({
     productId,
     activeListName,
     onListRemoval,
+    openMenuOnMobileTap,
   });
 
   return (

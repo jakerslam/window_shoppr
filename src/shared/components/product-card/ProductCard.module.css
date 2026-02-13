@@ -207,10 +207,15 @@
   }
 
   .productCard__wishlistWrap {
-    --wishlist-menu-right-offset: 0;
+    --wishlist-menu-right-offset: auto;
+    --wishlist-menu-left-offset: 0;
+    --wishlist-menu-min-width: 0;
+    --wishlist-menu-width: 100%;
+    --wishlist-menu-max-width: 100%;
     position: absolute;
     bottom: 8px;
     left: 8px;
+    width: calc(100% - 16px);
   }
 
   .productCard__wishlist {
@@ -226,5 +231,6 @@
   .productCard__wishlistWrap {
     bottom: 4px;
     left: 8px;
+    width: calc(100% - 16px);
   }
 }
