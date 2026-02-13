@@ -422,3 +422,26 @@
 .productDetail__reportSubmit:hover {
   opacity: 0.8;
 }
+
+.productDetail__content,
+.productDetail__gallery,
+.productDetail__info {
+  min-width: 0;
+}
+
+.productDetail__title,
+.productDetail__descriptionText,
+.productDetail__ratingText,
+.productDetail__reportLabel,
+.productDetail__reportThanks {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.productDetail__mainImageMedia,
+.productDetail__thumbImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}

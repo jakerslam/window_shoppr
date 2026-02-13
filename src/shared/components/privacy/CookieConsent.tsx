@@ -24,7 +24,13 @@ export default function CookieConsent() {
     }
 
     const stored = window.localStorage.getItem(CONSENT_KEY);
-    setIsVisible(!stored); // Show banner until consent is stored.
+    const timeoutId = window.setTimeout(() => {
+      setIsVisible(!stored); // Show banner until consent is stored.
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timeoutId); // Clean up deferred visibility update.
+    };
   }, []);
 
   const handleAcceptAll = () => {

@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useMemo, useState } from "react";
 import WishlistSaveButton from "@/features/wishlist/WishlistSaveButton";
 import styles from "@/features/product-detail/ProductDetail.module.css";
@@ -46,7 +45,8 @@ export default function ProductMediaGallery({
 }) {
   const galleryItems = useMemo(() => {
     const trimmedImages = images.slice(0, 5); // Limit gallery to five sample images.
-    const items: GalleryItem[] = trimmedImages.map((src) => ({
+    const baseImages = trimmedImages.length > 0 ? trimmedImages : ["/images/product-placeholder.svg"];
+    const items: GalleryItem[] = baseImages.map((src) => ({
       type: "image",
       src,
     }));
@@ -87,12 +87,14 @@ export default function ProductMediaGallery({
             {item.type === "video" ? (
               <span className={styles.productDetail__thumbLabel}>Video</span>
             ) : (
-              <Image
+              <img
                 className={styles.productDetail__thumbImage}
                 src={item.src}
                 alt={name}
-                width={56}
-                height={56}
+                loading="lazy"
+                onError={(event) => {
+                  event.currentTarget.src = "/images/product-placeholder.svg"; // Fall back when remote images fail.
+                }}
               />
             )}
           </button>
@@ -126,12 +128,14 @@ export default function ProductMediaGallery({
             />
           )
         ) : (
-          <Image
+          <img
             className={styles.productDetail__mainImageMedia}
-            src={activeItem?.src ?? "/images/sample-01.svg"}
+            src={activeItem?.src ?? "/images/product-placeholder.svg"}
             alt={name}
-            fill
-            sizes="(max-width: 720px) 92vw, (max-width: 1200px) 60vw, 640px"
+            loading="lazy"
+            onError={(event) => {
+              event.currentTarget.src = "/images/product-placeholder.svg"; // Fall back when remote images fail.
+            }}
           />
         )}
       </div>

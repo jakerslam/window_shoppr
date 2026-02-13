@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { Product } from "@/shared/lib/types";
 import styles from "@/shared/components/product-card/ProductCard.module.css";
 
@@ -66,7 +65,7 @@ export default function ProductCard({
     product.originalPrice > product.price; // Determine if strike price should show.
   const dealLabel = formatTimeRemaining(product.dealEndsAt); // Compute deal timer when available.
   const showDealBadge = hasDeal || Boolean(dealLabel); // Show badge for active deals.
-  const imageSrc = product.images[0] ?? "/images/sample-01.svg"; // Use first image or fallback.
+  const imageSrc = product.images[0] ?? "/images/product-placeholder.svg"; // Use first image or fallback.
   const isCompact = variant === "compact"; // Toggle compact styling for dense layouts.
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
@@ -93,12 +92,14 @@ export default function ProductCard({
         {showDealBadge && (
           <span className={styles.productCard__badge}>Deal</span>
         )}
-        <Image
+        <img
           className={styles.productCard__image}
           src={imageSrc}
           alt={product.name}
-          fill
-          sizes="(max-width: 600px) 160px, (max-width: 1024px) 200px, 240px"
+          loading="lazy"
+          onError={(event) => {
+            event.currentTarget.src = "/images/product-placeholder.svg"; // Fall back when remote images fail.
+          }}
         />
       </div>
 

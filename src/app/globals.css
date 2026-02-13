@@ -41,19 +41,19 @@
     --color-surface-muted: #1f2430;
     --color-border: #2a2f3a;
 
-    --color-primary: #8ab4f8;
-    --color-primary-strong: #5f8de8;
-    --color-accent: #9bbcff;
+    --color-primary: #caa96b;
+    --color-primary-strong: #e1c287;
+    --color-accent: #b8914f;
 
-    --color-text-muted: #a3a8b3;
+    --color-text-muted: #aeb3be;
     --color-text-inverse: #0f1115;
 
-  --color-hover-bg: rgba(138, 180, 248, 0.32);
-  --color-hover-border: rgba(138, 180, 248, 0.5);
-  --color-hover-text: var(--color-fg);
+    --color-hover-bg: rgba(202, 169, 107, 0.3);
+    --color-hover-border: rgba(202, 169, 107, 0.48);
+    --color-hover-text: #f1d8ae;
 
-  --color-save-active: #d9a56b;
-  --color-save-inactive: #e6e8ee;
+    --color-save-active: #d9a56b;
+    --color-save-inactive: #e6e8ee;
 
     --color-success: #3fb950;
     --color-warning: #f2c94c;
@@ -95,16 +95,16 @@
   --color-surface-muted: #1f2430;
   --color-border: #2a2f3a;
 
-  --color-primary: #8ab4f8;
-  --color-primary-strong: #5f8de8;
-  --color-accent: #9bbcff;
+  --color-primary: #caa96b;
+  --color-primary-strong: #e1c287;
+  --color-accent: #b8914f;
 
-  --color-text-muted: #a3a8b3;
+  --color-text-muted: #aeb3be;
   --color-text-inverse: #0f1115;
 
-  --color-hover-bg: rgba(138, 180, 248, 0.32);
-  --color-hover-border: rgba(138, 180, 248, 0.5);
-  --color-hover-text: var(--color-fg);
+  --color-hover-bg: rgba(202, 169, 107, 0.3);
+  --color-hover-border: rgba(202, 169, 107, 0.48);
+  --color-hover-text: #f1d8ae;
 
   --color-save-active: #d9a56b;
   --color-save-inactive: #e6e8ee;
@@ -151,18 +151,36 @@ a {
   flex: 1;
   width: min(1200px, 92vw);
   margin: 0 auto;
+  min-width: 0;
 }
 
 @media (max-width: 820px) {
-  .site-shell {
-    gap: 12px;
-  }
   :root {
     --mobile-nav-height: calc(64px + env(safe-area-inset-bottom));
   }
 
+  html,
+  body {
+    height: 100dvh;
+    overflow: hidden;
+  }
+
   .site-shell {
-    padding-bottom: calc(var(--mobile-nav-height) + var(--mobile-nav-offset));
+    gap: 8px;
+    min-height: 100dvh;
+    height: 100dvh;
+    padding-bottom: 0;
+  }
+
+  .site-shell__content {
+    width: min(1200px, 94vw);
+    margin: 0 auto;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-top: 56px;
+    padding-bottom: calc(var(--mobile-nav-height) + 54px);
   }
 }
 
@@ -172,13 +190,4 @@ h2,
 h3,
 h4 {
   font-family: var(--font-display), var(--font-sans), Arial, Helvetica, sans-serif;
-}
-
-/* Safari UI offset for bottom nav clearance. */
-@supports (-webkit-touch-callout: none) {
-  @media (hover: none) and (pointer: coarse) {
-    :root {
-      --mobile-nav-offset: 16px;
-    }
-  }
 }

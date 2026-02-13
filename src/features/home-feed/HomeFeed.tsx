@@ -146,7 +146,7 @@ export default function HomeFeed({
   const resultsLabel = `Browse ${sortedProducts.length} ${subtitleLabel}`; // Accessible count label.
 
   const columnCount = 5; // Desktop column count for the animated feed.
-  const durationScale = speedMode === "quick" ? 0.7 : 1; // Adjust speeds per toggle.
+  const durationScale = speedMode === "quick" ? 0.58 : 1; // Adjust speeds per toggle.
   // Memoize column durations so scroll speeds remain stable between renders.
   const columnDurations = useMemo(
     () => BASE_COLUMN_DURATIONS.map((value) => value * durationScale),
