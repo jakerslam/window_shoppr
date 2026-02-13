@@ -1,8 +1,8 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 41/85 (48.2%)  ██████████░░░░░░░░░░
-Frontend: 31/61 (50.8%) ██████████░░░░░░░░░░
+Overall: 41/86 (47.7%)  ██████████░░░░░░░░░░
+Frontend: 31/62 (50.0%) ██████████░░░░░░░░░░
 Backend: 9/21 (42.9%)   █████████░░░░░░░░░░░
 Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░░░
 
@@ -75,6 +75,7 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] R46: Refresh nav icon set (desktop + mobile) with cleaner, consistent iconography
 - [ ] R43: Notifications UI (feed + badge + placeholder list)
 - [ ] R44: Profile settings section (account + security preferences + theme toggle)
+- [ ] R49: Settings toggle for feed speed preference (cozy/quick) with persisted user choice
 - [ ] R45: Content preferences section (category taste + email frequency)
 - [ ] R29.10: Preference capture (optional onboarding quiz + trickle questions; build a local-first taste profile with privacy controls)
 - [ ] R29.11: List-based recommendations (use a selected list to bias feed)
@@ -128,6 +129,7 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] Q2: Wishlist cards reduced in compact size to remove excess empty space
 - [x] Q3: Feed column animation pauses while wishlist list dropdown is open (resumes on close)
 - [x] Q4: Quick speed toggle set slightly faster
+- [x] Q5: Wishlist mobile cards place save button inline with price row for denser layout
 
 ## Notes
 - Positioning (later): "Yelp for products" across retailers (cross-site reviews + community trust layer)
