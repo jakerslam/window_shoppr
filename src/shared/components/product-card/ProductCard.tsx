@@ -1,3 +1,4 @@
+import { toAssetPath } from "@/shared/lib/assets";
 import { Product } from "@/shared/lib/types";
 import styles from "@/shared/components/product-card/ProductCard.module.css";
 
@@ -46,6 +47,8 @@ type SaveButtonRenderProps = {
   wrapperClassName: string;
 };
 
+const PLACEHOLDER_IMAGE = toAssetPath("/images/product-placeholder.svg");
+
 /**
  * Product card with square image, name, and price section.
  */
@@ -65,7 +68,7 @@ export default function ProductCard({
     product.originalPrice > product.price; // Determine if strike price should show.
   const dealLabel = formatTimeRemaining(product.dealEndsAt); // Compute deal timer when available.
   const showDealBadge = hasDeal || Boolean(dealLabel); // Show badge for active deals.
-  const imageSrc = product.images[0] ?? "/images/product-placeholder.svg"; // Use first image or fallback.
+  const imageSrc = toAssetPath(product.images[0] ?? "/images/product-placeholder.svg"); // Use first image or fallback.
   const isCompact = variant === "compact"; // Toggle compact styling for dense layouts.
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
@@ -98,7 +101,7 @@ export default function ProductCard({
           alt={product.name}
           loading="lazy"
           onError={(event) => {
-            event.currentTarget.src = "/images/product-placeholder.svg"; // Fall back when remote images fail.
+            event.currentTarget.src = PLACEHOLDER_IMAGE; // Fall back when remote images fail.
           }}
         />
       </div>

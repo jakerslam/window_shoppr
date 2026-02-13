@@ -24,9 +24,10 @@ export default function MobileBottomNav() {
   const [openCategory, setOpenCategory] = useState<string | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
-  const isHomeActive = pathname === "/" && !isCategoriesOpen && !isSearchOpen;
-  const isWishlistActive = pathname === "/wishlist";
-  const isProfileActive = pathname === "/login" || pathname === "/signup";
+  const normalizedPath = pathname.replace(/\/+$/, "") || "/"; // Normalize trailing slashes from static hosting.
+  const isHomeActive = normalizedPath === "/" && !isCategoriesOpen;
+  const isWishlistActive = normalizedPath === "/wishlist";
+  const isProfileActive = normalizedPath === "/login" || normalizedPath === "/signup";
   const searchInputRef = useRef<HTMLInputElement | null>(null);
 
   /**
@@ -98,7 +99,7 @@ export default function MobileBottomNav() {
    * Navigate to the main feed and reset filters when needed.
    */
   const handleHome = () => {
-    if (pathname !== "/") {
+    if (normalizedPath !== "/") {
       router.push("/"); // Return to the feed.
       return;
     }
@@ -145,7 +146,7 @@ export default function MobileBottomNav() {
    * Submit the search and return to the feed if needed.
    */
   const handleSearchSubmit = () => {
-    if (searchQuery.trim() && pathname !== "/") {
+    if (searchQuery.trim() && normalizedPath !== "/") {
       router.push("/"); // Return to the feed when search is submitted.
     }
 
@@ -164,7 +165,7 @@ export default function MobileBottomNav() {
     setCategory(categorySlug); // Filter by category.
     handleCategoriesClose(); // Close after selection.
 
-    if (pathname !== "/") {
+    if (normalizedPath !== "/") {
       router.push("/"); // Return to feed for category filtering.
     }
   };
@@ -176,7 +177,7 @@ export default function MobileBottomNav() {
     setSubCategory(categorySlug, subCategorySlug); // Filter by subcategory.
     handleCategoriesClose(); // Close after selection.
 
-    if (pathname !== "/") {
+    if (normalizedPath !== "/") {
       router.push("/"); // Return to feed for subcategory filtering.
     }
   };
@@ -214,7 +215,7 @@ export default function MobileBottomNav() {
                 clearFilters(); // Reset filters to show all products.
                 handleCategoriesClose(); // Close after selection.
 
-                if (pathname !== "/") {
+                if (normalizedPath !== "/") {
                   router.push("/"); // Return to feed.
                 }
               }}

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import WishlistSaveButton from "@/features/wishlist/WishlistSaveButton";
+import { toAssetPath } from "@/shared/lib/assets";
 import styles from "@/features/product-detail/ProductDetail.module.css";
 
 /**
@@ -28,6 +29,8 @@ const getVideoEmbedUrl = (videoUrl: string) => {
 
   return null;
 };
+
+const PLACEHOLDER_IMAGE = toAssetPath("/images/product-placeholder.svg");
 
 /**
  * Product media gallery with image thumbnails and optional video support.
@@ -89,11 +92,11 @@ export default function ProductMediaGallery({
             ) : (
               <img
                 className={styles.productDetail__thumbImage}
-                src={item.src}
+                src={toAssetPath(item.src)}
                 alt={name}
                 loading="lazy"
                 onError={(event) => {
-                  event.currentTarget.src = "/images/product-placeholder.svg"; // Fall back when remote images fail.
+                  event.currentTarget.src = PLACEHOLDER_IMAGE; // Fall back when remote images fail.
                 }}
               />
             )}
@@ -130,11 +133,11 @@ export default function ProductMediaGallery({
         ) : (
           <img
             className={styles.productDetail__mainImageMedia}
-            src={activeItem?.src ?? "/images/product-placeholder.svg"}
+            src={toAssetPath(activeItem?.src ?? "/images/product-placeholder.svg")}
             alt={name}
             loading="lazy"
             onError={(event) => {
-              event.currentTarget.src = "/images/product-placeholder.svg"; // Fall back when remote images fail.
+              event.currentTarget.src = PLACEHOLDER_IMAGE; // Fall back when remote images fail.
             }}
           />
         )}

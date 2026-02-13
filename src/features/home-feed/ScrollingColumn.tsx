@@ -62,7 +62,6 @@ export default function ScrollingColumn({
   const durationRef = useRef(duration);
   const animateRef = useRef<(time: number) => void>(() => undefined);
 
-
   const loopedDeck = useMemo(() => [...deck, ...deck], [deck]);
 
   // Memoize open handlers so cards do not receive new callbacks on every render.
@@ -76,6 +75,12 @@ export default function ScrollingColumn({
     () => loopedDeck.map((product) => createSaveRenderer(product.id)),
     [loopedDeck],
   );
+
+  /**
+   * Determine whether true hover interactions are available.
+   */
+  const canHover = () =>
+    typeof window !== "undefined" && window.matchMedia("(hover: hover)").matches;
 
   /**
    * Measure the track height and recompute the scroll speed.
@@ -144,6 +149,10 @@ export default function ScrollingColumn({
    * Pause the scroll while the pointer is over the column.
    */
   const handleMouseEnter = () => {
+    if (!canHover()) {
+      return; // Ignore synthetic hover events from touch interactions.
+    }
+
     isHoveringRef.current = true; // Track hover state for modal coordination.
     isPausedRef.current = true; // Track pause state for resizes.
     targetSpeedRef.current = 0; // Ease to a stop on hover.
@@ -153,6 +162,10 @@ export default function ScrollingColumn({
    * Resume the scroll with a gentle speed ramp.
    */
   const handleMouseLeave = () => {
+    if (!canHover()) {
+      return; // Ignore synthetic hover events from touch interactions.
+    }
+
     isHoveringRef.current = false; // Track hover state for modal coordination.
 
     if (isModalOpenRef.current) {

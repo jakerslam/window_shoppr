@@ -633,3 +633,37 @@
   background: rgba(18, 20, 25, 0.9);
   border-color: rgba(202, 169, 107, 0.34);
 }
+
+.topBar__iconButton {
+  border: 0;
+  background: transparent;
+  width: auto;
+  height: 36px;
+  padding: 0 2px;
+}
+
+@media (max-width: 820px) {
+  .topBar {
+    padding: 6px 5vw 0;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .topBar__categoriesTrigger,
+  .topBar__actionButton,
+  .topBar__searchInput,
+  .topBar__menu,
+  .topBar__subMenu,
+  .topBar__iconButton {
+    border-color: rgba(202, 169, 107, 0.34);
+  }
+}
+
+:global(:root[data-theme="dark"]) .topBar__categoriesTrigger,
+:global(:root[data-theme="dark"]) .topBar__actionButton,
+:global(:root[data-theme="dark"]) .topBar__searchInput,
+:global(:root[data-theme="dark"]) .topBar__menu,
+:global(:root[data-theme="dark"]) .topBar__subMenu,
+:global(:root[data-theme="dark"]) .topBar__iconButton {
+  border-color: rgba(202, 169, 107, 0.34);
+}

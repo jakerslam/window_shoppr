@@ -213,3 +213,14 @@
     margin-left: 0;
   }
 }
+
+@media (max-width: 600px) {
+  .productCard {
+    padding-bottom: 52px;
+  }
+
+  .productCard__wishlistWrap {
+    bottom: 4px;
+    left: 8px;
+  }
+}

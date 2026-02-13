@@ -175,3 +175,12 @@
   align-items: center;
   justify-content: center;
 }
+
+.wishlistPage__grid {
+  align-items: stretch;
+}
+
+.wishlistPage__ghostCard {
+  min-height: 252px;
+  height: 100%;
+}
