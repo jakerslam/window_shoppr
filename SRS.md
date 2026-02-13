@@ -130,6 +130,7 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] Q3: Feed column animation pauses while wishlist list dropdown is open (resumes on close)
 - [x] Q4: Quick speed toggle set slightly faster
 - [x] Q5: Wishlist mobile cards place save button inline with price row for denser layout
+- [x] Q6: Refactor hardening pass (mobile overlay state cleanup + lint warnings removed)
 
 ## Notes
 - Positioning (later): "Yelp for products" across retailers (cross-site reviews + community trust layer)

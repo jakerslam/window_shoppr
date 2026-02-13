@@ -80,9 +80,15 @@ export default function MobileBottomNav() {
    * Close mobile overlays whenever the route changes.
    */
   useEffect(() => {
-    setIsSearchOpen(false); // Hide mobile search when navigating.
-    setIsCategoriesOpen(false); // Close category sheet when navigating.
-    setOpenCategory(null); // Reset submenu expansion on route change.
+    const timeoutId = window.setTimeout(() => {
+      setIsSearchOpen(false); // Hide mobile search when navigating.
+      setIsCategoriesOpen(false); // Close category sheet when navigating.
+      setOpenCategory(null); // Reset submenu expansion on route change.
+    }, 0); // Defer state updates to avoid synchronous effect cascades.
+
+    return () => {
+      window.clearTimeout(timeoutId); // Clean up deferred close when route changes quickly.
+    };
   }, [normalizedPath]);
 
   /**

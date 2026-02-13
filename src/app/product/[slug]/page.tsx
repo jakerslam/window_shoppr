@@ -130,7 +130,6 @@ export default async function ProductPage({
       {/* JSON-LD schema for search engines. */}
       <script
         type="application/ld+json"
-        // eslint-disable-next-line react/no-danger -- JSON-LD is safe when stringified.
         dangerouslySetInnerHTML={{ __html: schemaMarkup }}
       />
       <ProductDetail product={product} />
