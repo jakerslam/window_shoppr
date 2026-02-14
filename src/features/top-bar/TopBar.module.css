@@ -635,10 +635,10 @@
   gap: 8px;
   padding: 8px 12px;
   border-radius: 999px;
-  border: 1px solid rgba(228, 220, 207, 0.7);
-  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--color-mobile-control-border);
+  background: var(--color-mobile-control-bg);
   backdrop-filter: blur(8px);
-  box-shadow: 0 12px 24px rgba(22, 16, 10, 0.08);
+  box-shadow: var(--color-mobile-control-shadow);
   transform: translateY(10px);
   opacity: 0;
   animation: mobile-search-enter 220ms ease forwards;
@@ -762,17 +762,6 @@
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  .mobileSearch__bar {
-    background: rgba(18, 20, 25, 0.9);
-    border-color: rgba(202, 169, 107, 0.34);
-  }
-}
-
-:global(:root[data-theme="dark"]) .mobileSearch__bar {
-  background: rgba(18, 20, 25, 0.9);
-  border-color: rgba(202, 169, 107, 0.34);
-}
 
 .topBar__iconButton {
   border: 0;

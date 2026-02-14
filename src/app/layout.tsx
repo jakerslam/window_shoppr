@@ -42,6 +42,30 @@ const siteUrl = new URL(SITE_URL); // Normalize the metadata base URL.
 const siteOgImage = "/window.svg"; // Fallback OG image in /public.
 
 /**
+ * Initialize stored theme before hydration so user preference wins over system.
+ */
+const themeInitScript = `(function(){
+  try {
+    var raw = window.localStorage.getItem("window-shoppr-profile-settings");
+    if (!raw) {
+      return;
+    }
+
+    var parsed = JSON.parse(raw);
+    var preference = parsed && parsed.themePreference;
+
+    if (preference === "light" || preference === "dark") {
+      document.documentElement.dataset.theme = preference;
+      return;
+    }
+
+    document.documentElement.removeAttribute("data-theme");
+  } catch (error) {
+    document.documentElement.removeAttribute("data-theme");
+  }
+})();`;
+
+/**
  * Global metadata defaults for the entire site.
  */
 export const metadata: Metadata = {
@@ -90,6 +114,8 @@ export default function RootLayout({
     <html lang="en">
       {/* Page body with shared global layout. */}
       <body className={`${jakartaSans.variable} ${geistMono.variable} ${cormorant.variable}`}>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+
         <div className="site-shell">
           {/* Shared filters for navigation + feed. */}
           <CategoryFilterProvider>
