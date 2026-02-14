@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import LoginForm from "@/features/auth/LoginForm";
+import ProfileSettings from "@/features/profile/ProfileSettings";
 import styles from "@/app/login/page.module.css";
 
 /**
@@ -17,8 +18,11 @@ export const metadata: Metadata = {
 export default function LoginPage() {
   return (
     <div className={styles.loginPage}>
-      {/* Centered login form content. */}
-      <LoginForm />
+      {/* Two-panel auth and settings layout for profile management. */}
+      <div className={styles.loginPage__layout}>
+        <LoginForm />
+        <ProfileSettings />
+      </div>
     </div>
   );
 }

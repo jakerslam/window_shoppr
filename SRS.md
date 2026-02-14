@@ -1,8 +1,8 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 43/86 (50.0%)  ██████████░░░░░░░░░░
-Frontend: 33/62 (53.2%) ███████████░░░░░░░░░
+Overall: 46/86 (53.5%)  ███████████░░░░░░░░░
+Frontend: 36/62 (58.1%) ███████████░░░░░░░░░
 Backend: 9/21 (42.9%)   █████████░░░░░░░░░░░
 Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░░░
 
@@ -11,6 +11,17 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [ ] Not started
 - [x] Done
 - [ ] Selected next requirement
+
+
+## Engineering Standards
+- See `docs/ENGINEERING_STANDARDS.md` for coding, organization, and delivery workflow rules.
+
+
+## Maintenance Cadence
+- Run a maintenance/simplification pass after every 4 completed requirements.
+- Maintenance pass scope: split oversized files (220+/120+ rule), remove duplicate effects/state logic, clean dead code, run `npm run lint` + `npm run build`, and refresh docs impacted by refactors.
+- Release gate: do not start a new feature requirement if the maintenance pass is overdue.
+- Early trigger: run maintenance immediately if any TS/TSX file exceeds 350 lines.
 
 ## Core Requirements
 - [ ] R36: Add schema validation (Zod) for product data + env config
@@ -74,10 +85,10 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] R43.1: Bell notifications dropdown menu (default empty state: "No notifications")
 - [x] R46: Refresh nav icon set (desktop + mobile) with cleaner, consistent iconography
 - [x] R43: Notifications UI (feed + badge + placeholder list)
-- [NEXT] 🔵 R44: Profile settings section (account + security preferences + theme toggle)
-- [ ] R49: Settings toggle for feed speed preference (cozy/quick) with persisted user choice
-- [ ] R45: Content preferences section (category taste + email frequency)
-- [ ] R29.10: Preference capture (optional onboarding quiz + trickle questions; build a local-first taste profile with privacy controls)
+- [x] R44: Profile settings section (account + security preferences + theme toggle)
+- [x] R49: Settings toggle for feed speed preference (cozy/quick) with persisted user choice
+- [x] R45: Content preferences section (category taste + email frequency)
+- [NEXT] 🔵 R29.10: Preference capture (optional onboarding quiz + trickle questions; build a local-first taste profile with privacy controls)
 - [ ] R29.11: List-based recommendations (use a selected list to bias feed)
 - [ ] R47: Product detail share button (copy link + native share fallback)
 - [ ] R48: Configurable product description collapse (x chars with Read more/Read less)
@@ -131,6 +142,7 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] Q4: Quick speed toggle set slightly faster
 - [x] Q5: Wishlist mobile cards place save button inline with price row for denser layout
 - [x] Q6: Refactor hardening pass (mobile overlay state cleanup + lint warnings removed)
+- [x] Q7: Account settings now control cozy/quick feed speed multipliers used by the home speed toggle
 
 ## Notes
 - Positioning (later): "Yelp for products" across retailers (cross-site reviews + community trust layer)

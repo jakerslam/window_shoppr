@@ -4,6 +4,12 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCategoryFilter } from "@/features/category-filter/CategoryFilterProvider";
 import { getRecentlyViewedIds } from "@/shared/lib/recently-viewed";
+import {
+  DEFAULT_SPEED_PREFERENCES,
+  PROFILE_SETTINGS_STORAGE_KEY,
+  FeedSpeedPreferences,
+  readStoredProfileSettings,
+} from "@/shared/lib/profile-settings";
 import { Product } from "@/shared/lib/types";
 import { toCategorySlug } from "@/shared/lib/categories";
 import { formatCategoryLabel } from "@/features/home-feed/home-feed-utils";
@@ -33,6 +39,9 @@ export default function HomeFeed({
   const router = useRouter(); // Router for modal navigation.
   const [sortOption, setSortOption] = useState<SortOption>("newest");
   const [speedMode, setSpeedMode] = useState<"cozy" | "quick">("cozy");
+  const [speedPreferences, setSpeedPreferences] = useState<FeedSpeedPreferences>(
+    DEFAULT_SPEED_PREFERENCES,
+  ); // Load speed multipliers from saved profile settings.
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [personalizationSeed, setPersonalizationSeed] = useState(0);
   const [recentlyViewedIds, setRecentlyViewedIds] = useState<string[]>([]);
@@ -52,6 +61,36 @@ export default function HomeFeed({
       window.clearTimeout(timeoutId); // Clean up deferred sync when re-running.
     };
   }, [personalizationSeed]);
+
+  /**
+   * Load saved cozy/quick speed preferences from profile settings.
+   */
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return undefined; // Skip local storage access during SSR.
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      const stored = readStoredProfileSettings(); // Read persisted profile settings.
+      setSpeedPreferences(stored?.speedPreferences ?? DEFAULT_SPEED_PREFERENCES); // Fall back to defaults when missing.
+    }, 0);
+
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key !== PROFILE_SETTINGS_STORAGE_KEY) {
+        return; // Ignore unrelated local storage updates.
+      }
+
+      const stored = readStoredProfileSettings(); // Read latest settings after storage changes.
+      setSpeedPreferences(stored?.speedPreferences ?? DEFAULT_SPEED_PREFERENCES); // Keep speed controls in sync.
+    };
+
+    window.addEventListener("storage", handleStorage);
+
+    return () => {
+      window.clearTimeout(timeoutId); // Clean up deferred settings read.
+      window.removeEventListener("storage", handleStorage); // Clean up storage listener.
+    };
+  }, []);
 
   useEffect(() => {
     const handleModalToggle = (event: Event) => {
@@ -161,7 +200,8 @@ export default function HomeFeed({
   const resultsLabel = `Browse ${sortedProducts.length} ${subtitleLabel}`; // Accessible count label.
 
   const columnCount = 5; // Desktop column count for the animated feed.
-  const durationScale = speedMode === "quick" ? 0.52 : 1; // Adjust speeds per toggle.
+  const durationScale =
+    speedMode === "quick" ? speedPreferences.quickScale : speedPreferences.cozyScale; // Adjust speeds from saved profile preferences.
   // Memoize column durations so scroll speeds remain stable between renders.
   const columnDurations = useMemo(
     () => BASE_COLUMN_DURATIONS.map((value) => value * durationScale),
