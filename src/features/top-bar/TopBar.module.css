@@ -237,6 +237,59 @@
   gap: 10px;
 }
 
+.topBar__notifications {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.topBar__notificationsMenu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 220px;
+  max-width: min(280px, calc(100vw - 20px));
+  padding: 10px;
+  border-radius: 14px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  box-shadow: 0 16px 32px rgba(22, 16, 10, 0.14);
+  opacity: 0.9;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 70;
+}
+
+.topBar__notificationsEmpty {
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px dashed var(--color-border);
+  color: var(--color-text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.topBar__notificationsItem {
+  text-align: left;
+  border: 1px solid transparent;
+  background: transparent;
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.topBar__notificationsItem:hover {
+  background: var(--color-hover-bg);
+  border-color: var(--color-hover-border);
+  color: var(--color-hover-text);
+}
+
 .topBar__actionButton {
   height: 36px;
   padding: 0 14px;
@@ -270,7 +323,9 @@
 .topBar__menuItem:focus-visible,
 .topBar__subMenuItem:focus-visible,
 .topBar__actionButton:focus-visible,
-.topBar__searchButton:focus-visible {
+.topBar__searchButton:focus-visible,
+.topBar__iconButton:focus-visible,
+.topBar__notificationsItem:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
 }
