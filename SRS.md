@@ -1,9 +1,9 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 46/86 (53.5%)  ███████████░░░░░░░░░
+Overall: 46/87 (52.9%)  ███████████░░░░░░░░░
 Frontend: 36/62 (58.1%) ███████████░░░░░░░░░
-Backend: 9/21 (42.9%)   █████████░░░░░░░░░░░
+Backend: 9/22 (40.9%)   ████████░░░░░░░░░░░░
 Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░░░
 
 
@@ -71,6 +71,7 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] R29.1: Product source metadata + idempotency (source, externalId, lastSeenAt, lastPriceCheckAt)
 - [ ] R29: Agent ingestion API stub (authenticated upsert endpoint + schema validation + draft/publish state)
 - [ ] R12.3: Account management wiring (backend/auth integration)
+- [ ] R12.4: Auth gate for profile/settings and notifications (require login/signup session after auth backend is live)
 - [ ] R30: SQL data layer wiring (products, wishlist, email capture submissions)
 
 ## Analytics & Revenue
