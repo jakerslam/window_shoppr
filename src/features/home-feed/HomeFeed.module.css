@@ -287,9 +287,9 @@
   .homeFeed__dropdownButton,
   .homeFeed__speedToggle,
   .homeFeed__categoryTrigger {
-    background: rgba(255, 255, 255, 0.85);
-    border-color: rgba(228, 220, 207, 0.75);
-    box-shadow: 0 10px 20px rgba(22, 16, 10, 0.08);
+    background: var(--color-mobile-control-bg);
+    border-color: var(--color-mobile-control-border);
+    box-shadow: var(--color-mobile-control-shadow);
   }
 
   .homeFeed__columns {
@@ -351,9 +351,9 @@
   .homeFeed__dropdownButton,
   .homeFeed__speedToggle,
   .homeFeed__categoryTrigger {
-    background: rgba(255, 255, 255, 0.85);
-    border-color: rgba(228, 220, 207, 0.75);
-    box-shadow: 0 10px 20px rgba(22, 16, 10, 0.08);
+    background: var(--color-mobile-control-bg);
+    border-color: var(--color-mobile-control-border);
+    box-shadow: var(--color-mobile-control-shadow);
   }
 
   .homeFeed__columns {
@@ -428,24 +428,4 @@
   opacity: 0.8;
 }
 
-@media (prefers-color-scheme: dark) {
-  @media (max-width: 820px) {
-    .homeFeed__dropdownButton,
-    .homeFeed__speedToggle,
-    .homeFeed__categoryTrigger {
-      background: rgba(18, 20, 25, 0.9);
-      border-color: rgba(202, 169, 107, 0.34);
-      color: var(--color-primary-strong);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.22);
-    }
-  }
-}
 
-:global(:root[data-theme="dark"]) .homeFeed__dropdownButton,
-:global(:root[data-theme="dark"]) .homeFeed__speedToggle,
-:global(:root[data-theme="dark"]) .homeFeed__categoryTrigger {
-  background: rgba(18, 20, 25, 0.9);
-  border-color: rgba(202, 169, 107, 0.34);
-  color: var(--color-primary-strong);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.22);
-}

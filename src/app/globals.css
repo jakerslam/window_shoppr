@@ -27,6 +27,10 @@
   --color-warning: #c07a2b;
   --color-danger: #b8433e;
 
+  --color-mobile-control-bg: rgba(255, 255, 255, 0.85);
+  --color-mobile-control-border: rgba(228, 220, 207, 0.75);
+  --color-mobile-control-shadow: 0 10px 20px rgba(22, 16, 10, 0.08);
+
   /* Layout */
   --mobile-nav-height: 0px;
   --mobile-nav-offset: 0px;
@@ -58,6 +62,10 @@
     --color-success: #3fb950;
     --color-warning: #f2c94c;
     --color-danger: #f47067;
+
+    --color-mobile-control-bg: rgba(18, 20, 25, 0.9);
+    --color-mobile-control-border: rgba(202, 169, 107, 0.34);
+    --color-mobile-control-shadow: 0 10px 20px rgba(0, 0, 0, 0.22);
   }
 }
 
@@ -86,6 +94,10 @@
   --color-success: #2f8f64;
   --color-warning: #c07a2b;
   --color-danger: #b8433e;
+
+  --color-mobile-control-bg: rgba(255, 255, 255, 0.85);
+  --color-mobile-control-border: rgba(228, 220, 207, 0.75);
+  --color-mobile-control-shadow: 0 10px 20px rgba(22, 16, 10, 0.08);
 }
 
 :root[data-theme="dark"] {
@@ -112,6 +124,10 @@
   --color-success: #3fb950;
   --color-warning: #f2c94c;
   --color-danger: #f47067;
+
+  --color-mobile-control-bg: rgba(18, 20, 25, 0.9);
+  --color-mobile-control-border: rgba(202, 169, 107, 0.34);
+  --color-mobile-control-shadow: 0 10px 20px rgba(0, 0, 0, 0.22);
 }
 
 html,
