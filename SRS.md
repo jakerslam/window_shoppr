@@ -1,8 +1,8 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 42/86 (48.8%)  ██████████░░░░░░░░░░
-Frontend: 32/62 (51.6%) ██████████░░░░░░░░░░
+Overall: 43/86 (50.0%)  ██████████░░░░░░░░░░
+Frontend: 33/62 (53.2%) ███████████░░░░░░░░░
 Backend: 9/21 (42.9%)   █████████░░░░░░░░░░░
 Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░░░
 
@@ -73,8 +73,8 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 ## UX & Accessibility
 - [x] R43.1: Bell notifications dropdown menu (default empty state: "No notifications")
 - [x] R46: Refresh nav icon set (desktop + mobile) with cleaner, consistent iconography
-- [NEXT] 🔵 R43: Notifications UI (feed + badge + placeholder list)
-- [ ] R44: Profile settings section (account + security preferences + theme toggle)
+- [x] R43: Notifications UI (feed + badge + placeholder list)
+- [NEXT] 🔵 R44: Profile settings section (account + security preferences + theme toggle)
 - [ ] R49: Settings toggle for feed speed preference (cozy/quick) with persisted user choice
 - [ ] R45: Content preferences section (category taste + email frequency)
 - [ ] R29.10: Preference capture (optional onboarding quiz + trickle questions; build a local-first taste profile with privacy controls)
