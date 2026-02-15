@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Product } from "@/shared/lib/catalog/types";
-import { requestPointsRedemption } from "@/shared/lib/engagement/window-points";
 
 const DEFAULT_COLUMN_COUNT = 5; // Keep this aligned with the home feed desktop column count.
 
@@ -40,13 +39,6 @@ export default function useFiniteFeedState({ columnDecks }: { columnDecks: Produ
     deckSignature: "",
     indexes: [],
   });
-  const [rewardState, setRewardState] = useState<{
-    deckSignature: string;
-    message: string;
-  }>({
-    deckSignature: "",
-    message: "",
-  });
 
   const deckSignature = useMemo(
     () => columnDecks.map((deck) => deck.map((product) => product.id).join(",")).join("|"),
@@ -68,8 +60,6 @@ export default function useFiniteFeedState({ columnDecks }: { columnDecks: Produ
     completionState.deckSignature === deckSignature
       ? completionState.indexes
       : [];
-  const rewardStatus =
-    rewardState.deckSignature === deckSignature ? rewardState.message : "";
   const cycleToken = `${deckSignature}:${replayCount}`;
   const isComplete =
     activeColumnIndexes.length > 0 &&
@@ -122,30 +112,13 @@ export default function useFiniteFeedState({ columnDecks }: { columnDecks: Produ
       deckSignature,
       indexes: [],
     }); // Clear completion state.
-    setRewardState({
-      deckSignature,
-      message: "",
-    }); // Clear bonus status message.
     setReplayCount((previous) => previous + 1); // Reset per-column completion guards.
-  }, [deckSignature]);
-
-  /**
-   * Trigger the optional reward hook when the user reaches deck end.
-   */
-  const handleRewardHook = useCallback(() => {
-    const response = requestPointsRedemption();
-    setRewardState({
-      deckSignature,
-      message: response.message,
-    }); // Surface hook response in the end banner.
   }, [deckSignature]);
 
   return {
     isDeckEnded,
     cycleToken,
-    rewardStatus,
     handleColumnComplete,
     handleReplayDeck,
-    handleRewardHook,
   };
 }

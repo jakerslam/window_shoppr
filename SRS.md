@@ -89,7 +89,7 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] R24: Cookie consent + privacy/affiliate disclosure (accept all + essential only)
 
 ## UX & Accessibility
-- [ ] R43.2: Show a compact window-points badge in the top bar to the left of the notifications bell (desktop + mobile-safe sizing).
+- [NEXT] 🔵 R43.2: Show a compact window-points badge in the top bar to the left of the notifications bell (desktop + mobile-safe sizing).
 - [x] R43.1: Bell notifications dropdown menu (default empty state: "No notifications")
 - [x] R46: Refresh nav icon set (desktop + mobile) with cleaner, consistent iconography
 - [x] R43: Notifications UI (feed + badge + placeholder list)
@@ -107,7 +107,7 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] R17.1: Loading UI (global spinner/skeletons for route + modal transitions)
 - [x] R29.3: Gamification (window shop points + streaks + redemption hook later)
 - [x] R29.2: Finite feed UX ("end of deck" messaging + optional reward hook)
-- [NEXT] 🔵 R29.2.1: Finite feed end-state bar (full-width bottom bar that pauses feed and says "You've reached the end of our picks for {category}"), with explicit actions: "Start Over" and "Browse All Categories".
+- [x] R29.2.1: Finite feed end-state bar (full-width bottom bar that pauses feed and says "You've reached the end of our picks for {category}"), with explicit actions: "Start Over" and "Browse All Categories".
 - [x] R15: Accessibility baseline (focus states, contrast, keyboard nav)
 - [x] R16: Responsive layout pass (mobile/tablet polish)
 - [x] R17: Empty states + loading states

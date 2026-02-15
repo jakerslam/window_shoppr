@@ -6,41 +6,38 @@ import styles from "@/features/home-feed/HomeFeed.module.css";
  * End-of-deck callout shown when the finite feed has been consumed.
  */
 export default function HomeFeedEndDeck({
-  resultCount,
-  rewardStatus,
+  categoryLabel,
   onReplayDeck,
-  onRewardHook,
+  onBrowseAllCategories,
 }: {
-  resultCount: number;
-  rewardStatus: string;
+  categoryLabel: string;
   onReplayDeck: () => void;
-  onRewardHook: () => void;
+  onBrowseAllCategories: () => void;
 }) {
   return (
     <div className={styles.homeFeed__endDeck} role="status" aria-live="polite">
       <p className={styles.homeFeed__endDeckTitle}>
-        End of {resultCount} curated finds.
+        You&apos;ve reached the end of our picks for {categoryLabel}.
       </p>
-      <p className={styles.homeFeed__endDeckText}>You reached the end of this deck.</p>
+      <p className={styles.homeFeed__endDeckText}>
+        Check back soon for fresh finds.
+      </p>
       <div className={styles.homeFeed__endDeckActions}>
         <button
           className={styles.homeFeed__endDeckButton}
           type="button"
           onClick={onReplayDeck}
         >
-          Replay deck
+          Start Over
         </button>
         <button
           className={styles.homeFeed__endDeckButton}
           type="button"
-          onClick={onRewardHook}
+          onClick={onBrowseAllCategories}
         >
-          Reward hook
+          Browse All Categories
         </button>
       </div>
-      {rewardStatus ? (
-        <p className={styles.homeFeed__endDeckHint}>{rewardStatus}</p>
-      ) : null}
     </div>
   );
 }

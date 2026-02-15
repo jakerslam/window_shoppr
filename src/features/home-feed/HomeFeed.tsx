@@ -100,11 +100,17 @@ export default function HomeFeed({
   const {
     isDeckEnded,
     cycleToken,
-    rewardStatus,
     handleColumnComplete,
     handleReplayDeck,
-    handleRewardHook,
   } = useFiniteFeedState({ columnDecks });
+
+  /**
+   * Reset filters and return to the all-categories feed.
+   */
+  const handleBrowseAllCategories = useCallback(() => {
+    clearFilters(); // Reset category and search filters.
+    router.push("/"); // Navigate back to the root feed.
+  }, [clearFilters, router]);
 
   /**
    * Build a stable open handler for a given product card.
@@ -147,10 +153,9 @@ export default function HomeFeed({
 
       {isDeckEnded && sortedProducts.length > 0 ? (
         <HomeFeedEndDeck
-          resultCount={sortedProducts.length}
-          rewardStatus={rewardStatus}
+          categoryLabel={displayCategory || "all categories"}
           onReplayDeck={handleReplayDeck}
-          onRewardHook={handleRewardHook}
+          onBrowseAllCategories={handleBrowseAllCategories}
         />
       ) : null}
 

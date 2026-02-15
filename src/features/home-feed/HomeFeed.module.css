@@ -224,6 +224,7 @@
 }
 
 .homeFeed__endDeck {
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
