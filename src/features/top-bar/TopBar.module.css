@@ -294,6 +294,11 @@
   gap: 6px;
 }
 
+.topBar__notificationsAuthGate {
+  display: grid;
+  gap: 10px;
+}
+
 .topBar__notificationsEmpty {
   margin: 0;
   padding: 8px 10px;
@@ -303,6 +308,25 @@
   font-size: 13px;
   font-weight: 600;
   text-align: center;
+}
+
+.topBar__notificationsLogin {
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-muted);
+  color: var(--color-primary-strong);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 150ms ease;
+}
+
+.topBar__notificationsLogin:hover {
+  opacity: 0.7;
 }
 
 .topBar__notificationsItem {
@@ -394,6 +418,7 @@
 .topBar__searchButton:focus-visible,
 .topBar__iconButton:focus-visible,
 .topBar__notificationsItem:focus-visible,
+.topBar__notificationsLogin:focus-visible,
 .topBar__notificationsMarkRead:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;

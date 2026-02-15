@@ -9,11 +9,13 @@ import ProfileSettingsSecuritySection from "@/features/profile/sections/ProfileS
 import useProfileSettingsState from "@/features/profile/useProfileSettingsState";
 import styles from "@/features/profile/ProfileSettings.module.css";
 import { useWishlist } from "@/features/wishlist/wishlist";
+import useAuthSessionState from "@/shared/lib/platform/useAuthSessionState";
 
 /**
  * Profile settings panel for account, content, security, and theme preferences.
  */
 export default function ProfileSettings() {
+  const session = useAuthSessionState();
   const { listNames } = useWishlist(); // Wishlist list labels used for list-based recommendations.
   const {
     settings,
@@ -37,6 +39,28 @@ export default function ProfileSettings() {
     handleClearPersonalization,
     handleTasteQuizApply,
   } = useProfileSettingsState({ listNames }); // Centralize profile settings state + persistence.
+
+  if (!session) {
+    return (
+      <section className={styles.profileSettings} aria-labelledby="profile-settings-title">
+        <header className={styles.profileSettings__header}>
+          <h2 id="profile-settings-title" className={styles.profileSettings__title}>
+            Profile Settings
+          </h2>
+          <p className={styles.profileSettings__subtitle}>
+            Sign in to unlock account, preferences, and security controls.
+          </p>
+        </header>
+
+        <div className={styles.profileSettings__section}>
+          <h3 className={styles.profileSettings__sectionTitle}>Locked</h3>
+          <p className={styles.profileSettings__hint}>
+            Create an account or sign in to manage profile settings.
+          </p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section

@@ -6,6 +6,8 @@ import { usePathname } from "next/navigation";
 import styles from "@/features/top-bar/TopBar.module.css";
 import { BellIcon } from "@/features/top-bar/NavIcons";
 import { INITIAL_NOTIFICATIONS } from "@/features/top-bar/notifications/constants";
+import NotificationsMenu from "@/features/top-bar/notifications/NotificationsMenu";
+import { NotificationItem } from "@/features/top-bar/notifications/constants";
 import { signOutAccount } from "@/shared/lib/platform/auth-service";
 import {
   withAuthRedirectParam,
@@ -20,16 +22,25 @@ export default function TopBarActions() {
   const pathname = usePathname();
   const session = useAuthSessionState();
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
-  const [notifications, setNotifications] = useState(INITIAL_NOTIFICATIONS);
+  const [notifications, setNotifications] = useState<NotificationItem[]>(
+    INITIAL_NOTIFICATIONS,
+  );
   const notificationsRef = useRef<HTMLDivElement | null>(null);
   const menuId = useId();
 
   const unreadCount = useMemo(
-    () => notifications.filter((notification) => !notification.isRead).length,
-    [notifications],
+    () =>
+      session
+        ? notifications.filter((notification) => !notification.isRead).length
+        : 0,
+    [notifications, session],
   ); // Compute unread badge count from local notification state.
 
   const currentPath = useMemo(() => pathname, [pathname]); // Capture route for post-auth return.
+  const notificationsLoginHref = useMemo(
+    () => withAuthRedirectParam("/login", currentPath),
+    [currentPath],
+  ); // Include a safe return target for notifications auth gate.
 
   const loginHref = useMemo(() => {
     if (session) {
@@ -64,6 +75,10 @@ export default function TopBarActions() {
    * Mark a single notification as read.
    */
   const handleNotificationRead = (notificationId: string) => {
+    if (!session) {
+      return; // Ignore notification mutations when signed out.
+    }
+
     setNotifications((prev) =>
       prev.map((notification) =>
         notification.id === notificationId
@@ -77,6 +92,10 @@ export default function TopBarActions() {
    * Mark all notifications as read.
    */
   const handleMarkAllRead = () => {
+    if (!session) {
+      return; // Ignore notification mutations when signed out.
+    }
+
     setNotifications((prev) =>
       prev.map((notification) => ({ ...notification, isRead: true })),
     ); // Clear unread badge by setting every row to read.
@@ -170,46 +189,17 @@ export default function TopBarActions() {
         </button>
 
         {isNotificationsOpen ? (
-          <div className={styles.topBar__notificationsMenu} role="menu" id={menuId}>
-            <div className={styles.topBar__notificationsHeader}>
-              <span>Notifications</span>
-              {unreadCount > 0 ? (
-                <button
-                  className={styles.topBar__notificationsMarkRead}
-                  type="button"
-                  onClick={handleMarkAllRead} // Mark all visible notifications as read.
-                >
-                  Mark all read
-                </button>
-              ) : null}
-            </div>
-
-            {notifications.length === 0 ? (
-              <p className={styles.topBar__notificationsEmpty}>No notifications</p>
-            ) : (
-              <div className={styles.topBar__notificationsList}>
-                {notifications.map((notification) => (
-                  <button
-                    key={notification.id}
-                    className={`${styles.topBar__notificationsItem} ${
-                      notification.isRead
-                        ? styles["topBar__notificationsItem--read"]
-                        : styles["topBar__notificationsItem--unread"]
-                    }`}
-                    type="button"
-                    role="menuitem"
-                    onClick={() => handleNotificationRead(notification.id)} // Mark this notification as read.
-                  >
-                    <span className={styles.topBar__notificationsTitle}>{notification.title}</span>
-                    <span className={styles.topBar__notificationsSummary}>{notification.summary}</span>
-                    <span className={styles.topBar__notificationsMeta}>{notification.timeLabel}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-
-            <p className={styles.topBar__notificationsFooter}>Notification feed is in beta.</p>
-          </div>
+          <NotificationsMenu
+            menuId={menuId}
+            isAuthenticated={Boolean(session)}
+            unreadCount={unreadCount}
+            notifications={notifications}
+            loginHref={notificationsLoginHref}
+            onClose={handleNotificationsClose}
+            onMarkAllRead={handleMarkAllRead}
+            onRead={handleNotificationRead}
+            onLoginClick={() => writeAuthRedirectPath(currentPath)}
+          />
         ) : null}
       </div>
     </div>

@@ -1,9 +1,9 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 66/90 (73.3%)  ███████████████░░░░░
+Overall: 67/90 (74.4%)  ███████████████░░░░░
 Frontend: 51/64 (79.7%) ███████████████░░░░░
-Backend: 14/22 (63.6%)  █████████████░░░░░░░
+Backend: 15/22 (68.2%)  ██████████████░░░░░░
 Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░░░
 
 
@@ -72,8 +72,8 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] R29.1: Product source metadata + idempotency (source, externalId, lastSeenAt, lastPriceCheckAt)
 - [x] R29: Agent ingestion API stub (authenticated upsert endpoint + schema validation + draft/publish state)
 - [x] R12.3: Account management wiring (backend/auth integration)
-- [NEXT] 🔵 R12.4: Auth gate for profile/settings and notifications (require login/signup session after auth backend is live)
-- [ ] R30: SQL data layer wiring (products, wishlist, email capture submissions)
+- [x] R12.4: Auth gate for profile/settings and notifications (require login/signup session after auth backend is live)
+- [NEXT] 🔵 R30: SQL data layer wiring (products, wishlist, email capture submissions)
 
 ## Analytics & Revenue
 - [ ] R29.9: Post-click purchase confirmation prompt ("Did you buy this?" + review reminder hook)
@@ -165,7 +165,7 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] Q5: Wishlist mobile cards place save button inline with price row for denser layout
 - [x] Q6: Refactor hardening pass (mobile overlay state cleanup + lint warnings removed)
 - [x] Q7: Account settings now control cozy/quick feed speed multipliers used by the home speed toggle
-- [ ] Q8: Remove placeholder/fake notifications after notifications are gated behind login (no fake items; show empty state until backend is live)
+- [x] Q8: Remove placeholder/fake notifications after notifications are gated behind login (no fake items; show empty state until backend is live)
 - [ ] Q9: Keep wishlist "Removed from {list} / click to undo" ghost card locked to standard wishlist card dimensions so row height/width never expands.
 - [x] Q10: Gate product comment posting behind auth session stub (logged-out users can still view comments).
 - [x] Q11: Product-detail desktop thumbnail rail uses arrow-only navigation (manual scroll disabled; mobile swipe preserved).
