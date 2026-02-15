@@ -2,6 +2,10 @@
 "use client";
 
 import { toAssetPath } from "@/shared/lib/catalog/assets";
+import {
+  formatDealTimeRemaining,
+  isDealWindowActive,
+} from "@/shared/lib/catalog/deals";
 import { Product } from "@/shared/lib/catalog/types";
 import {
   formatSaveCountLabel,
@@ -13,37 +17,6 @@ import styles from "@/shared/components/product-card/ProductCard.module.css";
  * Format a numeric price into a USD string.
  */
 const formatPrice = (price: number) => `$${price.toFixed(2)}`;
-
-/**
- * Format time remaining until a deal expires.
- */
-const formatTimeRemaining = (dealEndsAt?: string) => {
-  if (!dealEndsAt) {
-    return null; // No timer when deal end is missing.
-  }
-
-  const endTime = new Date(dealEndsAt).getTime();
-  const diffMs = endTime - Date.now();
-
-  if (Number.isNaN(endTime) || diffMs <= 0) {
-    return "Deal ended";
-  }
-
-  const totalMinutes = Math.floor(diffMs / 60000);
-  const days = Math.floor(totalMinutes / 1440);
-  const hours = Math.floor((totalMinutes % 1440) / 60);
-  const minutes = totalMinutes % 60;
-
-  if (days > 0) {
-    return `Ends in ${days}d ${hours}h`;
-  }
-
-  if (hours > 0) {
-    return `Ends in ${hours}h ${minutes}m`;
-  }
-
-  return `Ends in ${minutes}m`;
-};
 
 /**
  * Render props for injecting a save button into the card.
@@ -70,11 +43,13 @@ export default function ProductCard({
   variant?: "default" | "compact";
   renderSaveButton?: (props: SaveButtonRenderProps) => React.ReactNode;
 }) {
-  const hasDeal =
+  const hasPriceDeal =
     typeof product.originalPrice === "number" &&
     product.originalPrice > product.price; // Determine if strike price should show.
-  const dealLabel = formatTimeRemaining(product.dealEndsAt); // Compute deal timer when available.
-  const showDealBadge = hasDeal || Boolean(dealLabel); // Show badge for active deals.
+  const isDealActive = isDealWindowActive(product.dealEndsAt); // Disable deal-only UI once expiration is in the past.
+  const hasDeal = hasPriceDeal && isDealActive; // Show strike pricing only while the deal window is active.
+  const dealLabel = formatDealTimeRemaining(product.dealEndsAt); // Compute active deal timer when available.
+  const showDealBadge = hasDeal || Boolean(dealLabel); // Show badge only for currently active deals.
   const imageSrc = toAssetPath(product.images[0] ?? "/images/product-placeholder.svg"); // Use first image or fallback.
   const isCompact = variant === "compact"; // Toggle compact styling for dense layouts.
   const saveCount = useProductSaveCount(product.id, product.saveCount ?? 0); // Subscribe to live save-count updates for this product.

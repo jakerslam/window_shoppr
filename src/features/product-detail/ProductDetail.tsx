@@ -3,6 +3,10 @@
 import { useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useCategoryFilter } from "@/features/category-filter/CategoryFilterProvider";
+import {
+  formatDealTimeRemaining,
+  isDealWindowActive,
+} from "@/shared/lib/catalog/deals";
 import { trackRecentlyViewed } from "@/shared/lib/engagement/recently-viewed";
 import {
   awardWindowPoints,
@@ -12,7 +16,6 @@ import { Product } from "@/shared/lib/catalog/types";
 import ProductDetailActions from "@/features/product-detail/ProductDetailActions";
 import ProductDetailInfo from "@/features/product-detail/ProductDetailInfo";
 import ProductMediaGallery from "@/features/product-detail/ProductMediaGallery";
-import { formatTimeRemaining } from "@/features/product-detail/product-detail-utils";
 import styles from "@/features/product-detail/ProductDetail.module.css";
 
 /**
@@ -27,10 +30,12 @@ export default function ProductDetail({
 }) {
   const router = useRouter();
   const { setSearchQuery } = useCategoryFilter();
-  const hasDeal =
+  const hasPriceDeal =
     typeof product.originalPrice === "number" &&
     product.originalPrice > product.price; // Determine if strike price should show.
-  const dealLabel = formatTimeRemaining(product.dealEndsAt); // Compute deal timer when available.
+  const isDealActive = isDealWindowActive(product.dealEndsAt); // Disable deal-only UI once expiration is in the past.
+  const hasDeal = hasPriceDeal && isDealActive; // Show strike pricing only while the deal window is active.
+  const dealLabel = formatDealTimeRemaining(product.dealEndsAt); // Compute active deal timer when available.
   const showDealBadge = hasDeal || Boolean(dealLabel); // Show badge for active deals.
 
   useEffect(() => {

@@ -40,7 +40,7 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] R6.1: In-feed expansion overlay (desktop) with mobile direct navigation
 - [x] R6: Product detail page template (back arrow, images, price, rating, description with "More")
 - [x] R7: Deal-specific UI (timer, deal badge, crossed-out price)
-- [NEXT] 🔵 R7.1: Expired-deal guard (automatically hide crossed-out/original price and countdown when `dealEndsAt` is in the past)
+- [x] R7.1: Expired-deal guard (automatically hide crossed-out/original price and countdown when `dealEndsAt` is in the past)
 - [x] R8: Category pages and routing
 - [x] R9: Email capture popup UI (delayed) with backend stubs
 - [x] R10: SEO baseline (metadata, Open Graph, schema.org, sitemap, robots)
@@ -51,6 +51,7 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] R12.1: Wishlist save menu (hover/long-press list selection)
 - [x] R13: Animation system for mesmerizing scrolling columns (hover pause)
 - [x] R13.1: Manual scroll assist for the auto-scrolling feed (wheel/touch drag adjusts speed temporarily; easing back to baseline)
+- [ ] R13.2: Mobile manual-scroll cooldown (after touch/wheel manipulation, wait 1000ms before that column resumes auto-scroll).
 - [x] R14: Navigation menu with hover unfurl (categories -> subcategories)
 
 ## SEO & Growth
@@ -88,6 +89,7 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] R24: Cookie consent + privacy/affiliate disclosure (accept all + essential only)
 
 ## UX & Accessibility
+- [ ] R43.2: Show a compact window-points badge in the top bar to the left of the notifications bell (desktop + mobile-safe sizing).
 - [x] R43.1: Bell notifications dropdown menu (default empty state: "No notifications")
 - [x] R46: Refresh nav icon set (desktop + mobile) with cleaner, consistent iconography
 - [x] R43: Notifications UI (feed + badge + placeholder list)
@@ -99,11 +101,13 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] R29.10.1: Preference question bank config (drive onboarding + trickle prompts from a data file for easy edits)
 - [x] R29.11: List-based recommendations (use a selected list to bias feed)
 - [x] R47: Product detail share button (copy link + native share fallback)
+- [ ] R47.1: Product-card action row update (share button on far right, save button directly to its left, and save-count shown only when count >= 5).
 - [x] R48: Configurable product description collapse (x chars with Read more/Read less)
 - [x] R29.7: Product view comments section (community notes + moderation hooks later)
 - [x] R17.1: Loading UI (global spinner/skeletons for route + modal transitions)
 - [x] R29.3: Gamification (window shop points + streaks + redemption hook later)
 - [x] R29.2: Finite feed UX ("end of deck" messaging + optional reward hook)
+- [NEXT] 🔵 R29.2.1: Finite feed end-state bar (full-width bottom bar that pauses feed and says "You've reached the end of our picks for {category}"), with explicit actions: "Start Over" and "Browse All Categories".
 - [x] R15: Accessibility baseline (focus states, contrast, keyboard nav)
 - [x] R16: Responsive layout pass (mobile/tablet polish)
 - [x] R17: Empty states + loading states
