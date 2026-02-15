@@ -17,6 +17,7 @@ This guide defines where agent automation should read/write today and where it w
 3. Validate against `ProductSchema` in `src/shared/lib/catalog/schema.ts`.
 4. Keep `id`, `slug`, `source`, and `externalId` stable.
 5. Update `lastSeenAt` and `lastPriceCheckAt` on refresh jobs.
+6. Use stub queue helpers in `src/shared/lib/agent/ingestion.ts` (`queueAgentProductUpsert`, `queueAgentPublishMutation`, `readAgentStubQueues`) until backend endpoints are wired.
 
 ## Moderation (Today)
 - Queue helpers in `src/shared/lib/engagement/reports.ts`:
@@ -43,6 +44,8 @@ This guide defines where agent automation should read/write today and where it w
 - `POST /api/agent/moderation/resolve`
 
 ## Reference Files
+- Agent ingestion stubs: `src/shared/lib/agent/ingestion.ts`
+- Agent ingestion schemas: `src/shared/lib/agent/ingestion-schema.ts`
 - Product types: `src/shared/lib/catalog/types.ts`
 - Product schema: `src/shared/lib/catalog/schema.ts`
 - Catalog loader stubs: `src/shared/lib/catalog/data.ts`

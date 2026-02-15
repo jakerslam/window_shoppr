@@ -1,6 +1,8 @@
 /**
  * Core product data types used across the app.
  */
+export type ProductPublishState = "draft" | "published" | "unpublished";
+
 export type Product = {
   id: string;
   source?: string;
@@ -23,6 +25,7 @@ export type Product = {
   videoUrl?: string;
   dealEndsAt?: string;
   isSponsored?: boolean;
+  publishState?: ProductPublishState;
 };
 
 /**

@@ -33,6 +33,9 @@ export const ProductSchema: z.ZodType<Product> = z
     videoUrl: z.string().url().optional(), // Optional review/demo video.
     dealEndsAt: ISO_DATE_TIME_SCHEMA.optional(), // Optional deal expiration timestamp.
     isSponsored: z.boolean().optional(), // Optional native ad flag.
+    publishState: z
+      .enum(["draft", "published", "unpublished"])
+      .optional(), // Optional publish state for agent moderation workflows.
   })
   .strict()
   .superRefine((product, context) => {
@@ -77,4 +80,3 @@ export const ProductCatalogSchema: z.ZodType<Product[]> = z
       }
     });
   });
-

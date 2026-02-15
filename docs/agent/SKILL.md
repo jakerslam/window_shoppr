@@ -13,6 +13,7 @@ This skill defines the ingestion and moderation contract for autonomous agents.
 - Source of truth remains `src/data/products.json`.
 - Moderation queue is local-first in browser storage.
 - API shapes below are finalizable contracts for the upcoming backend requirement (`R29`).
+- Local API stubs are implemented in `src/shared/lib/agent/ingestion.ts`.
 
 ## Product Ingestion Contract
 
@@ -89,6 +90,9 @@ This skill defines the ingestion and moderation contract for autonomous agents.
 - `moderation:queue:enqueue` (new moderation item)
 - `moderation:queue:update` (item status changed)
 - `affiliate:click` (attribution/analytics signal)
+- `agent:product:upsert` (agent upsert queued)
+- `agent:product:publish` (publish-state mutation queued)
+- `agent:moderation:resolve` (moderation resolution queued)
 
 ## Local-First Operation Steps (Today)
 1. Read/modify `src/data/products.json` with schema-valid products.

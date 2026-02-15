@@ -13,6 +13,12 @@ export const FALLBACK_PRODUCTS = ProductCatalogSchema.parse(productsJson); // Va
 export const getProductCatalog = () => FALLBACK_PRODUCTS; // Expose fallback catalog.
 
 /**
+ * Determine whether a product should be visible in public browsing surfaces.
+ */
+export const isPublishedProduct = (product: Product) =>
+  (product.publishState ?? "published") === "published"; // Default legacy products to published.
+
+/**
  * Attach source metadata defaults to a product.
  */
 export const normalizeProductSource = (product: Product, source: string) => {
@@ -24,6 +30,7 @@ export const normalizeProductSource = (product: Product, source: string) => {
     externalId,
     lastSeenAt: product.lastSeenAt,
     lastPriceCheckAt: product.lastPriceCheckAt,
+    publishState: product.publishState ?? "published", // Default legacy products to published.
   };
 };
 

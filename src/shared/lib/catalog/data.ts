@@ -2,6 +2,7 @@ import { Product } from "@/shared/lib/catalog/types";
 import { ProductCatalogSchema, ProductSchema } from "@/shared/lib/catalog/schema";
 import {
   FALLBACK_PRODUCTS,
+  isPublishedProduct,
   normalizeCatalogSource,
   normalizeProductSource,
 } from "@/shared/lib/catalog/products";
@@ -47,10 +48,10 @@ export const fetchProducts = async (): Promise<Product[]> => {
 
   if (sqlProducts && sqlProducts.length > 0) {
     const validated = ProductCatalogSchema.parse(sqlProducts); // Validate SQL data before display.
-    return normalizeCatalogSource(validated, "sql"); // Normalize SQL source metadata.
+    return normalizeCatalogSource(validated, "sql").filter(isPublishedProduct); // Normalize SQL metadata + enforce publish visibility.
   }
 
-  return normalizeCatalogSource(FALLBACK_PRODUCTS, "json"); // Normalize JSON source metadata.
+  return normalizeCatalogSource(FALLBACK_PRODUCTS, "json").filter(isPublishedProduct); // Normalize JSON metadata + enforce publish visibility.
 };
 
 /**
@@ -72,7 +73,10 @@ export const fetchProductBySlug = async (
   const jsonProduct =
     FALLBACK_PRODUCTS.find((product) => product.slug === slug) ?? null; // Match by slug.
 
-  return jsonProduct
-    ? normalizeProductSource(jsonProduct, "json")
-    : null; // Normalize JSON metadata when present.
+  if (!jsonProduct) {
+    return null; // Match previous null behavior when slug is unknown.
+  }
+
+  const normalized = normalizeProductSource(jsonProduct, "json"); // Normalize JSON metadata when present.
+  return isPublishedProduct(normalized) ? normalized : null; // Hide draft/unpublished items from public routes.
 };
