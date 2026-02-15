@@ -7,6 +7,7 @@ import Footer from "@/shared/components/footer/Footer";
 import EmailCaptureModal from "@/features/email-capture/EmailCaptureModal";
 import CookieConsent from "@/shared/components/privacy/CookieConsent";
 import { SITE_URL } from "@/shared/lib/seo";
+import { REFERRER_POLICY } from "@/shared/lib/security";
 import "./globals.css";
 
 const jakartaSans = Plus_Jakarta_Sans({
@@ -100,6 +101,7 @@ export const metadata: Metadata = {
     index: true, // Allow indexing.
     follow: true, // Allow link following.
   },
+  referrer: REFERRER_POLICY, // Reduce referrer leakage on outbound links.
 };
 
 /**

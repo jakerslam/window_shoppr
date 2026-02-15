@@ -1,8 +1,8 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 52/89 (58.4%)  ███████████░░░░░░░░░
-Frontend: 42/64 (65.6%) ████████████░░░░░░░░
+Overall: 53/89 (59.6%)  ███████████░░░░░░░░░
+Frontend: 43/64 (67.2%) ████████████░░░░░░░░
 Backend: 9/22 (40.9%)   ████████░░░░░░░░░░░░
 Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░░░
 
@@ -25,7 +25,7 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 
 ## Core Requirements
 - [x] R36: Add schema validation (Zod) for product data + env config
-- [NEXT] 🔵 R37: Add basic security headers (CSP, HSTS, etc.)
+- [x] R37: Add basic security headers (CSP, HSTS, etc.)
 - [x] R38: Add baseline analytics events (search, wishlist save, affiliate click)
 - [x] R12.2: Login modal/page UI with auth handler stubs
 - [x] R1: Initialize architecture (Next.js + TypeScript scaffold) and baseline project structure
@@ -55,7 +55,7 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 ## SEO & Growth
 - [x] R28: Category/subcategory gating (hide nav items + noindex pages until content threshold is met)
 - [ ] R22.5: Category + subcategory landing pages with SEO metadata, schema, and slug routing
-- [ ] R22.6: Category slug routing + canonical pages (category + subcategory)
+- [NEXT] 🔵 R22.6: Category slug routing + canonical pages (category + subcategory)
 - [ ] R25 (Phase 2 Optional): AI-curated blog engine with intent-to-product mapping (pillar templates, FAQ schema)
 - [x] R20: SEO structured data (Product/Offer JSON-LD)
 - [x] R21: Sitemap, robots, and canonical URLs
