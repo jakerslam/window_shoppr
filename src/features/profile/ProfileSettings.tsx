@@ -4,6 +4,7 @@ import TasteQuizModal from "@/features/preference-capture/TasteQuizModal";
 import ProfileSettingsAccountSection from "@/features/profile/sections/ProfileSettingsAccountSection";
 import ProfileSettingsAppearanceSection from "@/features/profile/sections/ProfileSettingsAppearanceSection";
 import ProfileSettingsContentSection from "@/features/profile/sections/ProfileSettingsContentSection";
+import ProfileSettingsRewardsSection from "@/features/profile/sections/ProfileSettingsRewardsSection";
 import ProfileSettingsSecuritySection from "@/features/profile/sections/ProfileSettingsSecuritySection";
 import useProfileSettingsState from "@/features/profile/useProfileSettingsState";
 import styles from "@/features/profile/ProfileSettings.module.css";
@@ -61,6 +62,8 @@ export default function ProfileSettings() {
         onQuickSpeedChange={handleQuickSpeedChange} // Update quick speed multiplier.
       />
 
+      <ProfileSettingsRewardsSection />
+
       <ProfileSettingsContentSection
         listNames={listNames}
         contentPreferences={contentPreferences}
@@ -99,4 +102,3 @@ export default function ProfileSettings() {
     </section>
   );
 }
-

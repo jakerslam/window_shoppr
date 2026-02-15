@@ -58,6 +58,38 @@
   gap: 10px;
 }
 
+.profileSettings__rewardGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.profileSettings__rewardCard {
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface-muted);
+  padding: 10px 9px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.profileSettings__rewardLabel {
+  font-size: 11px;
+  line-height: 1.2;
+  color: var(--color-text-muted);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.profileSettings__rewardValue {
+  font-size: 15px;
+  color: var(--color-primary-strong);
+  font-weight: 800;
+  line-height: 1.2;
+}
+
 .profileSettings__hint {
   margin: 0;
   color: var(--color-text-muted);
@@ -223,6 +255,10 @@
 
 @media (max-width: 560px) {
   .profileSettings__speedGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .profileSettings__rewardGrid {
     grid-template-columns: 1fr;
   }
 }

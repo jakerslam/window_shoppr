@@ -4,6 +4,10 @@ import { useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useCategoryFilter } from "@/features/category-filter/CategoryFilterProvider";
 import { trackRecentlyViewed } from "@/shared/lib/engagement/recently-viewed";
+import {
+  awardWindowPoints,
+  buildDailyWindowPointsKey,
+} from "@/shared/lib/engagement/window-points";
 import { Product } from "@/shared/lib/catalog/types";
 import ProductDetailActions from "@/features/product-detail/ProductDetailActions";
 import ProductDetailInfo from "@/features/product-detail/ProductDetailInfo";
@@ -31,6 +35,10 @@ export default function ProductDetail({
 
   useEffect(() => {
     trackRecentlyViewed(product.id); // Persist recently viewed state.
+    awardWindowPoints({
+      action: "product_view",
+      uniqueKey: buildDailyWindowPointsKey(`product-view:${product.id}`),
+    }); // Award one daily point event per viewed product.
   }, [product.id]);
 
   /**

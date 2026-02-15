@@ -2,6 +2,10 @@
 
 import { Product, PRODUCT_UI } from "@/shared/lib/catalog/types";
 import { trackAffiliateClick } from "@/shared/lib/engagement/analytics";
+import {
+  awardWindowPoints,
+  buildDailyWindowPointsKey,
+} from "@/shared/lib/engagement/window-points";
 import DescriptionToggle from "@/features/product-detail/DescriptionToggle";
 import ProductDetailShareButton from "@/features/product-detail/ProductDetailShareButton";
 import ProductDetailComments from "@/features/product-detail/info/ProductDetailComments";
@@ -43,6 +47,10 @@ export default function ProductDetailInfo({
       retailer: product.retailer,
       affiliateUrl: product.affiliateUrl,
     }); // Store click data for analytics.
+    awardWindowPoints({
+      action: "affiliate_click",
+      uniqueKey: buildDailyWindowPointsKey(`affiliate-click:${product.id}`),
+    }); // Award one daily click bonus per product.
   };
 
   return (

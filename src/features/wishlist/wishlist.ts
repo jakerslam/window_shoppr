@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { DEFAULT_WISHLIST_NAME } from "@/features/wishlist/wishlist-constants";
 import { trackWishlistEvent } from "@/shared/lib/engagement/analytics";
+import { awardWindowPoints } from "@/shared/lib/engagement/window-points";
 import {
   type WishlistListsState,
   broadcastWishlistChange,
@@ -112,6 +113,10 @@ export const useWishlist = () => {
       writeWishlistListsToStorage(nextState); // Persist updated lists.
       broadcastWishlistChange(); // Notify listeners about list updates.
       trackWishlistEvent({ action: "save", productId: id, listName: targetList }); // Track wishlist saves for analytics.
+      awardWindowPoints({
+        action: "wishlist_save",
+        uniqueKey: `wishlist-save:${id}`,
+      }); // Award one-time points the first time a product is saved.
       return nextState;
     });
   }, []);
@@ -174,6 +179,12 @@ export const useWishlist = () => {
         productId: id,
         listName: isAlreadySaved ? "All" : DEFAULT_WISHLIST_NAME,
       }); // Track wishlist toggles for analytics.
+      if (!isAlreadySaved) {
+        awardWindowPoints({
+          action: "wishlist_save",
+          uniqueKey: `wishlist-save:${id}`,
+        }); // Award one-time points for default-list saves via toggle.
+      }
       return nextState;
     });
   }, []);
