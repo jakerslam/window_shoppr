@@ -223,6 +223,12 @@
   transform: translateY(0);
 }
 
+@media (pointer: coarse) {
+  .homeFeed__column {
+    touch-action: none; /* Allow touch drag gestures to control the column without browser scrolling. */
+  }
+}
+
 @media (max-width: 1200px) {
   .homeFeed__columns {
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -427,4 +433,3 @@
 .homeFeed__emptyAction:hover {
   opacity: 0.8;
 }
-

@@ -1,8 +1,8 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 49/89 (55.1%)  ███████████░░░░░░░░░
-Frontend: 39/64 (60.9%) ████████████░░░░░░░░
+Overall: 50/89 (56.2%)  ███████████░░░░░░░░░
+Frontend: 40/64 (62.5%) ████████████░░░░░░░░
 Backend: 9/22 (40.9%)   ████████░░░░░░░░░░░░
 Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░░░
 
@@ -24,7 +24,7 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - Early trigger: run maintenance immediately if any TS/TSX file exceeds 350 lines.
 
 ## Core Requirements
-- [ ] R36: Add schema validation (Zod) for product data + env config
+- [NEXT] 🔵 R36: Add schema validation (Zod) for product data + env config
 - [ ] R37: Add basic security headers (CSP, HSTS, etc.)
 - [ ] R38: Add baseline analytics events (search, wishlist save, affiliate click)
 - [x] R12.2: Login modal/page UI with auth handler stubs
@@ -49,7 +49,7 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] R12: Wishlist UI stub and placeholder page
 - [x] R12.1: Wishlist save menu (hover/long-press list selection)
 - [x] R13: Animation system for mesmerizing scrolling columns (hover pause)
-- [NEXT] 🔵 R13.1: Manual scroll assist for the auto-scrolling feed (wheel/touch drag adjusts speed temporarily; easing back to baseline)
+- [x] R13.1: Manual scroll assist for the auto-scrolling feed (wheel/touch drag adjusts speed temporarily; easing back to baseline)
 - [x] R14: Navigation menu with hover unfurl (categories -> subcategories)
 
 ## SEO & Growth
