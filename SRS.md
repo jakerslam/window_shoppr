@@ -170,6 +170,7 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] Q10: Gate product comment posting behind auth session stub (logged-out users can still view comments).
 - [x] Q11: Product-detail desktop thumbnail rail uses arrow-only navigation (manual scroll disabled; mobile swipe preserved).
 - [x] Q12: Disable wishlist long-press menu opening on desktop (and keep it disabled on mobile); menu opens via supported click/double-click flows only.
+- [x] Q13: Coalesce rapid wishlist sync events into short-batch SQL sync requests (500ms window) to reduce request volume.
 
 ## Notes
 - Positioning (later): "Yelp for products" across retailers (cross-site reviews + community trust layer)
