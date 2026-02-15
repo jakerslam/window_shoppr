@@ -2,9 +2,10 @@
 
 import { useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { getAvailableCategories, toCategorySlug } from "@/shared/lib/categories";
+import { getAvailableCategories } from "@/shared/lib/categories";
 import { getProductCatalog } from "@/shared/lib/products";
 import { useCategoryFilter } from "@/features/category-filter/CategoryFilterProvider";
+import TopBarCategoriesMenuList from "@/features/top-bar/menu/TopBarCategoriesMenuList";
 import styles from "@/features/top-bar/TopBar.module.css";
 
 /**
@@ -60,6 +61,42 @@ export default function TopBarMenu() {
    */
   const handleSubMenuClose = () => {
     setOpenCategory(null); // Hide any open submenu.
+  };
+
+  /**
+   * Reset filters back to the full catalog view.
+   */
+  const handleSelectAll = () => {
+    clearFilters(); // Reset filters.
+    setIsMenuOpen(false); // Close menu after selection.
+    handleSubMenuClose(); // Ensure submenu is closed after selection.
+    if (pathname !== "/") {
+      router.push("/"); // Return to feed for category filtering.
+    }
+  };
+
+  /**
+   * Select a top-level category and return to the feed when needed.
+   */
+  const handleSelectCategory = (categorySlug: string) => {
+    setCategory(categorySlug); // Filter by category.
+    setIsMenuOpen(false); // Close menu after selection.
+    handleSubMenuClose(); // Ensure submenu is closed after selection.
+    if (pathname !== "/") {
+      router.push("/"); // Return to feed for category filtering.
+    }
+  };
+
+  /**
+   * Select a subcategory and return to the feed when needed.
+   */
+  const handleSelectSubCategory = (categorySlug: string, subSlug: string) => {
+    setSubCategory(categorySlug, subSlug); // Filter by subcategory.
+    setIsMenuOpen(false); // Close menu after selection.
+    handleSubMenuClose(); // Ensure submenu is closed after selection.
+    if (pathname !== "/") {
+      router.push("/"); // Return to feed for subcategory filtering.
+    }
   };
 
   const handleTriggerKeyDown = (
@@ -138,97 +175,18 @@ export default function TopBarMenu() {
         aria-label="Product categories"
         onMouseLeave={handleSubMenuClose}
       >
-        <button
-          ref={firstItemRef}
-          className={`${styles.topBar__menuItem} ${
-            !selectedCategory ? styles["topBar__menuItem--active"] : ""
-          }`}
-          type="button"
-          role="menuitem"
-          onClick={() => {
-            clearFilters(); // Reset filters.
-            setIsMenuOpen(false); // Close menu after selection.
-            if (pathname !== "/") {
-              router.push("/"); // Return to feed for category filtering.
-            }
-          }}
-        >
-          All Categories
-        </button>
-
-        {availableCategories.map((category) => {
-          const categorySlug = toCategorySlug(category.label); // Normalize category slug.
-          const isActive = selectedCategory === categorySlug; // Track active category.
-
-          return (
-            <div
-              key={category.label}
-              className={styles.topBar__menuGroup}
-            >
-              <button
-                className={`${styles.topBar__menuItem} ${
-                  isActive && !selectedSubCategory
-                    ? styles["topBar__menuItem--active"]
-                    : ""
-                }`}
-                type="button"
-                role="menuitem"
-                onMouseEnter={() =>
-                  handleSubMenuOpen(categorySlug, category.subCategories.length > 0)
-                }
-                onMouseMove={() =>
-                  handleSubMenuOpen(categorySlug, category.subCategories.length > 0)
-                }
-                onClick={() => {
-                  setCategory(categorySlug); // Filter by category.
-                  setIsMenuOpen(false); // Close menu after selection.
-                  if (pathname !== "/") {
-                    router.push("/"); // Return to feed for category filtering.
-                  }
-                }}
-              >
-                {category.label}
-              </button>
-
-              {category.subCategories.length > 0 ? (
-                <div
-                  className={styles.topBar__subMenu}
-                  style={{ display: openCategory === categorySlug ? "flex" : "none" }}
-                  role="menu"
-                  aria-label="Subcategories"
-                >
-                  {category.subCategories.map((subCategory) => {
-                    const subSlug = toCategorySlug(subCategory); // Normalize subcategory slug.
-                    const isSubActive =
-                      isActive && selectedSubCategory === subSlug; // Track active subcategory.
-
-                    return (
-                      <button
-                        key={subCategory}
-                        className={`${styles.topBar__subMenuItem} ${
-                          isSubActive
-                            ? styles["topBar__subMenuItem--active"]
-                            : ""
-                        }`}
-                        type="button"
-                        role="menuitem"
-                        onClick={() => {
-                          setSubCategory(categorySlug, subSlug); // Filter by subcategory.
-                          setIsMenuOpen(false); // Close menu after selection.
-                          if (pathname !== "/") {
-                            router.push("/"); // Return to feed for subcategory filtering.
-                          }
-                        }}
-                      >
-                        {subCategory}
-                      </button>
-                    );
-                  })}
-                </div>
-              ) : null}
-            </div>
-          );
-        })}
+        <TopBarCategoriesMenuList
+          availableCategories={availableCategories}
+          selectedCategory={selectedCategory}
+          selectedSubCategory={selectedSubCategory}
+          openCategory={openCategory}
+          firstItemRef={firstItemRef}
+          onSelectAll={handleSelectAll}
+          onSelectCategory={handleSelectCategory}
+          onSelectSubCategory={handleSelectSubCategory}
+          onSubMenuOpen={handleSubMenuOpen}
+          onSubMenuClose={handleSubMenuClose}
+        />
       </div>
     </div>
   );

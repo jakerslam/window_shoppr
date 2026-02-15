@@ -1,27 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { DEFAULT_WISHLIST_NAME } from "@/features/wishlist/wishlist-constants";
 import { useWishlist } from "@/features/wishlist/wishlist";
-
-const LONG_PRESS_DELAY = 260; // Slightly above an average click duration for easier discovery.
-const CLICK_DELAY = 220; // Delay to distinguish single click from double click.
-let openWishlistMenuCount = 0; // Track open menus globally to coordinate feed pause/resume.
-
-/**
- * Broadcast current wishlist menu open state.
- */
-const emitWishlistMenuState = () => {
-  if (typeof window === "undefined") {
-    return; // Skip events during SSR.
-  }
-
-  window.dispatchEvent(
-    new CustomEvent("wishlist-menu:toggle", {
-      detail: { open: openWishlistMenuCount > 0 },
-    }),
-  ); // Notify listeners when any wishlist menu opens/closes.
-};
+import useWishlistMenuDismiss from "@/features/wishlist/menu/useWishlistMenuDismiss";
+import useWishlistMenuGestures from "@/features/wishlist/menu/useWishlistMenuGestures";
+import useWishlistMenuListActions from "@/features/wishlist/menu/useWishlistMenuListActions";
+import useWishlistMenuOpenBroadcast from "@/features/wishlist/menu/useWishlistMenuOpenBroadcast";
 
 /**
  * Wishlist menu state and handlers for the save button UI.
@@ -51,26 +36,8 @@ export default function useWishlistMenu({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [newListName, setNewListName] = useState("");
   const wrapperRef = useRef<HTMLDivElement | null>(null);
-  const clickTimeoutRef = useRef<number | null>(null);
-  const longPressTimeoutRef = useRef<number | null>(null);
-  const suppressClickRef = useRef(false);
   const isItemSaved = isSaved(productId); // Any-list membership for star state.
   const menuId = `wishlist-menu-${productId}`; // Unique id for the dropdown menu.
-
-  /**
-   * Detect whether taps should open the list menu on mobile feed cards.
-   */
-  const shouldOpenOnMobileTap = useCallback(() => {
-    if (!enableListMenu || !openMenuOnMobileTap) {
-      return false; // Keep default click behavior when disabled.
-    }
-
-    if (typeof window === "undefined") {
-      return false; // Skip mobile checks during SSR.
-    }
-
-    return window.matchMedia("(max-width: 820px)").matches; // Match mobile layout breakpoint.
-  }, [enableListMenu, openMenuOnMobileTap]);
 
   /**
    * Defer removal callbacks to avoid render-phase updates.
@@ -88,234 +55,46 @@ export default function useWishlistMenu({
     [onListRemoval],
   );
 
-  /**
-   * Open the list menu and suppress single-click toggles.
-   */
-  const openMenu = useCallback(() => {
-    if (!enableListMenu) {
-      return; // Skip list menu behavior when disabled for this context.
-    }
-
-    suppressClickRef.current = true; // Prevent click toggles when menu opens.
-
-    if (clickTimeoutRef.current) {
-      window.clearTimeout(clickTimeoutRef.current); // Cancel pending click toggle.
-      clickTimeoutRef.current = null;
-    }
-
-    setIsMenuOpen(true); // Show the list menu.
-  }, [enableListMenu]);
-
-  /**
-   * Close the list menu and clear input state.
-   */
-  const closeMenu = useCallback(() => {
-    setIsMenuOpen(false); // Hide the list menu.
-    setNewListName(""); // Reset input value.
-  }, []);
-
-  /**
-   * Handle single click toggles with a delay to detect double clicks.
-   */
-  const handleClick = useCallback(() => {
-    if (shouldOpenOnMobileTap()) {
-      openMenu(); // Open list picker directly on mobile tap.
-      return;
-    }
-
-    if (suppressClickRef.current) {
-      suppressClickRef.current = false; // Reset suppression for next click.
-      return;
-    }
-
-    if (clickTimeoutRef.current) {
-      window.clearTimeout(clickTimeoutRef.current); // Clear previous click timer.
-    }
-
-    clickTimeoutRef.current = window.setTimeout(() => {
-      if (activeListName && activeListName !== "All") {
-        const isInActiveList = isSavedInList(productId, activeListName); // Check active list membership.
-
-        if (isInActiveList) {
-          removeFromList(productId, activeListName); // Remove from the active list.
-          notifyRemoval(productId, activeListName); // Notify removal for ghost state.
-        } else {
-          saveToList(productId, activeListName); // Save directly into the active list.
-        }
-
-        clickTimeoutRef.current = null;
-        return;
-      }
-
-      if (activeListName === "All") {
-        const wasSaved = isSaved(productId); // Capture saved state before toggle.
-        toggleSaved(productId); // Toggle saved state across lists.
-
-        if (wasSaved) {
-          notifyRemoval(productId, activeListName); // Notify removal for ghost state.
-        }
-
-        clickTimeoutRef.current = null;
-        return;
-      }
-
-      toggleSaved(productId); // Toggle saved state across lists.
-      clickTimeoutRef.current = null;
-    }, CLICK_DELAY);
-  }, [
+  const {
+    openMenu,
+    closeMenu,
+    handleClick,
+    handleDoubleClick,
+    handlePointerDown,
+    handlePointerUp,
+  } = useWishlistMenuGestures({
+    productId,
     activeListName,
+    openMenuOnMobileTap,
+    enableListMenu,
     isSaved,
     isSavedInList,
-    notifyRemoval,
-    productId,
-    removeFromList,
     saveToList,
+    removeFromList,
     toggleSaved,
-    shouldOpenOnMobileTap,
-    openMenu,
-  ]);
+    notifyRemoval,
+    setIsMenuOpen,
+    setNewListName,
+  }); // Centralize click/press gesture handling.
 
-  /**
-   * Handle double click to open the list menu.
-   */
-  const handleDoubleClick = useCallback(() => {
-    if (!enableListMenu) {
-      return; // Skip menu open behavior when disabled.
-    }
+  const { handleSelectList, handleCreateList } = useWishlistMenuListActions({
+    productId,
+    newListName,
+    addList,
+    saveToList,
+    removeFromList,
+    isSavedInList,
+    notifyRemoval,
+    closeMenu,
+  }); // Wire list selection and list creation actions.
 
-    openMenu(); // Open list selection on double click.
-  }, [enableListMenu, openMenu]);
+  useWishlistMenuDismiss({
+    isMenuOpen,
+    wrapperRef,
+    closeMenu,
+  }); // Close menu on outside clicks + escape.
 
-  /**
-   * Handle long-press to open the list menu.
-   */
-  const handlePointerDown = useCallback(() => {
-    if (!enableListMenu) {
-      return; // Skip long-press menu behavior when disabled.
-    }
-
-    if (longPressTimeoutRef.current) {
-      window.clearTimeout(longPressTimeoutRef.current); // Clear previous long-press timer.
-    }
-
-    longPressTimeoutRef.current = window.setTimeout(() => {
-      openMenu(); // Open list selection after long press.
-    }, LONG_PRESS_DELAY);
-  }, [enableListMenu, openMenu]);
-
-  /**
-   * Clear the long-press timer when releasing the pointer.
-   */
-  const handlePointerUp = useCallback(() => {
-    if (longPressTimeoutRef.current) {
-      window.clearTimeout(longPressTimeoutRef.current); // Cancel pending long-press.
-      longPressTimeoutRef.current = null;
-    }
-  }, []);
-
-  /**
-   * Handle selecting a list name from the menu.
-   */
-  const handleSelectList = useCallback(
-    (listName: string) => {
-      const isActive = isSavedInList(productId, listName); // Check list membership.
-
-      if (isActive) {
-        removeFromList(productId, listName); // Remove from the selected list.
-        notifyRemoval(productId, listName); // Notify removal for ghost state.
-      } else {
-        saveToList(productId, listName); // Save the item to the selected list.
-      }
-
-      closeMenu(); // Close menu after selection.
-    },
-    [
-      closeMenu,
-      isSavedInList,
-      notifyRemoval,
-      productId,
-      removeFromList,
-      saveToList,
-    ],
-  );
-
-  /**
-   * Handle creating a new list and saving the item to it.
-   */
-  const handleCreateList = useCallback(() => {
-    const trimmedName = newListName.trim(); // Clean up input text.
-
-    if (!trimmedName) {
-      return; // Skip when input is empty.
-    }
-
-    const normalizedName = addList(trimmedName); // Create list (or reuse existing).
-    saveToList(productId, normalizedName); // Save item into the new list.
-    closeMenu(); // Close menu after creation.
-  }, [addList, closeMenu, newListName, productId, saveToList]);
-
-  /**
-   * Close the menu when clicking outside or pressing escape.
-   */
-  useEffect(() => {
-    if (!isMenuOpen) {
-      return undefined; // Skip when menu is closed.
-    }
-
-    const handlePointerDownOutside = (event: MouseEvent) => {
-      if (!wrapperRef.current?.contains(event.target as Node)) {
-        closeMenu(); // Close when clicking outside of the menu.
-      }
-    };
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        closeMenu(); // Close when escape is pressed.
-      }
-    };
-
-    window.addEventListener("mousedown", handlePointerDownOutside); // Detect outside clicks.
-    window.addEventListener("pointerdown", handlePointerDownOutside); // Detect touch/pointer outside clicks.
-    window.addEventListener("keydown", handleKeyDown); // Listen for escape.
-
-    return () => {
-      window.removeEventListener("mousedown", handlePointerDownOutside); // Clean up listener.
-      window.removeEventListener("pointerdown", handlePointerDownOutside); // Clean up touch/pointer listener.
-      window.removeEventListener("keydown", handleKeyDown); // Clean up listener.
-    };
-  }, [closeMenu, isMenuOpen]);
-
-  /**
-   * Broadcast menu open state so feed columns can pause while list pickers are visible.
-   */
-  useEffect(() => {
-    if (!isMenuOpen) {
-      return undefined; // Skip open-state wiring while closed.
-    }
-
-    openWishlistMenuCount += 1; // Track a newly opened menu.
-    emitWishlistMenuState(); // Broadcast updated open state.
-
-    return () => {
-      openWishlistMenuCount = Math.max(0, openWishlistMenuCount - 1); // Prevent negative counters.
-      emitWishlistMenuState(); // Broadcast updated close state.
-    };
-  }, [isMenuOpen]);
-
-  /**
-   * Clear timers when the component unmounts.
-   */
-  useEffect(() => {
-    return () => {
-      if (clickTimeoutRef.current) {
-        window.clearTimeout(clickTimeoutRef.current); // Clean up click timer.
-      }
-
-      if (longPressTimeoutRef.current) {
-        window.clearTimeout(longPressTimeoutRef.current); // Clean up long-press timer.
-      }
-    };
-  }, []);
+  useWishlistMenuOpenBroadcast(isMenuOpen); // Broadcast global open-state for feed pause.
 
   return {
     DEFAULT_WISHLIST_NAME,
@@ -327,6 +106,8 @@ export default function useWishlistMenu({
     setNewListName,
     wrapperRef,
     menuId,
+    openMenu,
+    closeMenu,
     handleClick,
     handleDoubleClick,
     handlePointerDown,
@@ -335,3 +116,4 @@ export default function useWishlistMenu({
     handleCreateList,
   };
 }
+

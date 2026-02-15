@@ -1,24 +1,15 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { CATEGORY_LABELS, toCategorySlug } from "@/shared/lib/categories";
 import { PREFERENCE_QUESTION_BANK } from "@/shared/lib/preference-questions";
+import useTasteQuizModalLifecycle from "@/features/preference-capture/useTasteQuizModalLifecycle";
+import { formatTemplate } from "@/features/preference-capture/taste-quiz/taste-quiz-utils";
+import TasteQuizStepCategories from "@/features/preference-capture/taste-quiz/TasteQuizStepCategories";
+import TasteQuizStepVibes from "@/features/preference-capture/taste-quiz/TasteQuizStepVibes";
 import styles from "@/features/preference-capture/TasteQuizModal.module.css";
 
 const QUIZ_CONFIG = PREFERENCE_QUESTION_BANK.tasteQuiz; // Data-driven copy + selection caps.
-
-/**
- * Replace simple {token} values in copy templates.
- */
-const formatTemplate = (
-  template: string,
-  values: Record<string, string | number>,
-) =>
-  template.replace(/\{(\w+)\}/g, (match, token) =>
-    Object.prototype.hasOwnProperty.call(values, token)
-      ? String(values[token])
-      : match,
-  );
 
 /**
  * Lightweight onboarding quiz that collects taste signals locally.
@@ -49,35 +40,20 @@ export default function TasteQuizModal({
     [],
   );
 
-  useEffect(() => {
-    if (!isOpen) {
-      return undefined;
-    }
+  /**
+   * Reset the quiz state each time the modal opens.
+   */
+  const resetQuizState = useCallback(() => {
+    setStep(1); // Reset the quiz step each time the modal opens.
+    setSelectedCategorySlugs(initialCategorySlugs); // Seed quiz selections from stored preferences.
+    setSelectedVibes([]); // Reset vibes to keep the quiz lightweight.
+  }, [initialCategorySlugs]);
 
-    const timeoutId = window.setTimeout(() => {
-      setStep(1); // Reset the quiz step each time the modal opens.
-      setSelectedCategorySlugs(initialCategorySlugs); // Seed quiz selections from stored preferences.
-      setSelectedVibes([]); // Reset vibes to keep the quiz lightweight.
-    }, 0); // Defer state updates to avoid cascading render warnings.
-
-    document.body.style.overflow = "hidden"; // Prevent background scroll while open.
-    window.dispatchEvent(new CustomEvent("modal:toggle", { detail: { open: true } })); // Pause feed while open.
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onClose(); // Allow keyboard users to exit the quiz.
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.clearTimeout(timeoutId); // Clean up deferred state updates when closing quickly.
-      document.body.style.overflow = ""; // Restore background scroll.
-      window.dispatchEvent(new CustomEvent("modal:toggle", { detail: { open: false } })); // Resume feed.
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [initialCategorySlugs, isOpen, onClose]);
+  useTasteQuizModalLifecycle({
+    isOpen,
+    onReset: resetQuizState,
+    onClose,
+  }); // Handle scroll locking + escape close + feed pause events.
 
   /**
    * Toggle a category preference chip selection.
@@ -160,93 +136,29 @@ export default function TasteQuizModal({
         </header>
 
         {step === 1 ? (
-          <>
-            <h3 className={styles.tasteQuiz__sectionTitle}>
-              {formatTemplate(QUIZ_CONFIG.copy.step1TitleTemplate, {
-                maxCategories: QUIZ_CONFIG.maxCategories,
-              })}
-            </h3>
-            <div className={styles.tasteQuiz__chipGrid}>
-              {categoryOptions.map((option) => {
-                const isSelected = selectedCategorySlugs.includes(option.slug);
-
-                return (
-                  <button
-                    key={option.slug}
-                    className={`${styles.tasteQuiz__chip} ${
-                      isSelected ? styles["tasteQuiz__chip--active"] : ""
-                    }`}
-                    type="button"
-                    onClick={() => handleCategoryToggle(option.slug)} // Toggle category selection.
-                    aria-pressed={isSelected}
-                  >
-                    {option.label}
-                  </button>
-                );
-              })}
-            </div>
-
-            <div className={styles.tasteQuiz__actions}>
-              <button
-                className={styles.tasteQuiz__button}
-                type="button"
-                onClick={onClose}
-              >
-                {QUIZ_CONFIG.copy.buttonNotNow}
-              </button>
-              <button
-                className={`${styles.tasteQuiz__button} ${styles["tasteQuiz__button--primary"]}`}
-                type="button"
-                onClick={() => setStep(2)} // Advance to the vibe step.
-              >
-                {QUIZ_CONFIG.copy.buttonNext}
-              </button>
-            </div>
-          </>
+          <TasteQuizStepCategories
+            categoryOptions={categoryOptions}
+            selectedCategorySlugs={selectedCategorySlugs}
+            maxCategories={QUIZ_CONFIG.maxCategories}
+            stepTitleTemplate={QUIZ_CONFIG.copy.step1TitleTemplate}
+            notNowLabel={QUIZ_CONFIG.copy.buttonNotNow}
+            nextLabel={QUIZ_CONFIG.copy.buttonNext}
+            onToggleCategory={handleCategoryToggle}
+            onNotNow={onClose}
+            onNext={() => setStep(2)}
+          />
         ) : (
-          <>
-            <h3 className={styles.tasteQuiz__sectionTitle}>
-              {formatTemplate(QUIZ_CONFIG.copy.step2TitleTemplate, {
-                maxVibes: QUIZ_CONFIG.maxVibes,
-              })}
-            </h3>
-            <div className={styles.tasteQuiz__chipGrid}>
-              {QUIZ_CONFIG.vibeOptions.map((option) => {
-                const isSelected = selectedVibes.includes(option.tagKey);
-
-                return (
-                  <button
-                    key={option.tagKey}
-                    className={`${styles.tasteQuiz__chip} ${
-                      isSelected ? styles["tasteQuiz__chip--active"] : ""
-                    }`}
-                    type="button"
-                    onClick={() => handleVibeToggle(option.tagKey)} // Toggle vibe selection.
-                    aria-pressed={isSelected}
-                  >
-                    {option.label}
-                  </button>
-                );
-              })}
-            </div>
-
-            <div className={styles.tasteQuiz__actions}>
-              <button
-                className={styles.tasteQuiz__button}
-                type="button"
-                onClick={() => setStep(1)} // Return to category step.
-              >
-                {QUIZ_CONFIG.copy.buttonBack}
-              </button>
-              <button
-                className={`${styles.tasteQuiz__button} ${styles["tasteQuiz__button--primary"]}`}
-                type="button"
-                onClick={handleFinish} // Apply selected preferences.
-              >
-                {QUIZ_CONFIG.copy.buttonFinish}
-              </button>
-            </div>
-          </>
+          <TasteQuizStepVibes
+            vibeOptions={QUIZ_CONFIG.vibeOptions}
+            selectedVibes={selectedVibes}
+            maxVibes={QUIZ_CONFIG.maxVibes}
+            stepTitleTemplate={QUIZ_CONFIG.copy.step2TitleTemplate}
+            backLabel={QUIZ_CONFIG.copy.buttonBack}
+            finishLabel={QUIZ_CONFIG.copy.buttonFinish}
+            onToggleVibe={handleVibeToggle}
+            onBack={() => setStep(1)}
+            onFinish={handleFinish}
+          />
         )}
       </div>
     </div>
