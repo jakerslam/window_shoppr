@@ -1,0 +1,151 @@
+"use client";
+
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Product } from "@/shared/lib/catalog/types";
+import { requestPointsRedemption } from "@/shared/lib/engagement/window-points";
+
+const DEFAULT_COLUMN_COUNT = 5; // Keep this aligned with the home feed desktop column count.
+
+/**
+ * Resolve the visible column count from the current viewport width.
+ */
+const getVisibleColumnCount = (viewportWidth: number) => {
+  if (viewportWidth <= 820) {
+    return 2; // Mobile layout shows two columns.
+  }
+
+  if (viewportWidth <= 1024) {
+    return 3; // Tablet layout shows three columns.
+  }
+
+  if (viewportWidth <= 1200) {
+    return 4; // Small desktop layout shows four columns.
+  }
+
+  return DEFAULT_COLUMN_COUNT; // Full desktop layout.
+};
+
+/**
+ * Finite-feed state for end-of-deck messaging and replay flow.
+ */
+export default function useFiniteFeedState({ columnDecks }: { columnDecks: Product[][] }) {
+  const [viewportWidth, setViewportWidth] = useState(() =>
+    typeof window === "undefined" ? 1280 : window.innerWidth,
+  );
+  const [replayCount, setReplayCount] = useState(0);
+  const [completionState, setCompletionState] = useState<{
+    deckSignature: string;
+    indexes: number[];
+  }>({
+    deckSignature: "",
+    indexes: [],
+  });
+  const [rewardState, setRewardState] = useState<{
+    deckSignature: string;
+    message: string;
+  }>({
+    deckSignature: "",
+    message: "",
+  });
+
+  const deckSignature = useMemo(
+    () => columnDecks.map((deck) => deck.map((product) => product.id).join(",")).join("|"),
+    [columnDecks],
+  ); // Reset completion tracking when deck content changes.
+  const visibleColumnCount = useMemo(
+    () => getVisibleColumnCount(viewportWidth),
+    [viewportWidth],
+  );
+  const activeColumnIndexes = useMemo(
+    () =>
+      columnDecks
+        .slice(0, visibleColumnCount)
+        .map((deck, index) => (deck.length > 0 ? index : -1))
+        .filter((index) => index >= 0),
+    [columnDecks, visibleColumnCount],
+  ); // Track only visible columns that actually render cards.
+  const completedColumnIndexes =
+    completionState.deckSignature === deckSignature
+      ? completionState.indexes
+      : [];
+  const rewardStatus =
+    rewardState.deckSignature === deckSignature ? rewardState.message : "";
+  const cycleToken = `${deckSignature}:${replayCount}`;
+  const isComplete =
+    activeColumnIndexes.length > 0 &&
+    activeColumnIndexes.every((index) => completedColumnIndexes.includes(index)); // Detect when the visible deck has been consumed.
+  const isDeckEnded = isComplete;
+
+  /**
+   * Keep viewport width current for responsive visible-column logic.
+   */
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return undefined; // Skip window listeners during SSR.
+    }
+
+    const syncViewportWidth = () => {
+      setViewportWidth(window.innerWidth); // Capture latest viewport width.
+    };
+
+    window.addEventListener("resize", syncViewportWidth);
+
+    return () => {
+      window.removeEventListener("resize", syncViewportWidth);
+    };
+  }, []);
+
+  /**
+   * Track a visible column reaching the end of its deck.
+   */
+  const handleColumnComplete = useCallback((columnIndex: number) => {
+    setCompletionState((previous) => {
+      const currentIndexes =
+        previous.deckSignature === deckSignature ? previous.indexes : [];
+
+      if (currentIndexes.includes(columnIndex)) {
+        return previous; // Avoid duplicate completion entries.
+      }
+
+      return {
+        deckSignature,
+        indexes: [...currentIndexes, columnIndex],
+      };
+    });
+  }, [deckSignature]);
+
+  /**
+   * Replay the same deck from the beginning.
+   */
+  const handleReplayDeck = useCallback(() => {
+    setCompletionState({
+      deckSignature,
+      indexes: [],
+    }); // Clear completion state.
+    setRewardState({
+      deckSignature,
+      message: "",
+    }); // Clear bonus status message.
+    setReplayCount((previous) => previous + 1); // Reset per-column completion guards.
+  }, [deckSignature]);
+
+  /**
+   * Trigger the optional reward hook when the user reaches deck end.
+   */
+  const handleRewardHook = useCallback(() => {
+    const response = requestPointsRedemption();
+    setRewardState({
+      deckSignature,
+      message: response.message,
+    }); // Surface hook response in the end banner.
+  }, [deckSignature]);
+
+  return {
+    isDeckEnded,
+    cycleToken,
+    rewardStatus,
+    handleColumnComplete,
+    handleReplayDeck,
+    handleRewardHook,
+  };
+}

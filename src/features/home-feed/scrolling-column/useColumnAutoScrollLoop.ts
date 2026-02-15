@@ -14,6 +14,7 @@ import {
 export default function useColumnAutoScrollLoop({
   deckLength,
   duration,
+  onForwardLoop,
   trackRef,
   loopHeightRef,
   baseSpeedRef,
@@ -30,6 +31,7 @@ export default function useColumnAutoScrollLoop({
 }: {
   deckLength: number;
   duration: number;
+  onForwardLoop?: () => void;
   trackRef: RefObject<HTMLDivElement | null>;
   loopHeightRef: MutableRefObject<number>;
   baseSpeedRef: MutableRefObject<number>;
@@ -115,14 +117,20 @@ export default function useColumnAutoScrollLoop({
         const combinedTarget = baseTarget + manualVelocityRef.current; // Add manual velocity assist.
         const speedDelta = (combinedTarget - speedRef.current) * 0.08; // Ease toward combined target.
         const nextSpeed = speedRef.current + speedDelta; // Apply speed easing.
+        const previousPosition = positionRef.current; // Compare positions to detect forward loop completion.
         const nextPosition = normalizeLoopPosition(
-          positionRef.current + nextSpeed * deltaSeconds,
+          previousPosition + nextSpeed * deltaSeconds,
           loopHeight,
         ); // Wrap position safely (supports negative speed).
+        const wrappedForward = nextSpeed > 0 && nextPosition < previousPosition;
 
         speedRef.current = nextSpeed; // Update the current speed.
         positionRef.current = nextPosition; // Cache the current position.
         track.style.transform = `translateY(-${nextPosition}px)`; // Move the track.
+
+        if (wrappedForward) {
+          onForwardLoop?.(); // Notify finite-feed state when this column consumes one loop.
+        }
       }
 
       animationRef.current = window.requestAnimationFrame((nextTime) =>
@@ -140,6 +148,7 @@ export default function useColumnAutoScrollLoop({
       speedRef,
       targetSpeedRef,
       trackRef,
+      onForwardLoop,
     ],
   );
 
@@ -194,4 +203,3 @@ export default function useColumnAutoScrollLoop({
     };
   }, [animateRef, animationRef, deckLength, syncMetrics, trackRef]);
 }
-

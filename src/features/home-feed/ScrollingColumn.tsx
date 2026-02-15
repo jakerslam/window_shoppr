@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { Product } from "@/shared/lib/catalog/types";
 import ProductCard from "@/shared/components/product-card/ProductCard";
 import WishlistSaveButton from "@/features/wishlist/WishlistSaveButton";
@@ -40,21 +40,49 @@ const createSaveRenderer = (productId: string) =>
  * Scrolling column of product cards with hover pause + manual scroll assist.
  */
 export default function ScrollingColumn({
+  columnIndex,
   deck,
   duration,
   onOpen,
   isModalOpen,
+  isFeedEnded,
+  cycleToken,
+  onColumnComplete,
 }: {
+  columnIndex: number;
   deck: Product[];
   duration: number;
   onOpen: (product: Product) => () => void;
   isModalOpen: boolean;
+  isFeedEnded: boolean;
+  cycleToken: string;
+  onColumnComplete: (columnIndex: number) => void;
 }) {
   const loopedDeck = useMemo(() => [...deck, ...deck], [deck]);
   const deckSignature = useMemo(
     () => deck.map((product) => product.id).join("|"),
     [deck],
   ); // Track meaningful deck changes, not array identity churn.
+  const hasReportedCompletion = useRef(false);
+
+  /**
+   * Reset one-loop completion reporting whenever the cycle token changes.
+   */
+  useEffect(() => {
+    hasReportedCompletion.current = false; // Allow one completion callback for each deck cycle.
+  }, [cycleToken, deckSignature]);
+
+  /**
+   * Notify the feed when this visible column completes one full loop.
+   */
+  const handleForwardLoop = useCallback(() => {
+    if (hasReportedCompletion.current) {
+      return; // Report one completion per cycle to avoid duplicate end-state updates.
+    }
+
+    hasReportedCompletion.current = true;
+    onColumnComplete(columnIndex);
+  }, [columnIndex, onColumnComplete]);
 
   // Memoize open handlers so cards do not receive new callbacks on every render.
   const openHandlers = useMemo(
@@ -81,6 +109,8 @@ export default function ScrollingColumn({
     deckSignature,
     deckLength: deck.length,
     isModalOpen,
+    isFeedEnded,
+    onForwardLoop: handleForwardLoop,
   });
 
   if (deck.length === 0) {
@@ -111,4 +141,3 @@ export default function ScrollingColumn({
     </div>
   );
 }
-

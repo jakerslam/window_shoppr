@@ -15,11 +15,15 @@ export default function useColumnMotion({
   deckSignature,
   deckLength,
   isModalOpen,
+  isFeedEnded,
+  onForwardLoop,
 }: {
   duration: number;
   deckSignature: string;
   deckLength: number;
   isModalOpen: boolean;
+  isFeedEnded: boolean;
+  onForwardLoop?: () => void;
 }) {
   const columnRef = useRef<HTMLDivElement | null>(null);
   const trackRef = useRef<HTMLDivElement | null>(null);
@@ -34,6 +38,7 @@ export default function useColumnMotion({
   const isPausedRef = useRef(false);
   const isHoveringRef = useRef(false);
   const isModalOpenRef = useRef(false);
+  const isFeedEndedRef = useRef(false);
   const isWishlistMenuOpenRef = useRef(false);
   const isInteractingRef = useRef(false);
   const isDraggingRef = useRef(false);
@@ -47,6 +52,7 @@ export default function useColumnMotion({
     const shouldPause =
       isHoveringRef.current ||
       isModalOpenRef.current ||
+      isFeedEndedRef.current ||
       isWishlistMenuOpenRef.current ||
       isInteractingRef.current;
 
@@ -65,6 +71,11 @@ export default function useColumnMotion({
     isWishlistMenuOpenRef,
     syncPauseState,
   }); // Pause feed when overlays are active.
+
+  useEffect(() => {
+    isFeedEndedRef.current = isFeedEnded; // Sync finite-feed pause signal.
+    syncPauseState(); // Re-evaluate pause state when deck-end state changes.
+  }, [isFeedEnded, syncPauseState]);
 
   useWheelAssist({
     columnRef,
@@ -97,6 +108,7 @@ export default function useColumnMotion({
   useColumnAutoScrollLoop({
     deckLength,
     duration,
+    onForwardLoop,
     trackRef,
     loopHeightRef,
     baseSpeedRef,
@@ -137,4 +149,3 @@ export default function useColumnMotion({
     endPointerGesture,
   };
 }
-

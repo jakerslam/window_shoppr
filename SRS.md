@@ -1,8 +1,8 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 60/89 (67.4%)  ██████████████░░░░░░
-Frontend: 50/64 (78.1%) ███████████████░░░░░
+Overall: 61/89 (68.5%)  ██████████████░░░░░░
+Frontend: 51/64 (79.7%) ███████████████░░░░░
 Backend: 9/22 (40.9%)   ████████░░░░░░░░░░░░
 Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░░░
 
@@ -66,7 +66,7 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] R19: Performance hooks (memoization/callbacks) where proven beneficial
 
 ## Backend & Data
-- [ ] R29.12: User report inputs + moderation queue stub (agent-reviewed)
+- [NEXT] 🔵 R29.12: User report inputs + moderation queue stub (agent-reviewed)
 - [ ] R29.13: Agent API documentation (skill file for ingestion/moderation)
 - [ ] R29.6: Guest wishlist persistence + future account sync (local-first saves; later sync across devices)
 - [x] R29.1: Product source metadata + idempotency (source, externalId, lastSeenAt, lastPriceCheckAt)
@@ -99,7 +99,7 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] R29.7: Product view comments section (community notes + moderation hooks later)
 - [x] R17.1: Loading UI (global spinner/skeletons for route + modal transitions)
 - [x] R29.3: Gamification (window shop points + streaks + redemption hook later)
-- [NEXT] 🔵 R29.2: Finite feed UX ("end of deck" messaging + optional reward hook)
+- [x] R29.2: Finite feed UX ("end of deck" messaging + optional reward hook)
 - [x] R15: Accessibility baseline (focus states, contrast, keyboard nav)
 - [x] R16: Responsive layout pass (mobile/tablet polish)
 - [x] R17: Empty states + loading states
