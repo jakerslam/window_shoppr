@@ -137,6 +137,7 @@ This skill defines the ingestion and moderation contract for autonomous agents.
 - `moderation:queue:update` (item status changed)
 - `affiliate:click` (attribution/analytics signal)
 - `purchase:followup:update` (post-click conversion prompt queue updated)
+- `social-proof:save-counts` (save-count map updated after wishlist state transitions)
 - `agent:product:upsert` (agent upsert queued)
 - `agent:product:publish` (publish-state mutation queued)
 - `agent:moderation:resolve` (moderation resolution queued)

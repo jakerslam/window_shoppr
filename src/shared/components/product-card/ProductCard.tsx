@@ -1,7 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
+"use client";
 
 import { toAssetPath } from "@/shared/lib/catalog/assets";
 import { Product } from "@/shared/lib/catalog/types";
+import {
+  formatSaveCountLabel,
+  useProductSaveCount,
+} from "@/shared/lib/engagement/social-proof";
 import styles from "@/shared/components/product-card/ProductCard.module.css";
 
 /**
@@ -72,6 +77,8 @@ export default function ProductCard({
   const showDealBadge = hasDeal || Boolean(dealLabel); // Show badge for active deals.
   const imageSrc = toAssetPath(product.images[0] ?? "/images/product-placeholder.svg"); // Use first image or fallback.
   const isCompact = variant === "compact"; // Toggle compact styling for dense layouts.
+  const saveCount = useProductSaveCount(product.id, product.saveCount ?? 0); // Subscribe to live save-count updates for this product.
+  const saveCountLabel = formatSaveCountLabel(saveCount); // Render compact human-readable save count text.
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
     if (event.key === "Enter" || event.key === " ") {
@@ -138,6 +145,7 @@ export default function ProductCard({
               {dealLabel ?? " "} {/* Reserve space when timer is missing. */}
             </span>
           ) : null}
+          <span className={styles.productCard__saveCount}>{saveCountLabel}</span>
         </div>
 
         {/* Save button injected by the parent feature (wishlist/feed). */}

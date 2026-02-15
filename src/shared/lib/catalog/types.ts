@@ -18,6 +18,7 @@ export type Product = {
   originalPrice?: number;
   rating?: number;
   ratingCount?: number;
+  saveCount?: number;
   images: string[];
   description: string;
   affiliateUrl: string;

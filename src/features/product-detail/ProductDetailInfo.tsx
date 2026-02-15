@@ -3,6 +3,10 @@
 import { Product, PRODUCT_UI } from "@/shared/lib/catalog/types";
 import { trackAffiliateClick } from "@/shared/lib/engagement/analytics";
 import {
+  formatSaveCountLabel,
+  useProductSaveCount,
+} from "@/shared/lib/engagement/social-proof";
+import {
   awardWindowPoints,
   buildDailyWindowPointsKey,
 } from "@/shared/lib/engagement/window-points";
@@ -37,6 +41,8 @@ export default function ProductDetailInfo({
     ? `${product.rating.toFixed(1)} / 5 (${product.ratingCount ?? 0})`
     : "No ratings yet"; // Build rating label with reviews.
   const retailerLabel = product.retailer ?? "Retailer"; // Fall back when retailer is unknown.
+  const saveCount = useProductSaveCount(product.id, product.saveCount ?? 0); // Subscribe to live save-count updates for this product.
+  const saveCountLabel = formatSaveCountLabel(saveCount); // Render compact social-proof text.
 
   /**
    * Track outbound affiliate clicks for analytics.
@@ -96,6 +102,7 @@ export default function ProductDetailInfo({
           </div>
         </div>
         <span className={styles.productDetail__ratingText}>{ratingText}</span>
+        <span className={styles.productDetail__saveCount}>{saveCountLabel}</span>
       </div>
 
       <div className={styles.productDetail__actionsRow}>

@@ -1,7 +1,7 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 69/90 (76.7%)  ███████████████░░░░░
+Overall: 70/90 (77.8%)  ████████████████░░░░
 Frontend: 51/64 (79.7%) ███████████████░░░░░
 Backend: 16/22 (72.7%)  ███████████████░░░░░
 Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░░░
@@ -77,8 +77,8 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 
 ## Analytics & Revenue
 - [x] R29.9: Post-click purchase confirmation prompt ("Did you buy this?" + review reminder hook)
-- [NEXT] 🔵 R29.8: Social proof counts (display save count on product pages + cards)
-- [ ] R29.5: User-submitted deals (submit link + optional price/info; moderation queue for AI agent/gatekeeper; auto-enrich into draft products; optional revenue share later)
+- [x] R29.8: Social proof counts (display save count on product pages + cards)
+- [NEXT] 🔵 R29.5: User-submitted deals (submit link + optional price/info; moderation queue for AI agent/gatekeeper; auto-enrich into draft products; optional revenue share later)
 - [ ] R29.4: Native ad cards (occasional sponsored cards in feed, non-disruptive)
 - [x] R23: Click tracking for affiliate links
 - [x] R24: Cookie consent + privacy/affiliate disclosure (accept all + essential only)

@@ -61,6 +61,7 @@ This guide defines where agent automation should read/write today and where it w
 - `POST /data/wishlist/sync` (guest/account wishlist merge + ack pending ops)
 - `POST /data/email-captures` (email list capture persistence)
 - `POST /data/purchase-intents` (post-affiliate conversion responses + review reminder hook)
+- `POST /data/social-proof/saves` (aggregate save-count deltas for product social proof)
 
 ## Auth Surface (Account Wiring)
 - Frontend account wiring now expects:

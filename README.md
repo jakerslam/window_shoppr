@@ -49,6 +49,7 @@ See: `docs/agent/README.md`, `docs/agent/SKILL.md`, and `docs/agent/AGENT_SKILL.
 - `POST /data/wishlist/sync`
 - `POST /data/email-captures`
 - `POST /data/purchase-intents`
+- `POST /data/social-proof/saves`
 - `NEXT_PUBLIC_AUTH_API_URL` (optional): enables auth backend wiring (`/auth/*` routes).
 
 ## Scripts

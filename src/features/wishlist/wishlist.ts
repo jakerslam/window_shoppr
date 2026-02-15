@@ -15,6 +15,7 @@ import {
 } from "@/features/wishlist/lib/wishlist-storage";
 import { DEFAULT_WISHLIST_NAME } from "@/features/wishlist/wishlist-constants";
 import { trackWishlistEvent } from "@/shared/lib/engagement/analytics";
+import { applyProductSaveTransition } from "@/shared/lib/engagement/social-proof";
 import { awardWindowPoints } from "@/shared/lib/engagement/window-points";
 
 /**
@@ -93,6 +94,7 @@ export const useWishlist = () => {
         if (currentList.includes(id)) {
           return prev;
         }
+        const wasSaved = Object.values(prev.lists).some((list) => list.includes(id));
 
         const nextState = {
           order: normalizeListOrder(
@@ -117,6 +119,11 @@ export const useWishlist = () => {
           nextState,
           operation: { type: "save", productId: id, listName: targetList },
         });
+        applyProductSaveTransition({
+          productId: id,
+          wasSaved,
+          isSaved: true,
+        }); // Increment social-proof count only when transitioning from unsaved to saved.
         return nextState;
       });
     },
@@ -132,6 +139,7 @@ export const useWishlist = () => {
         if (!currentList.includes(id)) {
           return prev;
         }
+        const wasSaved = Object.values(prev.lists).some((list) => list.includes(id));
 
         const nextState = {
           order: normalizeListOrder(prev.order),
@@ -148,6 +156,14 @@ export const useWishlist = () => {
           nextState,
           operation: { type: "remove", productId: id, listName: targetList },
         });
+        const isStillSaved = Object.values(nextState.lists).some((list) =>
+          list.includes(id),
+        );
+        applyProductSaveTransition({
+          productId: id,
+          wasSaved,
+          isSaved: isStillSaved,
+        }); // Decrement social-proof count only when the product leaves all lists.
         return nextState;
       });
     },
@@ -196,6 +212,11 @@ export const useWishlist = () => {
             listName: isAlreadySaved ? "all" : DEFAULT_WISHLIST_NAME,
           },
         });
+        applyProductSaveTransition({
+          productId: id,
+          wasSaved: isAlreadySaved,
+          isSaved: !isAlreadySaved,
+        }); // Keep social-proof counts aligned with global save-state toggles.
         return nextState;
       });
     },

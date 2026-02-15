@@ -26,6 +26,7 @@ export const ProductSchema: z.ZodType<Product> = z
     originalPrice: z.number().finite().nonnegative().optional(), // Optional crossed-out price.
     rating: z.number().finite().min(0).max(5).optional(), // 0..5 star rating.
     ratingCount: z.number().int().nonnegative().optional(), // Count of ratings/reviews.
+    saveCount: z.number().int().nonnegative().optional(), // Optional social-proof save count.
     images: z.array(z.string().min(1)).min(1), // Primary image + optional gallery.
     description: z.string().min(1), // SEO-friendly description stored per product.
     affiliateUrl: z.string().url(), // Outbound affiliate destination.

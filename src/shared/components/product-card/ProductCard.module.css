@@ -127,6 +127,13 @@
   white-space: pre;
 }
 
+.productCard__saveCount {
+  font-size: 10px;
+  color: var(--color-text-muted);
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
 .productCard__wishlist {
   position: relative;
   border: 0;
