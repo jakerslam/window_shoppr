@@ -84,7 +84,7 @@
 .productCard__priceSection {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
   min-width: 0;
 }
 
@@ -137,9 +137,11 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 4px;
+  gap: 2px;
   min-width: 0;
   width: 100%;
+  border-top: 1px solid var(--color-border);
+  padding-top: 4px;
 }
 
 .productCard__wishlist {
@@ -260,11 +262,12 @@
   }
 
   .productCard__priceSection {
-    gap: 3px;
+    gap: 2px;
   }
 
   .productCard__actions {
-    gap: 3px;
+    gap: 2px;
+    padding-top: 3px;
   }
 
   .productCard--compact {

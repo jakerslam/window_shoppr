@@ -1,6 +1,10 @@
 "use client";
 
 import SortDropdown, { SortOption } from "@/features/home-feed/SortDropdown";
+import {
+  RabbitSpeedIcon,
+  TurtleSpeedIcon,
+} from "@/features/home-feed/SpeedIcons";
 import styles from "@/features/home-feed/HomeFeed.module.css";
 
 /**
@@ -59,14 +63,14 @@ export default function HomeFeedHeader({
             data-side="left"
             aria-hidden="true"
           >
-            🐢
+            <TurtleSpeedIcon />
           </span>
           <span
             className={styles.homeFeed__speedIcon}
             data-side="right"
             aria-hidden="true"
           >
-            🐇
+            <RabbitSpeedIcon />
           </span>
         </button>
 
@@ -76,4 +80,3 @@ export default function HomeFeedHeader({
     </div>
   );
 }
-

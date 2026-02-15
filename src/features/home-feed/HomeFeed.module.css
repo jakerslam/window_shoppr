@@ -185,10 +185,19 @@
 .homeFeed__speedIcon {
   position: relative;
   z-index: 1;
-  font-size: 14px;
+  width: 15px;
+  height: 15px;
   color: var(--color-text-muted);
   transition: color 200ms ease;
   justify-self: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.homeFeed__speedIcon svg {
+  width: 100%;
+  height: 100%;
 }
 
 .homeFeed__speedToggle:not(.homeFeed__speedToggle--quick)

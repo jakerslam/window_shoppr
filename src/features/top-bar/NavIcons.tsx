@@ -99,17 +99,13 @@ export function BellIcon(props: NavIconProps) {
   return (
     <svg
       viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.9"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      fill="currentColor"
       aria-hidden="true"
       focusable="false"
       {...props}
     >
-      <path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
-      <path d="M13.73 21a2 2 0 01-3.46 0" />
+      <path d="M18 16.75V11.5c0-2.97-1.64-5.45-4.5-6.16V4.75a1.5 1.5 0 0 0-3 0v.59C7.64 6.05 6 8.53 6 11.5v5.25l-1.75 1.75a.75.75 0 0 0 .53 1.28h14.44a.75.75 0 0 0 .53-1.28L18 16.75Z" />
+      <path d="M12 22a2.75 2.75 0 0 0 2.67-2H9.33A2.75 2.75 0 0 0 12 22Z" />
     </svg>
   );
 }
