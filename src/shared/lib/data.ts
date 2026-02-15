@@ -1,6 +1,10 @@
-import productsJson from "@/data/products.json";
 import { Product } from "@/shared/lib/types";
-import { normalizeCatalogSource, normalizeProductSource } from "@/shared/lib/products";
+import { ProductCatalogSchema, ProductSchema } from "@/shared/lib/schema";
+import {
+  FALLBACK_PRODUCTS,
+  normalizeCatalogSource,
+  normalizeProductSource,
+} from "@/shared/lib/products";
 
 const DEV_LOADING_DELAY_MS = 400; // Artificial delay to preview loading UI in dev.
 
@@ -42,10 +46,11 @@ export const fetchProducts = async (): Promise<Product[]> => {
   const sqlProducts = await fetchProductsFromSql(); // Prefer SQL when available.
 
   if (sqlProducts && sqlProducts.length > 0) {
-    return normalizeCatalogSource(sqlProducts, "sql"); // Normalize SQL source metadata.
+    const validated = ProductCatalogSchema.parse(sqlProducts); // Validate SQL data before display.
+    return normalizeCatalogSource(validated, "sql"); // Normalize SQL source metadata.
   }
 
-  return normalizeCatalogSource(productsJson as Product[], "json"); // Normalize JSON source metadata.
+  return normalizeCatalogSource(FALLBACK_PRODUCTS, "json"); // Normalize JSON source metadata.
 };
 
 /**
@@ -60,12 +65,12 @@ export const fetchProductBySlug = async (
   const sqlProduct = await fetchProductBySlugFromSql(slug); // Prefer SQL when available.
 
   if (sqlProduct) {
-    return normalizeProductSource(sqlProduct, "sql"); // Normalize SQL source metadata.
+    const validated = ProductSchema.parse(sqlProduct); // Validate SQL data before display.
+    return normalizeProductSource(validated, "sql"); // Normalize SQL source metadata.
   }
 
-  const jsonProducts = productsJson as Product[]; // Fall back to local JSON.
-
-  const jsonProduct = jsonProducts.find((product) => product.slug === slug) ?? null; // Match by slug.
+  const jsonProduct =
+    FALLBACK_PRODUCTS.find((product) => product.slug === slug) ?? null; // Match by slug.
 
   return jsonProduct
     ? normalizeProductSource(jsonProduct, "json")

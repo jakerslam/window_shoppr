@@ -1,4 +1,6 @@
-const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? ""; // Static hosting base path.
+import { PUBLIC_ENV } from "@/shared/lib/env";
+
+const BASE_PATH = PUBLIC_ENV.basePath; // Static hosting base path (validated).
 
 /**
  * Build a static-safe asset URL for local public files.

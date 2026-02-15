@@ -1,10 +1,11 @@
 import productsJson from "@/data/products.json";
+import { ProductCatalogSchema } from "@/shared/lib/schema";
 import { Product } from "@/shared/lib/types";
 
 /**
  * Static product catalog fallback for client-only experiences.
  */
-export const FALLBACK_PRODUCTS = productsJson as Product[]; // Use JSON fallback until SQL wiring.
+export const FALLBACK_PRODUCTS = ProductCatalogSchema.parse(productsJson); // Validate JSON fallback at module load.
 
 /**
  * Shared product catalog getter for category gating.

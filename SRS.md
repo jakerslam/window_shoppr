@@ -1,8 +1,8 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 50/89 (56.2%)  ███████████░░░░░░░░░
-Frontend: 40/64 (62.5%) ████████████░░░░░░░░
+Overall: 51/89 (57.3%)  ███████████░░░░░░░░░
+Frontend: 41/64 (64.1%) ████████████░░░░░░░░
 Backend: 9/22 (40.9%)   ████████░░░░░░░░░░░░
 Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░░░
 
@@ -24,9 +24,9 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - Early trigger: run maintenance immediately if any TS/TSX file exceeds 350 lines.
 
 ## Core Requirements
-- [NEXT] 🔵 R36: Add schema validation (Zod) for product data + env config
+- [x] R36: Add schema validation (Zod) for product data + env config
 - [ ] R37: Add basic security headers (CSP, HSTS, etc.)
-- [ ] R38: Add baseline analytics events (search, wishlist save, affiliate click)
+- [NEXT] 🔵 R38: Add baseline analytics events (search, wishlist save, affiliate click)
 - [x] R12.2: Login modal/page UI with auth handler stubs
 - [x] R1: Initialize architecture (Next.js + TypeScript scaffold) and baseline project structure
 - [x] R2: Define core data model and JSON fallback loading strategy (with SQL stubs)

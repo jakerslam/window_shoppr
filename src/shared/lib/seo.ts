@@ -1,8 +1,9 @@
+import { PUBLIC_ENV } from "@/shared/lib/env";
+
 /**
  * Canonical site URL for metadata, override with NEXT_PUBLIC_SITE_URL.
  */
-export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://window-shoppr.com"; // Fallback base URL.
+export const SITE_URL = PUBLIC_ENV.siteUrl; // Use validated env with a safe fallback.
 
 /**
  * Default max length for meta descriptions.
