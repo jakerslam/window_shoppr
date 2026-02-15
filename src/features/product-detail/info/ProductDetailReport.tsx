@@ -36,6 +36,7 @@ export default function ProductDetailReport({
     const details = reportDetails.trim();
 
     if (reportReason === "other" && !details) {
+      setReportSubmitted(false); // Ensure validation feedback renders inline after prior successful submissions.
       setReportMessage("Please add details for \"Other\" reports.");
       return; // Require details when reason is too generic.
     }
