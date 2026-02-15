@@ -2,25 +2,23 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { CATEGORY_LABELS, toCategorySlug } from "@/shared/lib/categories";
+import { PREFERENCE_QUESTION_BANK } from "@/shared/lib/preference-questions";
 import styles from "@/features/preference-capture/TasteQuizModal.module.css";
 
-type VibeOption = {
-  label: string;
-  tagKey: string;
-};
+const QUIZ_CONFIG = PREFERENCE_QUESTION_BANK.tasteQuiz; // Data-driven copy + selection caps.
 
-const MAX_CATEGORIES = 4;
-const MAX_VIBES = 5;
-
-const VIBE_OPTIONS: VibeOption[] = [
-  { label: "Cozy", tagKey: "cozy" },
-  { label: "Self-care", tagKey: "self-care" },
-  { label: "Home glow-up", tagKey: "home" },
-  { label: "Fitness", tagKey: "fitness" },
-  { label: "Pets", tagKey: "pets" },
-  { label: "Outdoors", tagKey: "outdoors" },
-  { label: "Desk setup", tagKey: "tech" },
-];
+/**
+ * Replace simple {token} values in copy templates.
+ */
+const formatTemplate = (
+  template: string,
+  values: Record<string, string | number>,
+) =>
+  template.replace(/\{(\w+)\}/g, (match, token) =>
+    Object.prototype.hasOwnProperty.call(values, token)
+      ? String(values[token])
+      : match,
+  );
 
 /**
  * Lightweight onboarding quiz that collects taste signals locally.
@@ -92,7 +90,7 @@ export default function TasteQuizModal({
         return prev.filter((slug) => slug !== categorySlug); // Remove category selection.
       }
 
-      if (prev.length >= MAX_CATEGORIES) {
+      if (prev.length >= QUIZ_CONFIG.maxCategories) {
         return prev; // Enforce a small cap to keep the quiz quick.
       }
 
@@ -111,7 +109,7 @@ export default function TasteQuizModal({
         return prev.filter((entry) => entry !== tagKey); // Remove the vibe tag.
       }
 
-      if (prev.length >= MAX_VIBES) {
+      if (prev.length >= QUIZ_CONFIG.maxVibes) {
         return prev; // Keep vibe tags limited for a quick experience.
       }
 
@@ -131,6 +129,11 @@ export default function TasteQuizModal({
     return null; // Render nothing when the quiz is closed.
   }
 
+  const stepMeta = formatTemplate(QUIZ_CONFIG.copy.stepMetaTemplate, {
+    step,
+    total: 2,
+  }); // Build data-driven step meta copy.
+
   return (
     <div className={styles.tasteQuiz} role="dialog" aria-modal="true">
       <div
@@ -141,11 +144,9 @@ export default function TasteQuizModal({
       <div className={styles.tasteQuiz__card} onClick={(event) => event.stopPropagation()}>
         <header className={styles.tasteQuiz__header}>
           <div className={styles.tasteQuiz__titleGroup}>
-            <div className={styles.tasteQuiz__stepMeta}>Step {step} of 2</div>
-            <h2 className={styles.tasteQuiz__title}>Personalize your window</h2>
-            <p className={styles.tasteQuiz__subtitle}>
-              This is saved only on this device. You can clear it anytime in settings.
-            </p>
+            <div className={styles.tasteQuiz__stepMeta}>{stepMeta}</div>
+            <h2 className={styles.tasteQuiz__title}>{QUIZ_CONFIG.copy.title}</h2>
+            <p className={styles.tasteQuiz__subtitle}>{QUIZ_CONFIG.copy.subtitle}</p>
           </div>
 
           <button
@@ -160,7 +161,11 @@ export default function TasteQuizModal({
 
         {step === 1 ? (
           <>
-            <h3 className={styles.tasteQuiz__sectionTitle}>Pick up to {MAX_CATEGORIES} categories</h3>
+            <h3 className={styles.tasteQuiz__sectionTitle}>
+              {formatTemplate(QUIZ_CONFIG.copy.step1TitleTemplate, {
+                maxCategories: QUIZ_CONFIG.maxCategories,
+              })}
+            </h3>
             <div className={styles.tasteQuiz__chipGrid}>
               {categoryOptions.map((option) => {
                 const isSelected = selectedCategorySlugs.includes(option.slug);
@@ -182,23 +187,31 @@ export default function TasteQuizModal({
             </div>
 
             <div className={styles.tasteQuiz__actions}>
-              <button className={styles.tasteQuiz__button} type="button" onClick={onClose}>
-                Not now
+              <button
+                className={styles.tasteQuiz__button}
+                type="button"
+                onClick={onClose}
+              >
+                {QUIZ_CONFIG.copy.buttonNotNow}
               </button>
               <button
                 className={`${styles.tasteQuiz__button} ${styles["tasteQuiz__button--primary"]}`}
                 type="button"
                 onClick={() => setStep(2)} // Advance to the vibe step.
               >
-                Next
+                {QUIZ_CONFIG.copy.buttonNext}
               </button>
             </div>
           </>
         ) : (
           <>
-            <h3 className={styles.tasteQuiz__sectionTitle}>Pick a few vibes (optional)</h3>
+            <h3 className={styles.tasteQuiz__sectionTitle}>
+              {formatTemplate(QUIZ_CONFIG.copy.step2TitleTemplate, {
+                maxVibes: QUIZ_CONFIG.maxVibes,
+              })}
+            </h3>
             <div className={styles.tasteQuiz__chipGrid}>
-              {VIBE_OPTIONS.map((option) => {
+              {QUIZ_CONFIG.vibeOptions.map((option) => {
                 const isSelected = selectedVibes.includes(option.tagKey);
 
                 return (
@@ -223,14 +236,14 @@ export default function TasteQuizModal({
                 type="button"
                 onClick={() => setStep(1)} // Return to category step.
               >
-                Back
+                {QUIZ_CONFIG.copy.buttonBack}
               </button>
               <button
                 className={`${styles.tasteQuiz__button} ${styles["tasteQuiz__button--primary"]}`}
                 type="button"
                 onClick={handleFinish} // Apply selected preferences.
               >
-                Finish
+                {QUIZ_CONFIG.copy.buttonFinish}
               </button>
             </div>
           </>

@@ -10,6 +10,7 @@ import {
   getTasteProfile,
   writeTasteProfile,
 } from "@/shared/lib/taste-profile";
+import { PREFERENCE_QUESTION_BANK } from "@/shared/lib/preference-questions";
 import DescriptionToggle from "@/features/product-detail/DescriptionToggle";
 import styles from "@/features/product-detail/ProductDetail.module.css";
 import { clamp, formatPrice } from "@/features/product-detail/product-detail-utils";
@@ -30,6 +31,7 @@ export default function ProductDetailInfo({
   onTagClick: (tag: string) => void;
   hasDeal: boolean;
 }) {
+  const trickleConfig = PREFERENCE_QUESTION_BANK.tasteTrickle; // Data-driven trickle preference copy.
   const ratingValue = product.rating ?? 0; // Default to zero for fill calculations.
   const ratingPercent = clamp((ratingValue / 5) * 100, 0, 100); // Convert rating to percent.
   const ratingText = product.rating
@@ -104,9 +106,9 @@ export default function ProductDetailInfo({
 
   const tasteStatusLabel =
     tasteSignalStatus === "liked"
-      ? "Noted: more like this"
+      ? trickleConfig.likedStatus
       : tasteSignalStatus === "disliked"
-        ? "Noted: less like this"
+        ? trickleConfig.dislikedStatus
         : ""; // Provide lightweight feedback after clicks.
 
   return (
@@ -164,7 +166,9 @@ export default function ProductDetailInfo({
       {/* Trickle preference capture for local-first personalization. */}
       <div className={styles.productDetail__taste}>
         <div className={styles.productDetail__tasteHeader}>
-          <span className={styles.productDetail__tasteTitle}>Tune your feed</span>
+          <span className={styles.productDetail__tasteTitle}>
+            {trickleConfig.title}
+          </span>
           <span
             className={styles.productDetail__tasteStatus}
             role="status"
@@ -179,14 +183,14 @@ export default function ProductDetailInfo({
             type="button"
             onClick={() => handleTasteSignal("like")} // Boost this product style in recommendations.
           >
-            More like this
+            {trickleConfig.likeLabel}
           </button>
           <button
             className={styles.productDetail__tasteButton}
             type="button"
             onClick={() => handleTasteSignal("dislike")} // Reduce this product style in recommendations.
           >
-            Less like this
+            {trickleConfig.dislikeLabel}
           </button>
         </div>
       </div>

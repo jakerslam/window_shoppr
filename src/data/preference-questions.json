@@ -1,0 +1,34 @@
+{
+  "tasteQuiz": {
+    "maxCategories": 4,
+    "maxVibes": 5,
+    "copy": {
+      "title": "Personalize your window",
+      "subtitle": "This is saved only on this device. You can clear it anytime in settings.",
+      "stepMetaTemplate": "Step {step} of {total}",
+      "step1TitleTemplate": "Pick up to {maxCategories} categories",
+      "step2TitleTemplate": "Pick a few vibes (optional)",
+      "buttonNotNow": "Not now",
+      "buttonNext": "Next",
+      "buttonBack": "Back",
+      "buttonFinish": "Finish"
+    },
+    "vibeOptions": [
+      { "label": "Cozy", "tagKey": "cozy" },
+      { "label": "Self-care", "tagKey": "self-care" },
+      { "label": "Home glow-up", "tagKey": "home" },
+      { "label": "Fitness", "tagKey": "fitness" },
+      { "label": "Pets", "tagKey": "pets" },
+      { "label": "Outdoors", "tagKey": "outdoors" },
+      { "label": "Desk setup", "tagKey": "tech" }
+    ]
+  },
+  "tasteTrickle": {
+    "title": "Tune your feed",
+    "likeLabel": "More like this",
+    "dislikeLabel": "Less like this",
+    "likedStatus": "Noted: more like this",
+    "dislikedStatus": "Noted: less like this"
+  }
+}
+
