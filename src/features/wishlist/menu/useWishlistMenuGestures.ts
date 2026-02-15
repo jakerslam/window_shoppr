@@ -2,11 +2,10 @@
 
 import { useCallback, useEffect, useRef } from "react";
 
-const LONG_PRESS_DELAY = 260; // Slightly above an average click duration for easier discovery.
 const CLICK_DELAY = 220; // Delay to distinguish single click from double click.
 
 /**
- * Gesture handlers for wishlist save interactions (click, double click, long press).
+ * Gesture handlers for wishlist save interactions (click + double click).
  */
 export default function useWishlistMenuGestures({
   productId,
@@ -36,7 +35,6 @@ export default function useWishlistMenuGestures({
   setNewListName: (value: string) => void;
 }) {
   const clickTimeoutRef = useRef<number | null>(null);
-  const longPressTimeoutRef = useRef<number | null>(null);
   const suppressClickRef = useRef(false);
 
   /**
@@ -152,41 +150,10 @@ export default function useWishlistMenuGestures({
     openMenu(); // Open list selection on double click.
   }, [enableListMenu, openMenu]);
 
-  /**
-   * Handle long-press to open the list menu.
-   */
-  const handlePointerDown = useCallback(() => {
-    if (!enableListMenu) {
-      return; // Skip long-press menu behavior when disabled.
-    }
-
-    if (longPressTimeoutRef.current) {
-      window.clearTimeout(longPressTimeoutRef.current); // Clear previous long-press timer.
-    }
-
-    longPressTimeoutRef.current = window.setTimeout(() => {
-      openMenu(); // Open list selection after long press.
-    }, LONG_PRESS_DELAY);
-  }, [enableListMenu, openMenu]);
-
-  /**
-   * Clear the long-press timer when releasing the pointer.
-   */
-  const handlePointerUp = useCallback(() => {
-    if (longPressTimeoutRef.current) {
-      window.clearTimeout(longPressTimeoutRef.current); // Cancel pending long-press.
-      longPressTimeoutRef.current = null;
-    }
-  }, []);
-
   useEffect(() => {
     return () => {
       if (clickTimeoutRef.current) {
         window.clearTimeout(clickTimeoutRef.current); // Clean up click timer.
-      }
-
-      if (longPressTimeoutRef.current) {
-        window.clearTimeout(longPressTimeoutRef.current); // Clean up long-press timer.
       }
     };
   }, []);
@@ -196,8 +163,5 @@ export default function useWishlistMenuGestures({
     closeMenu,
     handleClick,
     handleDoubleClick,
-    handlePointerDown,
-    handlePointerUp,
   };
 }
-

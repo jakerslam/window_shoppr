@@ -37,8 +37,6 @@ export default function WishlistSaveButton({
     menuId,
     handleClick,
     handleDoubleClick,
-    handlePointerDown,
-    handlePointerUp,
     handleSelectList,
     handleCreateList,
   } = useWishlistMenu({
@@ -55,7 +53,7 @@ export default function WishlistSaveButton({
       className={`${styles.wishlistSave} ${wrapperClassName ?? ""}`}
       onClick={(event) => event.stopPropagation()} // Prevent card clicks.
     >
-      {/* Save button with long-press and double-click support. */}
+      {/* Save button with click and double-click support. */}
       <button
         className={`${styles.wishlistSave__button} ${buttonClassName} ${
           isItemSaved && savedClassName ? savedClassName : ""
@@ -70,10 +68,6 @@ export default function WishlistSaveButton({
         aria-controls={enableListMenu ? menuId : undefined}
         onClick={handleClick} // Toggle wishlist on click.
         onDoubleClick={enableListMenu ? handleDoubleClick : undefined} // Open list menu on double click when enabled.
-        onPointerDown={enableListMenu ? handlePointerDown : undefined} // Start long press timer when enabled.
-        onPointerUp={handlePointerUp} // Clear long press timer.
-        onPointerLeave={handlePointerUp} // Clear timer when pointer leaves.
-        onPointerCancel={handlePointerUp} // Clear timer on cancel.
       >
         <span className={styles.wishlistSave__icon}>{isItemSaved ? "★" : "☆"}</span>
       </button>

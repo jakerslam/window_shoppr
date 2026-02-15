@@ -60,8 +60,6 @@ export default function useWishlistMenu({
     closeMenu,
     handleClick,
     handleDoubleClick,
-    handlePointerDown,
-    handlePointerUp,
   } = useWishlistMenuGestures({
     productId,
     activeListName,
@@ -110,10 +108,7 @@ export default function useWishlistMenu({
     closeMenu,
     handleClick,
     handleDoubleClick,
-    handlePointerDown,
-    handlePointerUp,
     handleSelectList,
     handleCreateList,
   };
 }
-

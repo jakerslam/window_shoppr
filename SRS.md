@@ -168,6 +168,7 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [ ] Q9: Keep wishlist "Removed from {list} / click to undo" ghost card locked to standard wishlist card dimensions so row height/width never expands.
 - [x] Q10: Gate product comment posting behind auth session stub (logged-out users can still view comments).
 - [x] Q11: Product-detail desktop thumbnail rail uses arrow-only navigation (manual scroll disabled; mobile swipe preserved).
+- [x] Q12: Disable wishlist long-press menu opening on desktop (and keep it disabled on mobile); menu opens via supported click/double-click flows only.
 
 ## Notes
 - Positioning (later): "Yelp for products" across retailers (cross-site reviews + community trust layer)
