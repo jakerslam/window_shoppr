@@ -40,7 +40,7 @@ Planned ingestion (agent‑driven):
 - Draft/publish controls
 - Moderation queue for user reports
 
-See: `docs/agent/README.md` and `docs/agent/AGENT_SKILL.md`.
+See: `docs/agent/README.md`, `docs/agent/SKILL.md`, and `docs/agent/AGENT_SKILL.md`.
 
 ## Scripts
 - `npm run dev` — local dev server

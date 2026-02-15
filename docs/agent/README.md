@@ -1,57 +1,44 @@
 # Window Shoppr Agent Integration
 
-This guide explains how to connect an agent to Window Shoppr for ingestion and moderation.
+This guide defines where agent automation should read/write today and where it will connect once backend APIs are live.
 
-## Current State (no backend yet)
-- There are **no live API endpoints** yet.
-- The source of truth is the local JSON catalog: `src/data/products.json`.
-- Use the draft contract below to prepare for the ingestion API.
+## Canonical Skill Contract
+- Primary: `docs/agent/SKILL.md`
+- Compatibility alias: `docs/agent/AGENT_SKILL.md`
 
-## Planned API Contract (stub)
-### Endpoints (not implemented yet)
+## Current Runtime Mode
+- Backend agent endpoints are not live yet.
+- Product source of truth is `src/data/products.json`.
+- Moderation queue is local-first via `localStorage`.
+
+## Ingestion (Today)
+1. Read existing products from `src/data/products.json`.
+2. Upsert by `source + externalId` (fallback to `slug`).
+3. Validate against `ProductSchema` in `src/shared/lib/catalog/schema.ts`.
+4. Keep `id`, `slug`, `source`, and `externalId` stable.
+5. Update `lastSeenAt` and `lastPriceCheckAt` on refresh jobs.
+
+## Moderation (Today)
+- Queue helpers in `src/shared/lib/engagement/reports.ts`:
+  - `buildModerationQueueSnapshot()`
+  - `getPendingModerationQueue()`
+  - `updateModerationQueueItem(...)`
+- Queue storage key: `window_shoppr_report_queue`
+- Raw report storage key: `window_shoppr_reports`
+- Event hooks:
+  - `report:submit`
+  - `moderation:queue:enqueue`
+  - `moderation:queue:update`
+
+## Planned API Surface (Backend Target)
 - `POST /api/agent/products/upsert`
 - `POST /api/agent/products/publish`
 - `POST /api/agent/products/unpublish`
-- `POST /api/agent/reports/resolve`
+- `GET /api/agent/moderation/pending`
+- `POST /api/agent/moderation/resolve`
 
-### Minimal Upsert Payload
-```json
-{
-  "source": "tiktok",
-  "externalId": "abc123",
-  "name": "Cozy Cloud Throw Blanket",
-  "affiliateUrl": "https://...",
-  "price": 39.99,
-  "category": "Home & Kitchen",
-  "subCategory": "Bedding",
-  "images": ["https://..."],
-  "description": "...",
-  "tags": ["cozy", "blanket", "bedding"]
-}
-```
-
-### Idempotency
-- Key: `source + externalId`
-- Fallback: `id` if externalId is missing
-
-## Local‑First Workflow (today)
-If you want the agent to populate the catalog now:
-1. Append or update items in `src/data/products.json`.
-2. Ensure each product has a stable `id` and `slug`.
-3. Use `source`, `externalId`, `lastSeenAt`, and `lastPriceCheckAt` if available.
-4. Commit changes so the site reflects updates.
-
-## Moderation Queue (stub)
-- User reports are stored in `localStorage` under `window_shoppr_reports`.
-- A browser event is broadcast: `report:submit` with the report payload.
-- Agents should ingest these into a review queue once the API is built.
-
-## Analytics Hooks (stub)
-- Affiliate click events are stored in `localStorage` as `window_shoppr_affiliate_clicks`.
-- Event: `affiliate:click` with `{ productId, productSlug, retailer, affiliateUrl, timestamp }`.
-
-## References
-- Agent skill doc: `docs/agent/AGENT_SKILL.md`
-- Category config: `src/shared/lib/catalog/categories.ts`
+## Reference Files
 - Product types: `src/shared/lib/catalog/types.ts`
-- Data loader: `src/shared/lib/catalog/data.ts`
+- Product schema: `src/shared/lib/catalog/schema.ts`
+- Catalog loader stubs: `src/shared/lib/catalog/data.ts`
+- Moderation queue stubs: `src/shared/lib/engagement/reports.ts`

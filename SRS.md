@@ -1,9 +1,9 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 62/89 (69.7%)  ██████████████░░░░░░
+Overall: 63/89 (70.8%)  ██████████████░░░░░░
 Frontend: 51/64 (79.7%) ███████████████░░░░░
-Backend: 10/22 (45.5%)  █████████░░░░░░░░░░░
+Backend: 11/22 (50.0%)  ██████████░░░░░░░░░░
 Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░░░
 
 
@@ -67,8 +67,8 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 
 ## Backend & Data
 - [x] R29.12: User report inputs + moderation queue stub (agent-reviewed)
-- [NEXT] 🔵 R29.13: Agent API documentation (skill file for ingestion/moderation)
-- [ ] R29.6: Guest wishlist persistence + future account sync (local-first saves; later sync across devices)
+- [x] R29.13: Agent API documentation (skill file for ingestion/moderation)
+- [NEXT] 🔵 R29.6: Guest wishlist persistence + future account sync (local-first saves; later sync across devices)
 - [x] R29.1: Product source metadata + idempotency (source, externalId, lastSeenAt, lastPriceCheckAt)
 - [ ] R29: Agent ingestion API stub (authenticated upsert endpoint + schema validation + draft/publish state)
 - [ ] R12.3: Account management wiring (backend/auth integration)
