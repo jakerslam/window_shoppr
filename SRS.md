@@ -1,8 +1,8 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 47/89 (52.8%)  ███████████░░░░░░░░░
-Frontend: 37/64 (57.8%) ████████████░░░░░░░░
+Overall: 48/89 (53.9%)  ███████████░░░░░░░░░
+Frontend: 38/64 (59.4%) ████████████░░░░░░░░
 Backend: 9/22 (40.9%)   ████████░░░░░░░░░░░░
 Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░░░
 
@@ -91,8 +91,8 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] R49: Settings toggle for feed speed preference (cozy/quick) with persisted user choice
 - [x] R45: Content preferences section (category taste + email frequency)
 - [x] R29.10: Preference capture (optional onboarding quiz + trickle questions; build a local-first taste profile with privacy controls)
-- [ ] R29.10.1: Preference question bank config (drive onboarding + trickle prompts from a data file for easy edits)
-- [NEXT] 🔵 R29.11: List-based recommendations (use a selected list to bias feed)
+- [NEXT] 🔵 R29.10.1: Preference question bank config (drive onboarding + trickle prompts from a data file for easy edits)
+- [x] R29.11: List-based recommendations (use a selected list to bias feed)
 - [ ] R47: Product detail share button (copy link + native share fallback)
 - [ ] R48: Configurable product description collapse (x chars with Read more/Read less)
 - [ ] R29.7: Product view comments section (community notes + moderation hooks later)

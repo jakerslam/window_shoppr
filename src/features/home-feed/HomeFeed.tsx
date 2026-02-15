@@ -12,6 +12,10 @@ import {
   readStoredProfileSettings,
 } from "@/shared/lib/profile-settings";
 import {
+  WISHLIST_EVENT,
+  WISHLIST_LISTS_STORAGE_KEY,
+} from "@/features/wishlist/wishlist-constants";
+import {
   TASTE_PROFILE_STORAGE_KEY,
   TasteProfile,
   createDefaultTasteProfile,
@@ -30,6 +34,32 @@ import {
 import styles from "@/features/home-feed/HomeFeed.module.css";
 
 const BASE_COLUMN_DURATIONS = [38, 46, 54, 62, 70]; // Base scroll speeds per column.
+
+/**
+ * Read wishlist list ids from local storage for list-based recommendations.
+ */
+const readWishlistListIdsFromStorage = (listName: string) => {
+  if (typeof window === "undefined") {
+    return [] as string[]; // Skip storage reads during SSR.
+  }
+
+  try {
+    const raw = window.localStorage.getItem(WISHLIST_LISTS_STORAGE_KEY); // Read wishlist list payload.
+    if (!raw) {
+      return [] as string[]; // No list data saved yet.
+    }
+
+    const parsed = JSON.parse(raw) as {
+      lists?: Record<string, unknown>;
+    };
+    const list = parsed.lists?.[listName]; // Grab the requested list ids.
+
+    return Array.isArray(list) ? list.map(String) : ([] as string[]);
+  } catch (error) {
+    console.warn("Unable to read wishlist list ids", error); // Log parse/storage issues.
+    return [] as string[]; // Fail closed on parse errors.
+  }
+};
 
 /**
  * Client-side feed renderer with sorting and search.
@@ -52,6 +82,10 @@ export default function HomeFeed({
   const [preferredCategorySlugs, setPreferredCategorySlugs] = useState<string[]>(
     DEFAULT_CONTENT_PREFERENCES.preferredCategorySlugs,
   ); // Load preferred category slugs from saved content settings.
+  const [recommendationListName, setRecommendationListName] = useState<
+    string | null
+  >(DEFAULT_CONTENT_PREFERENCES.recommendationListName); // Load selected wishlist list for recommendations.
+  const [recommendationListIds, setRecommendationListIds] = useState<string[]>([]);
   const [tasteProfile, setTasteProfile] = useState<TasteProfile | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [personalizationSeed, setPersonalizationSeed] = useState(0);
@@ -88,6 +122,10 @@ export default function HomeFeed({
         stored?.contentPreferences.preferredCategorySlugs ??
           DEFAULT_CONTENT_PREFERENCES.preferredCategorySlugs,
       ); // Sync preferred category slugs for personalization.
+      setRecommendationListName(
+        stored?.contentPreferences.recommendationListName ??
+          DEFAULT_CONTENT_PREFERENCES.recommendationListName,
+      ); // Sync list-based recommendation selection.
     }, 0);
 
     const handleStorage = (event: StorageEvent) => {
@@ -101,6 +139,10 @@ export default function HomeFeed({
         stored?.contentPreferences.preferredCategorySlugs ??
           DEFAULT_CONTENT_PREFERENCES.preferredCategorySlugs,
       ); // Keep preferred categories in sync.
+      setRecommendationListName(
+        stored?.contentPreferences.recommendationListName ??
+          DEFAULT_CONTENT_PREFERENCES.recommendationListName,
+      ); // Keep list-based recommendations in sync.
     };
 
     window.addEventListener("storage", handleStorage);
@@ -110,6 +152,56 @@ export default function HomeFeed({
       window.removeEventListener("storage", handleStorage); // Clean up storage listener.
     };
   }, []);
+
+  /**
+   * Sync the selected wishlist list ids for list-based recommendations.
+   */
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return undefined; // Skip storage access during SSR.
+    }
+
+    if (!recommendationListName) {
+      const timeoutId = window.setTimeout(() => {
+        setRecommendationListIds([]); // Clear list ids when no recommendation list is selected.
+      }, 0); // Defer to avoid render-phase lint warnings.
+
+      return () => {
+        window.clearTimeout(timeoutId); // Clean up deferred clear when changing selection.
+      };
+    }
+
+    const syncListIds = () => {
+      setRecommendationListIds(
+        readWishlistListIdsFromStorage(recommendationListName),
+      ); // Refresh ids from local storage snapshot.
+    };
+
+    const timeoutId = window.setTimeout(() => {
+      syncListIds(); // Load list ids after mount and list selection changes.
+    }, 0);
+
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key !== WISHLIST_LISTS_STORAGE_KEY) {
+        return; // Ignore unrelated local storage updates.
+      }
+
+      syncListIds(); // Refresh on cross-tab wishlist list updates.
+    };
+
+    const handleWishlistChange = () => {
+      syncListIds(); // Refresh on same-tab wishlist changes.
+    };
+
+    window.addEventListener("storage", handleStorage);
+    window.addEventListener(WISHLIST_EVENT, handleWishlistChange);
+
+    return () => {
+      window.clearTimeout(timeoutId); // Clean up deferred hydration read.
+      window.removeEventListener("storage", handleStorage); // Clean up storage listener.
+      window.removeEventListener(WISHLIST_EVENT, handleWishlistChange); // Clean up wishlist listener.
+    };
+  }, [recommendationListName]);
 
   /**
    * Load local taste profile preferences for personalization scoring.
@@ -258,9 +350,11 @@ export default function HomeFeed({
       rankProductsForUser(sortedProducts, recentlyViewedIds, shouldPersonalize, {
         tasteProfile,
         preferredCategorySlugs,
+        recommendationListIds,
       }),
     [
       preferredCategorySlugs,
+      recommendationListIds,
       recentlyViewedIds,
       shouldPersonalize,
       sortedProducts,

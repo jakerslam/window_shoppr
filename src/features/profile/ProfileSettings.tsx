@@ -5,6 +5,7 @@ import { CATEGORY_LABELS, toCategorySlug } from "@/shared/lib/categories";
 import { clearRecentlyViewed } from "@/shared/lib/recently-viewed";
 import styles from "@/features/profile/ProfileSettings.module.css";
 import TasteQuizModal from "@/features/preference-capture/TasteQuizModal";
+import { useWishlist } from "@/features/wishlist/wishlist";
 import {
   DEFAULT_CONTENT_PREFERENCES,
   DEFAULT_SETTINGS,
@@ -62,6 +63,7 @@ export default function ProfileSettings() {
   const hasMountedRef = useRef(false);
   const hasTasteMountedRef = useRef(false);
   const skipNextTasteWriteRef = useRef(false);
+  const { listNames } = useWishlist(); // Wishlist list labels used for list-based recommendations.
   const [settings, setSettings] = useState<ProfileSettingsState>(
     () => readStoredProfileSettings()?.settings ?? DEFAULT_SETTINGS,
   ); // Initialize account/security settings from local storage once.
@@ -81,6 +83,34 @@ export default function ProfileSettings() {
     () => readTasteProfile() ?? createDefaultTasteProfile(),
   ); // Initialize taste profile state from local storage once.
   const [isTasteQuizOpen, setIsTasteQuizOpen] = useState(false);
+
+  /**
+   * Clear the selected recommendation list if it no longer exists.
+   */
+  useEffect(() => {
+    if (!contentPreferences.recommendationListName) {
+      return undefined; // Skip validation when no list is selected.
+    }
+
+    if (listNames.includes(contentPreferences.recommendationListName)) {
+      return undefined; // Keep selection when the list still exists.
+    }
+
+    if (typeof window === "undefined") {
+      return undefined; // Skip deferred state updates during SSR.
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setContentPreferences((prev) => ({
+        ...prev,
+        recommendationListName: null,
+      })); // Reset missing list preference to avoid stale personalization.
+    }, 0); // Defer to avoid render-phase lint warnings.
+
+    return () => {
+      window.clearTimeout(timeoutId); // Clean up deferred reset when list names change quickly.
+    };
+  }, [contentPreferences.recommendationListName, listNames]);
 
   /**
    * Persist settings and theme whenever values change after first render.
@@ -191,6 +221,16 @@ export default function ProfileSettings() {
       ...prev,
       emailFrequency: nextFrequency,
     }));
+  };
+
+  /**
+   * Choose a wishlist list to bias feed recommendations.
+   */
+  const handleRecommendationListChange = (nextValue: string) => {
+    setContentPreferences((prev) => ({
+      ...prev,
+      recommendationListName: nextValue ? nextValue : null,
+    })); // Persist list selection (or clear when "None" is chosen).
   };
 
   /**
@@ -342,6 +382,26 @@ export default function ProfileSettings() {
             );
           })}
         </div>
+
+        <label className={styles.profileSettings__field}>
+          <span className={styles.profileSettings__label}>Recommend based on a list</span>
+          <select
+            className={styles.profileSettings__select}
+            value={contentPreferences.recommendationListName ?? ""}
+            onChange={(event) => handleRecommendationListChange(event.target.value)} // Update list-based recommendation selection.
+          >
+            <option value="">None</option>
+            {listNames.map((name) => (
+              <option key={name} value={name}>
+                {name}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <p className={styles.profileSettings__hint}>
+          Picks on the home feed will lean toward items similar to what you save in that list.
+        </p>
 
         <label className={styles.profileSettings__field}>
           <span className={styles.profileSettings__label}>Email frequency</span>

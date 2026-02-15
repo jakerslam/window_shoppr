@@ -54,6 +54,51 @@ const buildPreferenceWeights = (
 };
 
 /**
+ * Build a weighted preference map from a saved wishlist list.
+ */
+const buildListWeights = (listIds: string[], productLookup: Map<string, Product>) => {
+  const categoryCounts = new Map<string, number>();
+  const subCategoryCounts = new Map<string, number>();
+  const tagCounts = new Map<string, number>();
+
+  const uniqueIds = Array.from(new Set(listIds.filter(Boolean))); // Normalize list ids for stable scoring.
+
+  uniqueIds.forEach((id) => {
+    const product = productLookup.get(id);
+
+    if (!product) {
+      return; // Skip ids that do not exist in the current catalog snapshot.
+    }
+
+    const categoryKey = toCategorySlug(product.category); // Normalize category to a slug key.
+    const subCategoryKey = product.subCategory
+      ? toCategorySlug(product.subCategory)
+      : undefined; // Normalize subcategory to a slug key.
+
+    categoryCounts.set(categoryKey, (categoryCounts.get(categoryKey) ?? 0) + 1); // Count category occurrences.
+
+    if (subCategoryKey) {
+      subCategoryCounts.set(
+        subCategoryKey,
+        (subCategoryCounts.get(subCategoryKey) ?? 0) + 1,
+      ); // Count subcategory occurrences.
+    }
+
+    (product.tags ?? []).forEach((tag) => {
+      const tagKey = normalizeText(tag);
+      tagCounts.set(tagKey, (tagCounts.get(tagKey) ?? 0) + 1); // Count tag occurrences.
+    });
+  });
+
+  return {
+    listSize: uniqueIds.length,
+    categoryCounts,
+    subCategoryCounts,
+    tagCounts,
+  };
+};
+
+/**
  * Rank products for each user using recently viewed preferences.
  */
 export const rankProductsForUser = (
@@ -63,6 +108,7 @@ export const rankProductsForUser = (
   options?: {
     tasteProfile?: TasteProfile | null;
     preferredCategorySlugs?: string[];
+    recommendationListIds?: string[];
   },
 ) => {
   if (!applyPersonalization) {
@@ -72,6 +118,10 @@ export const rankProductsForUser = (
   const productLookup = new Map(products.map((product) => [product.id, product]));
   const { categoryWeights, subCategoryWeights, tagWeights } =
     buildPreferenceWeights(recentlyViewedIds, productLookup); // Build weighted preferences.
+  const listWeights = buildListWeights(
+    options?.recommendationListIds ?? [],
+    productLookup,
+  ); // Build list-based preferences when a list is selected.
 
   const preferredCategorySlugs = options?.preferredCategorySlugs ?? [];
   const tasteProfile = options?.tasteProfile ?? null;
@@ -102,12 +152,38 @@ export const rankProductsForUser = (
         ? tasteCategoryWeight * 0.45 + clampedTasteTagScore
         : 0; // Apply taste profile scoring only when enabled.
 
+      const listCategoryScore = listWeights.listSize
+        ? ((listWeights.categoryCounts.get(categoryKey) ?? 0) / listWeights.listSize) *
+          4
+        : 0; // Boost categories that appear often in the selected list.
+      const listSubCategoryScore =
+        listWeights.listSize && subCategoryKey
+          ? ((listWeights.subCategoryCounts.get(subCategoryKey) ?? 0) /
+              listWeights.listSize) *
+            2.5
+          : 0; // Boost subcategories that appear often in the selected list.
+      const listTagScore = listWeights.listSize
+        ? (product.tags ?? []).reduce((total, tag) => {
+            const tagKey = normalizeText(tag);
+            return (
+              total +
+              ((listWeights.tagCounts.get(tagKey) ?? 0) / listWeights.listSize) *
+                1.5
+            );
+          }, 0)
+        : 0; // Boost tags that match the selected list.
+      const listBoost = Math.min(
+        5,
+        listCategoryScore + listSubCategoryScore + Math.min(listTagScore, 3),
+      ); // Keep list contribution bounded for stable sorting.
+
       const score =
         (categoryWeights.get(categoryKey) ?? 0) +
         (subCategoryKey ? subCategoryWeights.get(subCategoryKey) ?? 0 : 0) +
         Math.min(tagScore, 3) +
         preferredBoost +
-        tasteBoost; // Combine recency and taste-driven boosts.
+        tasteBoost +
+        listBoost; // Combine recency, taste, and list-driven boosts.
 
       return {
         product,

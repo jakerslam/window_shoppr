@@ -12,6 +12,7 @@ export type EmailFrequency = "weekly" | "twice-weekly" | "daily";
 export type ContentPreferencesState = {
   preferredCategorySlugs: string[];
   emailFrequency: EmailFrequency;
+  recommendationListName: string | null;
 };
 
 export type ProfileSettingsState = {
@@ -40,6 +41,7 @@ export const DEFAULT_SETTINGS: ProfileSettingsState = {
 export const DEFAULT_CONTENT_PREFERENCES: ContentPreferencesState = {
   preferredCategorySlugs: [],
   emailFrequency: "weekly",
+  recommendationListName: null,
 };
 
 export const SPEED_LIMITS = {
@@ -128,6 +130,10 @@ const normalizeContentPreferences = (rawValue: unknown): ContentPreferencesState
   return {
     preferredCategorySlugs,
     emailFrequency,
+    recommendationListName:
+      typeof candidate?.recommendationListName === "string"
+        ? candidate.recommendationListName
+        : DEFAULT_CONTENT_PREFERENCES.recommendationListName,
   };
 };
 
