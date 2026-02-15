@@ -51,7 +51,7 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] R12.1: Wishlist save menu (hover/long-press list selection)
 - [x] R13: Animation system for mesmerizing scrolling columns (hover pause)
 - [x] R13.1: Manual scroll assist for the auto-scrolling feed (wheel/touch drag adjusts speed temporarily; easing back to baseline)
-- [ ] R13.2: Mobile manual-scroll cooldown (after touch/wheel manipulation, wait 1000ms before that column resumes auto-scroll).
+- [NEXT] 🔵 R13.2: Mobile manual-scroll cooldown (after touch/wheel manipulation, wait 1000ms before that column resumes auto-scroll).
 - [x] R14: Navigation menu with hover unfurl (categories -> subcategories)
 
 ## SEO & Growth
@@ -89,19 +89,20 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] R24: Cookie consent + privacy/affiliate disclosure (accept all + essential only)
 
 ## UX & Accessibility
-- [NEXT] 🔵 R43.2: Show a compact window-points badge in the top bar to the left of the notifications bell (desktop + mobile-safe sizing).
+- [x] R43.2: Show a compact window-points badge in the top bar to the left of the notifications bell (desktop + mobile-safe sizing).
 - [x] R43.1: Bell notifications dropdown menu (default empty state: "No notifications")
 - [x] R46: Refresh nav icon set (desktop + mobile) with cleaner, consistent iconography
 - [x] R43: Notifications UI (feed + badge + placeholder list)
 - [x] R44: Profile settings section (account + security preferences + theme toggle)
 - [x] R49: Settings toggle for feed speed preference (cozy/quick) with persisted user choice
+- [x] R49.1: Persist the active feed speed toggle state (cozy/quick) across navigation/reloads so the UI keeps the user’s last selected mode.
 - [x] R50: Product media overflow navigation (when image/video thumbnails exceed viewport, show horizontal side-scroll with swipe support and arrow controls).
 - [x] R45: Content preferences section (category taste + email frequency)
 - [x] R29.10: Preference capture (optional onboarding quiz + trickle questions; build a local-first taste profile with privacy controls)
 - [x] R29.10.1: Preference question bank config (drive onboarding + trickle prompts from a data file for easy edits)
 - [x] R29.11: List-based recommendations (use a selected list to bias feed)
 - [x] R47: Product detail share button (copy link + native share fallback)
-- [ ] R47.1: Product-card action row update (share button on far right, save button directly to its left, and save-count shown only when count >= 5).
+- [x] R47.1: Product-card action row update (share button on far right, save button directly to its left, and save-count shown only when count >= 5).
 - [x] R48: Configurable product description collapse (x chars with Read more/Read less)
 - [x] R29.7: Product view comments section (community notes + moderation hooks later)
 - [x] R17.1: Loading UI (global spinner/skeletons for route + modal transitions)

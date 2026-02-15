@@ -8,6 +8,7 @@ import { BellIcon } from "@/features/top-bar/NavIcons";
 import { INITIAL_NOTIFICATIONS } from "@/features/top-bar/notifications/constants";
 import NotificationsMenu from "@/features/top-bar/notifications/NotificationsMenu";
 import { NotificationItem } from "@/features/top-bar/notifications/constants";
+import { readWindowPointsState } from "@/shared/lib/engagement/window-points";
 import { signOutAccount } from "@/shared/lib/platform/auth-service";
 import {
   withAuthRedirectParam,
@@ -25,6 +26,7 @@ export default function TopBarActions() {
   const [notifications, setNotifications] = useState<NotificationItem[]>(
     INITIAL_NOTIFICATIONS,
   );
+  const [pointsTotal, setPointsTotal] = useState(() => readWindowPointsState().totalPoints);
   const notificationsRef = useRef<HTMLDivElement | null>(null);
   const menuId = useId();
 
@@ -56,6 +58,10 @@ export default function TopBarActions() {
 
     return session.displayName?.trim() || "Account";
   }, [session]);
+  const pointsLabel = useMemo(
+    () => (pointsTotal > 9999 ? "9,999+" : pointsTotal.toLocaleString()),
+    [pointsTotal],
+  ); // Keep point-count text compact for the top bar badge.
 
   /**
    * Toggle the notifications dropdown from the bell button.
@@ -139,6 +145,29 @@ export default function TopBarActions() {
     };
   }, [isNotificationsOpen]);
 
+  /**
+   * Keep the top-bar points badge synced with reward updates across tabs/components.
+   */
+  useEffect(() => {
+    const syncPoints = () => {
+      setPointsTotal(readWindowPointsState().totalPoints); // Refresh point total from local storage.
+    };
+
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key === "window_shoppr_window_points") {
+        syncPoints(); // Sync when another tab updates points.
+      }
+    };
+
+    window.addEventListener("window-points:update", syncPoints);
+    window.addEventListener("storage", handleStorage);
+
+    return () => {
+      window.removeEventListener("window-points:update", syncPoints);
+      window.removeEventListener("storage", handleStorage);
+    };
+  }, []);
+
   return (
     <div className={styles.topBar__actions}>
       {/* Desktop-only submit-deal shortcut. */}
@@ -173,6 +202,10 @@ export default function TopBarActions() {
           Sign out
         </button>
       ) : null}
+
+      <span className={styles.topBar__pointsBadge} aria-label={`Window points: ${pointsLabel}`}>
+        {pointsLabel}
+      </span>
 
       {/* Notifications bell and dropdown menu. */}
       <div className={styles.topBar__notifications} ref={notificationsRef}>

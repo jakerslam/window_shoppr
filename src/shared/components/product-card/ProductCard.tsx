@@ -11,6 +11,7 @@ import {
   formatSaveCountLabel,
   useProductSaveCount,
 } from "@/shared/lib/engagement/social-proof";
+import ProductCardShareButton from "@/shared/components/product-card/ProductCardShareButton";
 import styles from "@/shared/components/product-card/ProductCard.module.css";
 
 /**
@@ -54,6 +55,7 @@ export default function ProductCard({
   const isCompact = variant === "compact"; // Toggle compact styling for dense layouts.
   const saveCount = useProductSaveCount(product.id, product.saveCount ?? 0); // Subscribe to live save-count updates for this product.
   const saveCountLabel = formatSaveCountLabel(saveCount); // Render compact human-readable save count text.
+  const showSaveCount = saveCount >= 5; // Hide weak social proof until count crosses the trust threshold.
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
     if (event.key === "Enter" || event.key === " ") {
@@ -120,17 +122,28 @@ export default function ProductCard({
               {dealLabel ?? " "} {/* Reserve space when timer is missing. */}
             </span>
           ) : null}
-          <span className={styles.productCard__saveCount}>{saveCountLabel}</span>
         </div>
 
-        {/* Save button injected by the parent feature (wishlist/feed). */}
-        {renderSaveButton
-          ? renderSaveButton({
-              buttonClassName: styles.productCard__wishlist, // Base button styles.
-              savedClassName: styles["productCard__wishlist--saved"], // Saved-state styles.
-              wrapperClassName: styles.productCard__wishlistWrap, // Positioning wrapper styles.
-            })
-          : null}
+        <div className={styles.productCard__actions}>
+          {/* Save button injected by the parent feature (wishlist/feed). */}
+          {renderSaveButton
+            ? renderSaveButton({
+                buttonClassName: styles.productCard__wishlist, // Base button styles.
+                savedClassName: styles["productCard__wishlist--saved"], // Saved-state styles.
+                wrapperClassName: styles.productCard__wishlistWrap, // Positioning wrapper styles.
+              })
+            : null}
+
+          {showSaveCount ? (
+            <span className={styles.productCard__saveCount}>{saveCountLabel}</span>
+          ) : null}
+
+          <ProductCardShareButton
+            productName={product.name}
+            productSlug={product.slug}
+            className={styles.productCard__share}
+          />
+        </div>
       </div>
     </article>
   );

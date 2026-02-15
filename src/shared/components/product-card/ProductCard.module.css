@@ -82,7 +82,7 @@
 
 .productCard__priceSection {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
   gap: 12px;
   flex-wrap: nowrap;
@@ -132,6 +132,15 @@
   color: var(--color-text-muted);
   line-height: 1.2;
   white-space: nowrap;
+}
+
+.productCard__actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  min-width: 0;
+  margin-left: auto;
 }
 
 .productCard__wishlist {
@@ -215,33 +224,48 @@
   outline-offset: 2px;
 }
 
+.productCard__share {
+  border: 0;
+  background: transparent;
+  color: var(--color-primary-strong);
+  border-radius: 999px;
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  font-size: 16px;
+  line-height: 1;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: opacity 150ms ease;
+}
+
+.productCard__share:hover {
+  opacity: 0.72;
+}
+
+.productCard__share:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
 @media (max-width: 600px) {
   .productCard {
     max-width: 170px;
     padding: 12px;
-    padding-bottom: 44px;
     position: relative;
   }
 
   .productCard__priceSection {
-    justify-content: flex-start;
+    justify-content: space-between;
+    align-items: center;
   }
 
-  .productCard:not(.productCard--compact) .productCard__wishlistWrap {
-    --wishlist-wrapper-position: absolute;
-    --wishlist-wrapper-bottom: 8px;
-    --wishlist-wrapper-right: 8px;
-    --wishlist-wrapper-width: calc(100% - 16px);
-    --wishlist-wrapper-z-index: 3;
-    --wishlist-menu-right-offset: auto;
-    --wishlist-menu-left-offset: 0;
-    --wishlist-menu-min-width: 0;
-    --wishlist-menu-width: 100%;
-    --wishlist-menu-max-width: 100%;
-  }
-
-  .productCard:not(.productCard--compact) .productCard__wishlist {
-    margin-left: auto;
+  .productCard__actions {
+    gap: 4px;
   }
 
   .productCard--compact {
@@ -274,14 +298,10 @@
   .productCard--compact .productCard__wishlist {
     margin-left: auto;
   }
-}
 
-@media (max-width: 600px) {
-  .productCard:not(.productCard--compact) {
-    padding-bottom: 52px;
-  }
-
-  .productCard:not(.productCard--compact) .productCard__wishlistWrap {
-    --wishlist-wrapper-bottom: 4px;
+  .productCard__share {
+    width: 28px;
+    height: 28px;
+    font-size: 15px;
   }
 }

@@ -17,6 +17,13 @@ import useFiniteFeedState from "@/features/home-feed/useFiniteFeedState";
 import styles from "@/features/home-feed/HomeFeed.module.css";
 
 const BASE_COLUMN_DURATIONS = [38, 46, 54, 62, 70]; // Base scroll speeds per column.
+const SPEED_MODE_STORAGE_KEY = "window_shoppr_feed_speed_mode"; // Persist user-selected speed toggle mode.
+
+/**
+ * Validate storage values before applying them to speed mode state.
+ */
+const isValidSpeedMode = (value: string): value is "cozy" | "quick" =>
+  value === "cozy" || value === "quick";
 
 /**
  * Client-side feed renderer with sorting and search.
@@ -32,7 +39,14 @@ export default function HomeFeed({
 }) {
   const router = useRouter();
   const [sortOption, setSortOption] = useState<SortOption>("newest");
-  const [speedMode, setSpeedMode] = useState<"cozy" | "quick">("cozy");
+  const [speedMode, setSpeedMode] = useState<"cozy" | "quick">(() => {
+    if (typeof window === "undefined") {
+      return "cozy"; // Use a stable default during SSR.
+    }
+
+    const savedMode = window.localStorage.getItem(SPEED_MODE_STORAGE_KEY);
+    return savedMode && isValidSpeedMode(savedMode) ? savedMode : "cozy"; // Restore saved mode when available.
+  });
   const {
     speedPreferences,
     preferredCategorySlugs,
@@ -58,6 +72,17 @@ export default function HomeFeed({
       delete document.body.dataset.homeFeedLock; // Restore default scrolling on route change.
     };
   }, []);
+
+  /**
+   * Persist the current cozy/quick toggle selection for next visits.
+   */
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return; // Skip storage writes during SSR.
+    }
+
+    window.localStorage.setItem(SPEED_MODE_STORAGE_KEY, speedMode); // Save mode after each toggle.
+  }, [speedMode]);
 
   const categorySource = selectedSubCategory || selectedCategory || "";
   const displayCategory = formatCategoryLabel(categorySource);
