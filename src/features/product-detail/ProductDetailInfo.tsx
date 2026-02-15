@@ -4,6 +4,12 @@ import { useCallback, useState } from "react";
 import { Product, PRODUCT_UI } from "@/shared/lib/types";
 import { submitReport } from "@/shared/lib/reports";
 import { trackAffiliateClick } from "@/shared/lib/analytics";
+import {
+  TastePreferenceSignal,
+  applyTasteSignal,
+  getTasteProfile,
+  writeTasteProfile,
+} from "@/shared/lib/taste-profile";
 import DescriptionToggle from "@/features/product-detail/DescriptionToggle";
 import styles from "@/features/product-detail/ProductDetail.module.css";
 import { clamp, formatPrice } from "@/features/product-detail/product-detail-utils";
@@ -37,6 +43,9 @@ export default function ProductDetailInfo({
   >("inaccuracy");
   const [reportDetails, setReportDetails] = useState("");
   const [reportSubmitted, setReportSubmitted] = useState(false);
+  const [tasteSignalStatus, setTasteSignalStatus] = useState<
+    "idle" | "liked" | "disliked"
+  >("idle");
 
   /**
    * Toggle the inline report form.
@@ -72,6 +81,33 @@ export default function ProductDetailInfo({
       affiliateUrl: product.affiliateUrl,
     }); // Store click data for analytics.
   };
+
+  /**
+   * Store a local-first taste signal to personalize future feed rankings.
+   */
+  const handleTasteSignal = useCallback(
+    (signal: TastePreferenceSignal) => {
+      const profile = getTasteProfile(); // Load or create a taste profile payload.
+
+      if (!profile) {
+        return; // Skip updates when storage is unavailable.
+      }
+
+      const nextProfile = applyTasteSignal(profile, product, signal); // Update weights based on this product.
+      writeTasteProfile(nextProfile); // Persist taste profile changes.
+
+      setTasteSignalStatus(signal === "like" ? "liked" : "disliked"); // Show quick feedback.
+      window.setTimeout(() => setTasteSignalStatus("idle"), 1600); // Clear status after a short delay.
+    },
+    [product],
+  );
+
+  const tasteStatusLabel =
+    tasteSignalStatus === "liked"
+      ? "Noted: more like this"
+      : tasteSignalStatus === "disliked"
+        ? "Noted: less like this"
+        : ""; // Provide lightweight feedback after clicks.
 
   return (
     <div className={styles.productDetail__info}>
@@ -124,6 +160,36 @@ export default function ProductDetailInfo({
         text={product.description}
         previewLimit={PRODUCT_UI.DESCRIPTION_PREVIEW_LIMIT}
       />
+
+      {/* Trickle preference capture for local-first personalization. */}
+      <div className={styles.productDetail__taste}>
+        <div className={styles.productDetail__tasteHeader}>
+          <span className={styles.productDetail__tasteTitle}>Tune your feed</span>
+          <span
+            className={styles.productDetail__tasteStatus}
+            role="status"
+            aria-live="polite"
+          >
+            {tasteStatusLabel}
+          </span>
+        </div>
+        <div className={styles.productDetail__tasteActions}>
+          <button
+            className={styles.productDetail__tasteButton}
+            type="button"
+            onClick={() => handleTasteSignal("like")} // Boost this product style in recommendations.
+          >
+            More like this
+          </button>
+          <button
+            className={styles.productDetail__tasteButton}
+            type="button"
+            onClick={() => handleTasteSignal("dislike")} // Reduce this product style in recommendations.
+          >
+            Less like this
+          </button>
+        </div>
+      </div>
 
       {reportSubmitted ? (
         <p className={styles.productDetail__reportThanks}>Thanks for the report.</p>

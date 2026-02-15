@@ -5,11 +5,18 @@ import { useRouter } from "next/navigation";
 import { useCategoryFilter } from "@/features/category-filter/CategoryFilterProvider";
 import { getRecentlyViewedIds } from "@/shared/lib/recently-viewed";
 import {
+  DEFAULT_CONTENT_PREFERENCES,
   DEFAULT_SPEED_PREFERENCES,
   PROFILE_SETTINGS_STORAGE_KEY,
   FeedSpeedPreferences,
   readStoredProfileSettings,
 } from "@/shared/lib/profile-settings";
+import {
+  TASTE_PROFILE_STORAGE_KEY,
+  TasteProfile,
+  createDefaultTasteProfile,
+  readTasteProfile,
+} from "@/shared/lib/taste-profile";
 import { Product } from "@/shared/lib/types";
 import { toCategorySlug } from "@/shared/lib/categories";
 import { formatCategoryLabel } from "@/features/home-feed/home-feed-utils";
@@ -42,6 +49,10 @@ export default function HomeFeed({
   const [speedPreferences, setSpeedPreferences] = useState<FeedSpeedPreferences>(
     DEFAULT_SPEED_PREFERENCES,
   ); // Load speed multipliers from saved profile settings.
+  const [preferredCategorySlugs, setPreferredCategorySlugs] = useState<string[]>(
+    DEFAULT_CONTENT_PREFERENCES.preferredCategorySlugs,
+  ); // Load preferred category slugs from saved content settings.
+  const [tasteProfile, setTasteProfile] = useState<TasteProfile | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [personalizationSeed, setPersonalizationSeed] = useState(0);
   const [recentlyViewedIds, setRecentlyViewedIds] = useState<string[]>([]);
@@ -73,6 +84,10 @@ export default function HomeFeed({
     const timeoutId = window.setTimeout(() => {
       const stored = readStoredProfileSettings(); // Read persisted profile settings.
       setSpeedPreferences(stored?.speedPreferences ?? DEFAULT_SPEED_PREFERENCES); // Fall back to defaults when missing.
+      setPreferredCategorySlugs(
+        stored?.contentPreferences.preferredCategorySlugs ??
+          DEFAULT_CONTENT_PREFERENCES.preferredCategorySlugs,
+      ); // Sync preferred category slugs for personalization.
     }, 0);
 
     const handleStorage = (event: StorageEvent) => {
@@ -82,12 +97,56 @@ export default function HomeFeed({
 
       const stored = readStoredProfileSettings(); // Read latest settings after storage changes.
       setSpeedPreferences(stored?.speedPreferences ?? DEFAULT_SPEED_PREFERENCES); // Keep speed controls in sync.
+      setPreferredCategorySlugs(
+        stored?.contentPreferences.preferredCategorySlugs ??
+          DEFAULT_CONTENT_PREFERENCES.preferredCategorySlugs,
+      ); // Keep preferred categories in sync.
     };
 
     window.addEventListener("storage", handleStorage);
 
     return () => {
       window.clearTimeout(timeoutId); // Clean up deferred settings read.
+      window.removeEventListener("storage", handleStorage); // Clean up storage listener.
+    };
+  }, []);
+
+  /**
+   * Load local taste profile preferences for personalization scoring.
+   */
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return undefined; // Skip local storage access during SSR.
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setTasteProfile(readTasteProfile() ?? createDefaultTasteProfile()); // Hydrate taste profile after mount.
+    }, 0);
+
+    const handleTasteProfileUpdated = (event: Event) => {
+      const customEvent = event as CustomEvent<{ profile?: TasteProfile | null }>;
+      if (customEvent.detail && "profile" in customEvent.detail) {
+        setTasteProfile(customEvent.detail.profile ?? createDefaultTasteProfile()); // Apply event payload when present.
+        return;
+      }
+
+      setTasteProfile(readTasteProfile() ?? createDefaultTasteProfile()); // Fall back to stored profile.
+    };
+
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key !== TASTE_PROFILE_STORAGE_KEY) {
+        return; // Ignore unrelated local storage updates.
+      }
+
+      setTasteProfile(readTasteProfile() ?? createDefaultTasteProfile()); // Keep taste profile in sync across tabs.
+    };
+
+    window.addEventListener("taste-profile:updated", handleTasteProfileUpdated);
+    window.addEventListener("storage", handleStorage);
+
+    return () => {
+      window.clearTimeout(timeoutId); // Clean up deferred hydration read.
+      window.removeEventListener("taste-profile:updated", handleTasteProfileUpdated); // Clean up taste listener.
       window.removeEventListener("storage", handleStorage); // Clean up storage listener.
     };
   }, []);
@@ -133,7 +192,9 @@ export default function HomeFeed({
     : title; // Fall back when no category filter is selected.
 
 
-  const shouldPersonalize = sortOption === "newest"; // Only personalize the default sort.
+  const personalizationEnabled = tasteProfile?.personalizationEnabled ?? true; // Default personalization to enabled.
+  const shouldPersonalize =
+    sortOption === "newest" && personalizationEnabled; // Only personalize the default sort when enabled.
 
   const filteredProducts = useMemo(() => {
     const normalizedQuery = normalizeText(searchQuery); // Normalize input for matching.
@@ -193,8 +254,18 @@ export default function HomeFeed({
   }, [filteredProducts, sortOption]);
 
   const rankedProducts = useMemo(
-    () => rankProductsForUser(sortedProducts, recentlyViewedIds, shouldPersonalize),
-    [recentlyViewedIds, shouldPersonalize, sortedProducts],
+    () =>
+      rankProductsForUser(sortedProducts, recentlyViewedIds, shouldPersonalize, {
+        tasteProfile,
+        preferredCategorySlugs,
+      }),
+    [
+      preferredCategorySlugs,
+      recentlyViewedIds,
+      shouldPersonalize,
+      sortedProducts,
+      tasteProfile,
+    ],
   );
 
   const resultsLabel = `Browse ${sortedProducts.length} ${subtitleLabel}`; // Accessible count label.

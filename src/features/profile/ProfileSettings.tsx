@@ -2,7 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { CATEGORY_LABELS, toCategorySlug } from "@/shared/lib/categories";
+import { clearRecentlyViewed } from "@/shared/lib/recently-viewed";
 import styles from "@/features/profile/ProfileSettings.module.css";
+import TasteQuizModal from "@/features/preference-capture/TasteQuizModal";
 import {
   DEFAULT_CONTENT_PREFERENCES,
   DEFAULT_SETTINGS,
@@ -16,6 +18,15 @@ import {
   ThemePreference,
   readStoredProfileSettings,
 } from "@/shared/lib/profile-settings";
+import {
+  TasteProfile,
+  applyTasteQuizSelections,
+  clearTasteProfile,
+  createDefaultTasteProfile,
+  readTasteProfile,
+  setTastePersonalizationEnabled,
+  writeTasteProfile,
+} from "@/shared/lib/taste-profile";
 
 const CONTENT_CATEGORY_OPTIONS = CATEGORY_LABELS.map((label) => ({
   label,
@@ -49,6 +60,8 @@ const applyThemePreference = (themePreference: ThemePreference) => {
  */
 export default function ProfileSettings() {
   const hasMountedRef = useRef(false);
+  const hasTasteMountedRef = useRef(false);
+  const skipNextTasteWriteRef = useRef(false);
   const [settings, setSettings] = useState<ProfileSettingsState>(
     () => readStoredProfileSettings()?.settings ?? DEFAULT_SETTINGS,
   ); // Initialize account/security settings from local storage once.
@@ -64,6 +77,10 @@ export default function ProfileSettings() {
         readStoredProfileSettings()?.contentPreferences ??
         DEFAULT_CONTENT_PREFERENCES,
     ); // Initialize content preferences from local storage once.
+  const [tasteProfile, setTasteProfile] = useState<TasteProfile>(
+    () => readTasteProfile() ?? createDefaultTasteProfile(),
+  ); // Initialize taste profile state from local storage once.
+  const [isTasteQuizOpen, setIsTasteQuizOpen] = useState(false);
 
   /**
    * Persist settings and theme whenever values change after first render.
@@ -86,6 +103,23 @@ export default function ProfileSettings() {
     ); // Persist latest profile + speed + content preferences.
     applyThemePreference(themePreference); // Keep theme synced with selected preference.
   }, [settings, themePreference, speedPreferences, contentPreferences]);
+
+  /**
+   * Persist taste profile updates after first render.
+   */
+  useEffect(() => {
+    if (!hasTasteMountedRef.current) {
+      hasTasteMountedRef.current = true; // Skip first write to avoid clobbering stored state.
+      return;
+    }
+
+    if (skipNextTasteWriteRef.current) {
+      skipNextTasteWriteRef.current = false; // Consume one-shot write skip used for clearing.
+      return;
+    }
+
+    writeTasteProfile(tasteProfile); // Persist taste profile changes.
+  }, [tasteProfile]);
 
   /**
    * Update cozy speed while preserving the minimum gap above quick speed.
@@ -157,6 +191,35 @@ export default function ProfileSettings() {
       ...prev,
       emailFrequency: nextFrequency,
     }));
+  };
+
+  /**
+   * Toggle personalization application for the home feed.
+   */
+  const handlePersonalizationToggle = (enabled: boolean) => {
+    setTasteProfile((prev) => setTastePersonalizationEnabled(prev, enabled));
+  };
+
+  /**
+   * Clear local-first personalization data for privacy controls.
+   */
+  const handleClearPersonalization = () => {
+    skipNextTasteWriteRef.current = true; // Avoid immediately recreating cleared storage payloads.
+    clearTasteProfile(); // Remove taste profile from local storage.
+    clearRecentlyViewed(); // Clear recently viewed personalization state.
+    setTasteProfile(createDefaultTasteProfile()); // Reset taste profile in memory.
+    setContentPreferences(DEFAULT_CONTENT_PREFERENCES); // Reset stored content preferences.
+  };
+
+  /**
+   * Apply onboarding quiz answers to content and taste preferences.
+   */
+  const handleTasteQuizApply = (nextCategorySlugs: string[], nextVibeTags: string[]) => {
+    setContentPreferences((prev) => ({
+      ...prev,
+      preferredCategorySlugs: nextCategorySlugs,
+    })); // Persist category taste selections.
+    setTasteProfile((prev) => applyTasteQuizSelections(prev, nextCategorySlugs, nextVibeTags)); // Seed taste weights.
   };
 
   return (
@@ -248,6 +311,16 @@ export default function ProfileSettings() {
       <div className={styles.profileSettings__section}>
         <h3 className={styles.profileSettings__sectionTitle}>Content</h3>
 
+        <div className={styles.profileSettings__actions}>
+          <button
+            className={styles.profileSettings__actionButton}
+            type="button"
+            onClick={() => setIsTasteQuizOpen(true)} // Open the optional onboarding taste quiz.
+          >
+            Take the taste quiz
+          </button>
+        </div>
+
         <div className={styles.profileSettings__chipGrid}>
           {CONTENT_CATEGORY_OPTIONS.map((option) => {
             const isSelected = contentPreferences.preferredCategorySlugs.includes(
@@ -284,6 +357,26 @@ export default function ProfileSettings() {
             <option value="daily">Daily</option>
           </select>
         </label>
+
+        <label className={styles.profileSettings__toggleRow}>
+          <input
+            className={styles.profileSettings__checkbox}
+            type="checkbox"
+            checked={tasteProfile.personalizationEnabled}
+            onChange={(event) => handlePersonalizationToggle(event.target.checked)} // Toggle personalization enablement.
+          />
+          <span>Personalize my feed (local-only)</span>
+        </label>
+
+        <div className={styles.profileSettings__actions}>
+          <button
+            className={styles.profileSettings__dangerButton}
+            type="button"
+            onClick={handleClearPersonalization} // Clear taste profile and recently viewed data.
+          >
+            Clear personalization data
+          </button>
+        </div>
       </div>
 
       {/* Security preferences section. */}
@@ -348,6 +441,13 @@ export default function ProfileSettings() {
       <p className={styles.profileSettings__status} role="status">
         Saved automatically
       </p>
+
+      <TasteQuizModal
+        isOpen={isTasteQuizOpen}
+        initialCategorySlugs={contentPreferences.preferredCategorySlugs}
+        onApply={handleTasteQuizApply} // Persist quiz results into local preferences.
+        onClose={() => setIsTasteQuizOpen(false)} // Close the quiz modal.
+      />
     </section>
   );
 }

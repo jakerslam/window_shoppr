@@ -1,8 +1,8 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 46/87 (52.9%)  ███████████░░░░░░░░░
-Frontend: 36/62 (58.1%) ███████████░░░░░░░░░
+Overall: 47/89 (52.8%)  ███████████░░░░░░░░░
+Frontend: 37/64 (57.8%) ████████████░░░░░░░░
 Backend: 9/22 (40.9%)   ████████░░░░░░░░░░░░
 Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░░░
 
@@ -49,6 +49,7 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] R12: Wishlist UI stub and placeholder page
 - [x] R12.1: Wishlist save menu (hover/long-press list selection)
 - [x] R13: Animation system for mesmerizing scrolling columns (hover pause)
+- [ ] R13.1: Manual scroll assist for the auto-scrolling feed (wheel/touch drag adjusts speed temporarily; easing back to baseline)
 - [x] R14: Navigation menu with hover unfurl (categories -> subcategories)
 
 ## SEO & Growth
@@ -77,7 +78,7 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 ## Analytics & Revenue
 - [ ] R29.9: Post-click purchase confirmation prompt ("Did you buy this?" + review reminder hook)
 - [ ] R29.8: Social proof counts (display save count on product pages + cards)
-- [ ] R29.5: User-submitted deals (submission flow + moderation + optional revenue share later)
+- [ ] R29.5: User-submitted deals (submit link + optional price/info; moderation queue for AI agent/gatekeeper; optional revenue share later)
 - [ ] R29.4: Native ad cards (occasional sponsored cards in feed, non-disruptive)
 - [x] R23: Click tracking for affiliate links
 - [x] R24: Cookie consent + privacy/affiliate disclosure (accept all + essential only)
@@ -89,8 +90,9 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] R44: Profile settings section (account + security preferences + theme toggle)
 - [x] R49: Settings toggle for feed speed preference (cozy/quick) with persisted user choice
 - [x] R45: Content preferences section (category taste + email frequency)
-- [NEXT] 🔵 R29.10: Preference capture (optional onboarding quiz + trickle questions; build a local-first taste profile with privacy controls)
-- [ ] R29.11: List-based recommendations (use a selected list to bias feed)
+- [x] R29.10: Preference capture (optional onboarding quiz + trickle questions; build a local-first taste profile with privacy controls)
+- [ ] R29.10.1: Preference question bank config (drive onboarding + trickle prompts from a data file for easy edits)
+- [NEXT] 🔵 R29.11: List-based recommendations (use a selected list to bias feed)
 - [ ] R47: Product detail share button (copy link + native share fallback)
 - [ ] R48: Configurable product description collapse (x chars with Read more/Read less)
 - [ ] R29.7: Product view comments section (community notes + moderation hooks later)
@@ -104,6 +106,9 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 
 ## Theme
 - [x] R15.1: Theme system (light/dark) applied to components
+
+## UI Tuning Backlog
+- [ ] U1: Scroll speed settings UX polish (make speed inputs easier to use and invert semantics so higher value = faster), with migration of saved preferences so existing users keep equivalent behavior.
 
 ## Later-Stage Polish
 - [ ] R39: Error monitoring + performance tracing (Sentry or similar)
@@ -144,6 +149,7 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] Q5: Wishlist mobile cards place save button inline with price row for denser layout
 - [x] Q6: Refactor hardening pass (mobile overlay state cleanup + lint warnings removed)
 - [x] Q7: Account settings now control cozy/quick feed speed multipliers used by the home speed toggle
+- [ ] Q8: Remove placeholder/fake notifications after notifications are gated behind login (no fake items; show empty state until backend is live)
 
 ## Notes
 - Positioning (later): "Yelp for products" across retailers (cross-site reviews + community trust layer)
