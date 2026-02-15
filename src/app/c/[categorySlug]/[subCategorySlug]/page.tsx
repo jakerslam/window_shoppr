@@ -4,6 +4,7 @@ import HomeFeed from "@/features/home-feed/HomeFeed";
 import { getAvailableCategories, toCategorySlug } from "@/shared/lib/catalog/categories";
 import { fetchProducts } from "@/shared/lib/catalog/data";
 import { buildMetaDescription, SITE_URL } from "@/shared/lib/platform/seo";
+import { buildCategoryListingSchema } from "@/app/c/schema";
 
 export const dynamicParams = false; // Pre-render available subcategory pages for static export.
 
@@ -121,12 +122,27 @@ export default async function SubCategoryPage({
       toCategorySlug(product.subCategory) === subCategorySlug; // Match subcategory slug.
     return matchesCategory && matchesSubCategory;
   }); // Server-filter products so the initial HTML is subcategory-specific for SEO.
+  const schemaData = buildCategoryListingSchema({
+    categoryLabel: category.label,
+    categorySlug,
+    products: scopedProducts,
+    subCategoryLabel,
+    subCategorySlug,
+  }); // Build subcategory landing page schema.
+  const schemaMarkup = JSON.stringify(schemaData); // Serialize JSON-LD for script injection.
 
   return (
-    <HomeFeed
-      products={scopedProducts}
-      title={`Today's ${subCategoryLabel} Finds`} // Ensure the header is correct on first render for direct visits.
-    />
+    <>
+      {/* JSON-LD schema for subcategory landing pages. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: schemaMarkup }}
+      />
+
+      <HomeFeed
+        products={scopedProducts}
+        title={`Today's ${subCategoryLabel} Finds`} // Ensure the header is correct on first render for direct visits.
+      />
+    </>
   ); // Render the feed with subcategory-scoped data.
 }
-

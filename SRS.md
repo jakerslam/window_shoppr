@@ -1,8 +1,8 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 54/89 (60.7%)  ████████████░░░░░░░░
-Frontend: 44/64 (68.8%) █████████████░░░░░░░
+Overall: 55/89 (61.8%)  ████████████░░░░░░░░
+Frontend: 45/64 (70.3%) ██████████████░░░░░░
 Backend: 9/22 (40.9%)   ████████░░░░░░░░░░░░
 Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░░░
 
@@ -54,7 +54,7 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 
 ## SEO & Growth
 - [x] R28: Category/subcategory gating (hide nav items + noindex pages until content threshold is met)
-- [NEXT] 🔵 R22.5: Category + subcategory landing pages with SEO metadata, schema, and slug routing
+- [x] R22.5: Category + subcategory landing pages with SEO metadata, schema, and slug routing
 - [x] R22.6: Category slug routing + canonical pages (category + subcategory)
 - [ ] R25 (Phase 2 Optional): AI-curated blog engine with intent-to-product mapping (pillar templates, FAQ schema)
 - [x] R20: SEO structured data (Product/Offer JSON-LD)
@@ -89,7 +89,7 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] R43: Notifications UI (feed + badge + placeholder list)
 - [x] R44: Profile settings section (account + security preferences + theme toggle)
 - [x] R49: Settings toggle for feed speed preference (cozy/quick) with persisted user choice
-- [ ] R50: Product media overflow navigation (when image/video thumbnails exceed viewport, show horizontal side-scroll with swipe support and arrow controls).
+- [NEXT] 🔵 R50: Product media overflow navigation (when image/video thumbnails exceed viewport, show horizontal side-scroll with swipe support and arrow controls).
 - [x] R45: Content preferences section (category taste + email frequency)
 - [x] R29.10: Preference capture (optional onboarding quiz + trickle questions; build a local-first taste profile with privacy controls)
 - [x] R29.10.1: Preference question bank config (drive onboarding + trickle prompts from a data file for easy edits)
