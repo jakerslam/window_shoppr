@@ -30,6 +30,11 @@ This guide defines where agent automation should read/write today and where it w
   - `moderation:queue:enqueue`
   - `moderation:queue:update`
 
+## Wishlist Sync (Today)
+- Guest wishlist data remains local-first in `windowShopprWishlistLists`.
+- Sync metadata queue for future account merge is stored in `windowShopprWishlistSyncState`.
+- Sync request event: `wishlist:sync:request` with a payload containing guest id, account id (if present), normalized lists, and pending operations.
+
 ## Planned API Surface (Backend Target)
 - `POST /api/agent/products/upsert`
 - `POST /api/agent/products/publish`

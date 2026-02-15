@@ -1,9 +1,8 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { DEFAULT_WISHLIST_NAME } from "@/features/wishlist/wishlist-constants";
-import { trackWishlistEvent } from "@/shared/lib/engagement/analytics";
-import { awardWindowPoints } from "@/shared/lib/engagement/window-points";
+import useWishlistAccountSync from "@/features/wishlist/lib/useWishlistAccountSync";
+import useWishlistStorageSync from "@/features/wishlist/lib/useWishlistStorageSync";
 import {
   type WishlistListsState,
   broadcastWishlistChange,
@@ -14,180 +13,194 @@ import {
   readWishlistListsFromStorage,
   writeWishlistListsToStorage,
 } from "@/features/wishlist/lib/wishlist-storage";
-import useWishlistStorageSync from "@/features/wishlist/lib/useWishlistStorageSync";
+import { DEFAULT_WISHLIST_NAME } from "@/features/wishlist/wishlist-constants";
+import { trackWishlistEvent } from "@/shared/lib/engagement/analytics";
+import { awardWindowPoints } from "@/shared/lib/engagement/window-points";
 
 /**
- * Shared wishlist state with local storage persistence.
+ * Shared wishlist state with local-first persistence and sync stubs.
  */
 export const useWishlist = () => {
   const [listState, setListState] = useState<WishlistListsState>(() =>
     buildDefaultWishlistState(),
   );
+  const { enqueueWishlistSyncOperation } = useWishlistAccountSync();
 
   const syncFromStorage = useCallback(() => {
-    const storedState = readWishlistListsFromStorage(); // Pull latest list data.
-    setListState(storedState); // Update local state with stored lists.
+    setListState(readWishlistListsFromStorage());
   }, []);
 
-  useWishlistStorageSync({ syncFromStorage }); // Keep state in sync with storage updates.
+  useWishlistStorageSync({ syncFromStorage });
 
   const listNames = useMemo(
     () => normalizeListOrder(listState.order),
     [listState.order],
-  ); // Use normalized list order for menus.
-
-  // Memoize default list ids to avoid recreating arrays on every render.
+  );
   const defaultIds = useMemo(
     () => listState.lists[DEFAULT_WISHLIST_NAME] ?? [],
     [listState.lists],
   );
-  const savedIds = useMemo(
-    () => new Set(defaultIds),
-    [defaultIds],
-  ); // Cached set for default list checks.
+  const savedIds = useMemo(() => new Set(defaultIds), [defaultIds]);
 
   const isSaved = useCallback(
     (id: string) =>
       Object.values(listState.lists).some((list) => list.includes(id)),
     [listState.lists],
-  ); // Check if an id is saved in any list.
-
+  );
   const isSavedInList = useCallback(
-    (id: string, listName: string) =>
-      (listState.lists[listName] ?? []).includes(id),
+    (id: string, listName: string) => (listState.lists[listName] ?? []).includes(id),
     [listState.lists],
-  ); // Check if an id is saved in a specific list.
+  );
 
-  const addList = useCallback((name: string) => {
-    const trimmed = normalizeListName(name); // Clean up the list name input.
-
-    if (!trimmed) {
-      return DEFAULT_WISHLIST_NAME; // Fall back to the default list name.
-    }
-
-    setListState((prev) => {
-      if (prev.lists[trimmed]) {
-        return prev; // No change when list already exists.
+  const addList = useCallback(
+    (name: string) => {
+      const trimmed = normalizeListName(name);
+      if (!trimmed) {
+        return DEFAULT_WISHLIST_NAME;
       }
 
-      const nextState = {
-        order: normalizeListOrder([...prev.order, trimmed]),
-        lists: {
-          ...prev.lists,
-          [trimmed]: [],
-        },
-      };
+      setListState((prev) => {
+        if (prev.lists[trimmed]) {
+          return prev;
+        }
 
-      writeWishlistListsToStorage(nextState); // Persist new list.
-      broadcastWishlistChange(); // Notify listeners about new list.
-      trackWishlistEvent({ action: "create_list", listName: trimmed }); // Track list creation for analytics.
-      return nextState;
-    });
+        const nextState = {
+          order: normalizeListOrder([...prev.order, trimmed]),
+          lists: { ...prev.lists, [trimmed]: [] },
+        };
 
-    return trimmed; // Return the normalized list name.
-  }, []);
+        writeWishlistListsToStorage(nextState);
+        broadcastWishlistChange();
+        trackWishlistEvent({ action: "create_list", listName: trimmed });
+        enqueueWishlistSyncOperation({
+          nextState,
+          operation: { type: "create_list", listName: trimmed },
+        });
+        return nextState;
+      });
 
-  const saveToList = useCallback((id: string, listName: string) => {
-    const targetList = normalizeListName(listName) || DEFAULT_WISHLIST_NAME; // Resolve list name.
+      return trimmed;
+    },
+    [enqueueWishlistSyncOperation],
+  );
 
-    setListState((prev) => {
-      const currentList = prev.lists[targetList] ?? []; // Load existing ids for list.
+  const saveToList = useCallback(
+    (id: string, listName: string) => {
+      const targetList = normalizeListName(listName) || DEFAULT_WISHLIST_NAME;
 
-      if (currentList.includes(id)) {
-        return prev; // Skip storage writes when already saved in this list.
-      }
+      setListState((prev) => {
+        const currentList = prev.lists[targetList] ?? [];
+        if (currentList.includes(id)) {
+          return prev;
+        }
 
-      const updatedList = normalizeWishlistIds([...currentList, id]); // Add id to list.
-      const nextState = {
-        order: normalizeListOrder(
-          prev.order.includes(targetList)
-            ? prev.order
-            : [...prev.order, targetList],
-        ),
-        lists: {
-          ...prev.lists,
-          [targetList]: updatedList,
-        },
-      };
+        const nextState = {
+          order: normalizeListOrder(
+            prev.order.includes(targetList)
+              ? prev.order
+              : [...prev.order, targetList],
+          ),
+          lists: {
+            ...prev.lists,
+            [targetList]: normalizeWishlistIds([...currentList, id]),
+          },
+        };
 
-      writeWishlistListsToStorage(nextState); // Persist updated lists.
-      broadcastWishlistChange(); // Notify listeners about list updates.
-      trackWishlistEvent({ action: "save", productId: id, listName: targetList }); // Track wishlist saves for analytics.
-      awardWindowPoints({
-        action: "wishlist_save",
-        uniqueKey: `wishlist-save:${id}`,
-      }); // Award one-time points the first time a product is saved.
-      return nextState;
-    });
-  }, []);
-
-  const removeFromList = useCallback((id: string, listName: string) => {
-    const targetList = normalizeListName(listName) || DEFAULT_WISHLIST_NAME; // Resolve list name.
-
-    setListState((prev) => {
-      const currentList = prev.lists[targetList] ?? []; // Load existing ids for list.
-
-      if (!currentList.includes(id)) {
-        return prev; // Skip when the item is not present in the target list.
-      }
-
-      const updatedList = currentList.filter((entry) => entry !== id); // Remove id.
-      const nextState = {
-        order: normalizeListOrder(prev.order),
-        lists: {
-          ...prev.lists,
-          [targetList]: updatedList,
-        },
-      };
-
-      writeWishlistListsToStorage(nextState); // Persist updated lists.
-      broadcastWishlistChange(); // Notify listeners about list updates.
-      trackWishlistEvent({ action: "remove", productId: id, listName: targetList }); // Track wishlist removals for analytics.
-      return nextState;
-    });
-  }, []);
-
-  const toggleSaved = useCallback((id: string) => {
-    setListState((prev) => {
-      const isAlreadySaved = Object.values(prev.lists).some((list) =>
-        list.includes(id),
-      ); // Detect membership in any list.
-      const nextLists = Object.fromEntries(
-        Object.entries(prev.lists).map(([name, ids]) => [
-          name,
-          isAlreadySaved ? ids.filter((entry) => entry !== id) : ids,
-        ]),
-      ); // Remove id from all lists when already saved.
-
-      if (!isAlreadySaved) {
-        const currentList = prev.lists[DEFAULT_WISHLIST_NAME] ?? [];
-        nextLists[DEFAULT_WISHLIST_NAME] = normalizeWishlistIds([
-          ...currentList,
-          id,
-        ]); // Add to default list when saving.
-      }
-
-      const nextState = {
-        order: normalizeListOrder(prev.order),
-        lists: nextLists,
-      };
-
-      writeWishlistListsToStorage(nextState); // Persist updated lists.
-      broadcastWishlistChange(); // Notify listeners about list updates.
-      trackWishlistEvent({
-        action: isAlreadySaved ? "remove" : "save",
-        productId: id,
-        listName: isAlreadySaved ? "All" : DEFAULT_WISHLIST_NAME,
-      }); // Track wishlist toggles for analytics.
-      if (!isAlreadySaved) {
+        writeWishlistListsToStorage(nextState);
+        broadcastWishlistChange();
+        trackWishlistEvent({ action: "save", productId: id, listName: targetList });
         awardWindowPoints({
           action: "wishlist_save",
           uniqueKey: `wishlist-save:${id}`,
-        }); // Award one-time points for default-list saves via toggle.
-      }
-      return nextState;
-    });
-  }, []);
+        });
+        enqueueWishlistSyncOperation({
+          nextState,
+          operation: { type: "save", productId: id, listName: targetList },
+        });
+        return nextState;
+      });
+    },
+    [enqueueWishlistSyncOperation],
+  );
+
+  const removeFromList = useCallback(
+    (id: string, listName: string) => {
+      const targetList = normalizeListName(listName) || DEFAULT_WISHLIST_NAME;
+
+      setListState((prev) => {
+        const currentList = prev.lists[targetList] ?? [];
+        if (!currentList.includes(id)) {
+          return prev;
+        }
+
+        const nextState = {
+          order: normalizeListOrder(prev.order),
+          lists: {
+            ...prev.lists,
+            [targetList]: currentList.filter((entry) => entry !== id),
+          },
+        };
+
+        writeWishlistListsToStorage(nextState);
+        broadcastWishlistChange();
+        trackWishlistEvent({ action: "remove", productId: id, listName: targetList });
+        enqueueWishlistSyncOperation({
+          nextState,
+          operation: { type: "remove", productId: id, listName: targetList },
+        });
+        return nextState;
+      });
+    },
+    [enqueueWishlistSyncOperation],
+  );
+
+  const toggleSaved = useCallback(
+    (id: string) => {
+      setListState((prev) => {
+        const isAlreadySaved = Object.values(prev.lists).some((list) =>
+          list.includes(id),
+        );
+        const nextLists = Object.fromEntries(
+          Object.entries(prev.lists).map(([name, ids]) => [
+            name,
+            isAlreadySaved ? ids.filter((entry) => entry !== id) : ids,
+          ]),
+        );
+
+        if (!isAlreadySaved) {
+          const currentList = prev.lists[DEFAULT_WISHLIST_NAME] ?? [];
+          nextLists[DEFAULT_WISHLIST_NAME] = normalizeWishlistIds([...currentList, id]);
+        }
+
+        const nextState = { order: normalizeListOrder(prev.order), lists: nextLists };
+        writeWishlistListsToStorage(nextState);
+        broadcastWishlistChange();
+        trackWishlistEvent({
+          action: isAlreadySaved ? "remove" : "save",
+          productId: id,
+          listName: isAlreadySaved ? "All" : DEFAULT_WISHLIST_NAME,
+        });
+
+        if (!isAlreadySaved) {
+          awardWindowPoints({
+            action: "wishlist_save",
+            uniqueKey: `wishlist-save:${id}`,
+          });
+        }
+
+        enqueueWishlistSyncOperation({
+          nextState,
+          operation: {
+            type: isAlreadySaved ? "remove" : "save",
+            productId: id,
+            listName: isAlreadySaved ? "all" : DEFAULT_WISHLIST_NAME,
+          },
+        });
+        return nextState;
+      });
+    },
+    [enqueueWishlistSyncOperation],
+  );
 
   return {
     savedIds,
