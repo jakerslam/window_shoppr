@@ -1,8 +1,8 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 56/89 (62.9%)  █████████████░░░░░░░
-Frontend: 46/64 (71.9%) ██████████████░░░░░░
+Overall: 57/89 (64.0%)  █████████████░░░░░░░
+Frontend: 47/64 (73.4%) ███████████████░░░░░
 Backend: 9/22 (40.9%)   ████████░░░░░░░░░░░░
 Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░░░
 
@@ -94,8 +94,8 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] R29.10: Preference capture (optional onboarding quiz + trickle questions; build a local-first taste profile with privacy controls)
 - [x] R29.10.1: Preference question bank config (drive onboarding + trickle prompts from a data file for easy edits)
 - [x] R29.11: List-based recommendations (use a selected list to bias feed)
-- [NEXT] 🔵 R47: Product detail share button (copy link + native share fallback)
-- [ ] R48: Configurable product description collapse (x chars with Read more/Read less)
+- [x] R47: Product detail share button (copy link + native share fallback)
+- [NEXT] 🔵 R48: Configurable product description collapse (x chars with Read more/Read less)
 - [ ] R29.7: Product view comments section (community notes + moderation hooks later)
 - [x] R17.1: Loading UI (global spinner/skeletons for route + modal transitions)
 - [ ] R29.3: Gamification (window shop points + streaks + redemption hook later)

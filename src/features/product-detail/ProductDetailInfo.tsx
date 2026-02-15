@@ -3,6 +3,7 @@
 import { Product, PRODUCT_UI } from "@/shared/lib/catalog/types";
 import { trackAffiliateClick } from "@/shared/lib/engagement/analytics";
 import DescriptionToggle from "@/features/product-detail/DescriptionToggle";
+import ProductDetailShareButton from "@/features/product-detail/ProductDetailShareButton";
 import ProductDetailReport from "@/features/product-detail/info/ProductDetailReport";
 import ProductDetailTaste from "@/features/product-detail/info/ProductDetailTaste";
 import styles from "@/features/product-detail/ProductDetail.module.css";
@@ -80,15 +81,22 @@ export default function ProductDetailInfo({
         <span className={styles.productDetail__ratingText}>{ratingText}</span>
       </div>
 
-      <a
-        className={styles.productDetail__cta}
-        href={product.affiliateUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={handleAffiliateClick} // Track affiliate click before navigation.
-      >
-        Get deal at {retailerLabel}
-      </a>
+      <div className={styles.productDetail__actionsRow}>
+        <a
+          className={styles.productDetail__cta}
+          href={product.affiliateUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={handleAffiliateClick} // Track affiliate click before navigation.
+        >
+          Get deal at {retailerLabel}
+        </a>
+
+        <ProductDetailShareButton
+          productName={product.name}
+          productSlug={product.slug}
+        />
+      </div>
 
       <DescriptionToggle
         text={product.description}

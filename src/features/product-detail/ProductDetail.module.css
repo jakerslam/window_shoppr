@@ -358,6 +358,35 @@
   opacity: 0.9;
 }
 
+.productDetail__actionsRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.productDetail__share {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-muted);
+  color: var(--color-save-inactive);
+  font-size: 13px;
+  font-weight: 600;
+  width: fit-content;
+  transition: opacity 150ms ease;
+  cursor: pointer;
+  opacity: 0.75;
+}
+
+.productDetail__share:hover {
+  opacity: 0.9;
+}
+
 .productDetail__description {
   display: flex;
   flex-direction: column;
@@ -470,6 +499,7 @@
 
 .productDetail__back:focus-visible,
 .productDetail__cta:focus-visible,
+.productDetail__share:focus-visible,
 .productDetail__descriptionToggle:focus-visible,
 .productDetail__thumb:focus-visible,
 .productDetail__thumbNav:focus-visible,
