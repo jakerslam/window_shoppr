@@ -20,6 +20,7 @@ export default function ProductDetailReport({
   >("inaccuracy");
   const [reportDetails, setReportDetails] = useState("");
   const [reportSubmitted, setReportSubmitted] = useState(false);
+  const [reportMessage, setReportMessage] = useState("");
 
   /**
    * Toggle the inline report form.
@@ -32,14 +33,26 @@ export default function ProductDetailReport({
    * Submit a report stub for agent review.
    */
   const handleReportSubmit = useCallback(() => {
-    submitReport({
+    const details = reportDetails.trim();
+
+    if (reportReason === "other" && !details) {
+      setReportMessage("Please add details for \"Other\" reports.");
+      return; // Require details when reason is too generic.
+    }
+
+    const queueItem = submitReport({
       productId,
       productSlug,
       reason: reportReason,
-      details: reportDetails.trim() || undefined,
+      details: details || undefined,
     });
 
     setReportSubmitted(true);
+    setReportMessage(
+      queueItem
+        ? `Queued for review (${queueItem.id}).`
+        : "Queued for review.",
+    );
     setIsReportOpen(false);
     setReportDetails("");
   }, [productId, productSlug, reportDetails, reportReason]);
@@ -47,7 +60,9 @@ export default function ProductDetailReport({
   return (
     <>
       {reportSubmitted ? (
-        <p className={styles.productDetail__reportThanks}>Thanks for the report.</p>
+        <p className={styles.productDetail__reportThanks}>
+          Thanks for the report. {reportMessage}
+        </p>
       ) : null}
 
       <div className={styles.productDetail__report}>
@@ -83,9 +98,18 @@ export default function ProductDetailReport({
                 className={styles.productDetail__reportInput}
                 rows={3}
                 value={reportDetails}
-                onChange={(event) => setReportDetails(event.target.value)}
+                onChange={(event) => {
+                  setReportDetails(event.target.value);
+                  if (reportMessage) {
+                    setReportMessage(""); // Clear validation message while editing.
+                  }
+                }}
               />
             </label>
+
+            {reportMessage && !reportSubmitted ? (
+              <p className={styles.productDetail__reportThanks}>{reportMessage}</p>
+            ) : null}
 
             <button
               className={styles.productDetail__reportSubmit}
@@ -100,4 +124,3 @@ export default function ProductDetailReport({
     </>
   );
 }
-
