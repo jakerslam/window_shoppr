@@ -54,6 +54,7 @@ export default function ProductCard({
   const hasDeal = hasPriceDeal && isDealActive; // Show strike pricing only while the deal window is active.
   const dealLabel = formatDealTimeRemaining(product.dealEndsAt); // Compute active deal timer when available.
   const showDealBadge = Boolean(dealLabel); // Show badge only when a concrete remaining-time label exists.
+  const compactDealLabel = dealLabel?.replace(/^Ends in\s+/i, "") ?? null; // Show compact countdown copy on cards.
   const imageSrc = toAssetPath(product.images[0] ?? "/images/product-placeholder.svg"); // Use first image or fallback.
   const isCompact = variant === "compact"; // Toggle compact styling for dense layouts.
   const saveCount = useProductSaveCount(product.id, product.saveCount ?? 0); // Subscribe to live save-count updates for this product.
@@ -83,7 +84,12 @@ export default function ProductCard({
       <div className={styles.productCard__media}>
         {/* Deal badge for discounted items. */}
         {showDealBadge ? (
-          <span className={styles.productCard__badge}>{dealLabel}</span>
+          <span className={styles.productCard__badge}>
+            <span className={styles.productCard__badgeIcon} aria-hidden="true">
+              ⏱
+            </span>
+            <span>{compactDealLabel}</span>
+          </span>
         ) : null}
         <img
           className={styles.productCard__image}
@@ -123,9 +129,9 @@ export default function ProductCard({
           {!isCompact ? ( // Hide deal timer in compact mode.
             <span
               className={styles.productCard__dealTime}
-              aria-hidden={!dealLabel}
+              aria-hidden={!compactDealLabel}
             >
-              {dealLabel ?? " "} {/* Reserve space when timer is missing. */}
+              {compactDealLabel ? `⏱ ${compactDealLabel}` : " "} {/* Reserve space when timer is missing. */}
             </span>
           ) : null}
         </div>
