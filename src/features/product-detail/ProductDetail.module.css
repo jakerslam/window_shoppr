@@ -72,13 +72,6 @@
   background-size: cover;
 }
 
-.productDetail__mainImageMedia {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-
 .productDetail__mainImage .productDetail__saveWrap {
   position: absolute;
   top: 8px;
@@ -233,12 +226,6 @@
 .productDetail__thumb--active {
   border-color: var(--color-primary-strong);
   box-shadow: 0 0 0 2px rgba(111, 69, 41, 0.2);
-}
-
-.productDetail__thumbImage {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 }
 
 .productDetail__thumbLabel {
@@ -397,13 +384,6 @@
   font-size: 14px;
   line-height: 1.6;
   color: var(--color-fg);
-}
-
-.productDetail__descriptionText--clamped {
-  display: -webkit-box;
-  -webkit-line-clamp: 6;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 
 .productDetail__descriptionToggle {
