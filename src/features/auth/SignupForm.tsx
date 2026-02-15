@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { writeAuthSession } from "@/shared/lib/platform/auth-session";
 import styles from "@/features/auth/SignupForm.module.css";
 
 /**
@@ -26,16 +27,26 @@ export default function SignupForm({
   // Handle signup submission with a stub response.
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault(); // Prevent full page reload.
+    const formData = new FormData(event.currentTarget);
+    const emailValue = `${formData.get("email") ?? ""}`.trim();
+    writeAuthSession({ provider: "email", email: emailValue || undefined }); // Persist stub auth session after signup.
     setStatusMessage(
       wantsNewsletter
-        ? "Signup stub: newsletter opt-in captured."
-        : "Signup stub: connect auth provider.",
+        ? "Account created (stub session) + newsletter opt-in captured."
+        : "Account created (stub session).",
     ); // Placeholder for signup wiring.
   };
 
   // Handle social signup stubs for future provider wiring.
   const handleSocialLogin = (provider: string) => {
-    setStatusMessage(`${provider} signup stub: connect provider.`); // Placeholder for social auth.
+    const normalizedProvider =
+      provider === "Google"
+        ? "google"
+        : provider === "X"
+          ? "x"
+          : "meta";
+    writeAuthSession({ provider: normalizedProvider }); // Persist social signup stub session.
+    setStatusMessage(`${provider} signup complete (stub session).`); // Placeholder for social auth.
   };
 
   return (

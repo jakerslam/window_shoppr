@@ -1,11 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import {
   getCommentsByProductId,
   ProductComment,
   submitComment,
 } from "@/shared/lib/engagement/comments";
+import { readAuthSession } from "@/shared/lib/platform/auth-session";
 import styles from "@/features/product-detail/ProductDetail.module.css";
 
 const MIN_COMMENT_LENGTH = 3; // Avoid submitting empty or low-signal comments.
@@ -21,18 +23,45 @@ export default function ProductDetailComments({
   productId: string;
   productSlug: string;
 }) {
-  const [comments, setComments] = useState<ProductComment[]>([]);
+  const [commentsVersion, setCommentsVersion] = useState(0);
   const [author, setAuthor] = useState("");
   const [body, setBody] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  void commentsVersion; // Rerender trigger for comment refresh events.
+  const comments = isAuthenticated
+    ? getCommentsByProductId(productId).slice(0, MAX_RENDERED_COMMENTS)
+    : []; // Read visible comments from local storage when auth/session state changes.
 
   /**
-   * Load comments on mount for this product.
+   * Keep comment gating in sync with the current auth session stub.
    */
   useEffect(() => {
-    setComments(getCommentsByProductId(productId).slice(0, MAX_RENDERED_COMMENTS));
-  }, [productId]);
+    const syncAuthState = () => {
+      setIsAuthenticated(Boolean(readAuthSession())); // Gate comments behind auth.
+    };
+
+    syncAuthState(); // Initialize from storage.
+
+    const handleSessionUpdate = () => {
+      syncAuthState(); // React immediately when auth session changes in this tab.
+    };
+
+    const handleStorageUpdate = (event: StorageEvent) => {
+      if (event.key === "window_shoppr_auth_session") {
+        syncAuthState(); // Sync when auth state changes in another tab.
+      }
+    };
+
+    window.addEventListener("auth:session", handleSessionUpdate);
+    window.addEventListener("storage", handleStorageUpdate);
+
+    return () => {
+      window.removeEventListener("auth:session", handleSessionUpdate);
+      window.removeEventListener("storage", handleStorageUpdate);
+    };
+  }, []);
 
   /**
    * Subscribe to cross-component comment events for live updates.
@@ -46,7 +75,7 @@ export default function ProductDetailComments({
         return; // Ignore comments for other products.
       }
 
-      setComments((prev) => [incoming, ...prev].slice(0, MAX_RENDERED_COMMENTS));
+      setCommentsVersion((prev) => prev + 1); // Refresh comments from storage when a new product note arrives.
     };
 
     window.addEventListener("comment:submit", handleCommentSubmit);
@@ -68,6 +97,11 @@ export default function ProductDetailComments({
    * Submit a new comment with basic validation and local persistence.
    */
   const handleSubmit = useCallback(() => {
+    if (!isAuthenticated) {
+      setErrorMessage("Please sign in to post a note.");
+      return;
+    }
+
     const trimmedBody = body.trim();
 
     if (trimmedBody.length < MIN_COMMENT_LENGTH) {
@@ -83,10 +117,27 @@ export default function ProductDetailComments({
       body: trimmedBody,
     });
 
+    setCommentsVersion((prev) => prev + 1); // Refresh comments from storage after local submit.
     setBody("");
     setErrorMessage("");
     setIsSubmitted(true);
-  }, [author, body, productId, productSlug]);
+  }, [author, body, isAuthenticated, productId, productSlug]);
+
+  if (!isAuthenticated) {
+    return (
+      <section className={styles.productDetail__comments}>
+        <div className={styles.productDetail__commentsHeader}>
+          <h2 className={styles.productDetail__commentsTitle}>Community notes</h2>
+        </div>
+        <p className={styles.productDetail__commentsHint}>
+          Sign in to view and post notes on this product.
+        </p>
+        <Link className={styles.productDetail__commentLogin} href="/login">
+          Sign in to comment
+        </Link>
+      </section>
+    );
+  }
 
   return (
     <section className={styles.productDetail__comments}>
@@ -161,4 +212,3 @@ export default function ProductDetailComments({
     </section>
   );
 }
-

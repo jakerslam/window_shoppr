@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { writeAuthSession } from "@/shared/lib/platform/auth-session";
 import styles from "@/features/auth/LoginForm.module.css";
 
 /**
@@ -25,7 +26,10 @@ export default function LoginForm({
   // Handle login submission with a stub response.
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault(); // Prevent full page reload.
-    setStatusMessage("Login stub: connect auth provider."); // Placeholder for auth wiring.
+    const formData = new FormData(event.currentTarget);
+    const emailValue = `${formData.get("email") ?? ""}`.trim();
+    writeAuthSession({ provider: "email", email: emailValue || undefined }); // Persist stub auth session for gated UI.
+    setStatusMessage("Signed in (stub session)."); // Placeholder until backend auth is wired.
   };
 
   // Handle forgotten password with a stub response.
@@ -35,7 +39,14 @@ export default function LoginForm({
 
   // Handle social login stubs for future provider wiring.
   const handleSocialLogin = (provider: string) => {
-    setStatusMessage(`${provider} login stub: connect provider.`); // Placeholder for social auth.
+    const normalizedProvider =
+      provider === "Google"
+        ? "google"
+        : provider === "X"
+          ? "x"
+          : "meta";
+    writeAuthSession({ provider: normalizedProvider }); // Persist social stub session.
+    setStatusMessage(`${provider} sign-in complete (stub session).`); // Placeholder for social auth wiring.
   };
 
   return (

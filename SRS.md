@@ -152,6 +152,8 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] Q7: Account settings now control cozy/quick feed speed multipliers used by the home speed toggle
 - [ ] Q8: Remove placeholder/fake notifications after notifications are gated behind login (no fake items; show empty state until backend is live)
 - [ ] Q9: Keep wishlist "Removed from {list} / click to undo" ghost card locked to standard wishlist card dimensions so row height/width never expands.
+- [x] Q10: Gate product comments behind auth session stub (show sign-in prompt when logged out).
+- [x] Q11: Product-detail desktop thumbnail rail uses arrow-only navigation (manual scroll disabled; mobile swipe preserved).
 
 ## Notes
 - Positioning (later): "Yelp for products" across retailers (cross-site reviews + community trust layer)
