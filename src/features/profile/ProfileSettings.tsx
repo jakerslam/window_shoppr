@@ -1,266 +1,41 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { CATEGORY_LABELS, toCategorySlug } from "@/shared/lib/categories";
-import { clearRecentlyViewed } from "@/shared/lib/recently-viewed";
-import styles from "@/features/profile/ProfileSettings.module.css";
 import TasteQuizModal from "@/features/preference-capture/TasteQuizModal";
+import ProfileSettingsAccountSection from "@/features/profile/sections/ProfileSettingsAccountSection";
+import ProfileSettingsAppearanceSection from "@/features/profile/sections/ProfileSettingsAppearanceSection";
+import ProfileSettingsContentSection from "@/features/profile/sections/ProfileSettingsContentSection";
+import ProfileSettingsSecuritySection from "@/features/profile/sections/ProfileSettingsSecuritySection";
+import useProfileSettingsState from "@/features/profile/useProfileSettingsState";
+import styles from "@/features/profile/ProfileSettings.module.css";
 import { useWishlist } from "@/features/wishlist/wishlist";
-import {
-  DEFAULT_CONTENT_PREFERENCES,
-  DEFAULT_SETTINGS,
-  DEFAULT_SPEED_PREFERENCES,
-  PROFILE_SETTINGS_STORAGE_KEY,
-  SPEED_LIMITS,
-  ContentPreferencesState,
-  EmailFrequency,
-  FeedSpeedPreferences,
-  ProfileSettingsState,
-  ThemePreference,
-  readStoredProfileSettings,
-} from "@/shared/lib/profile-settings";
-import {
-  TasteProfile,
-  applyTasteQuizSelections,
-  clearTasteProfile,
-  createDefaultTasteProfile,
-  readTasteProfile,
-  setTastePersonalizationEnabled,
-  writeTasteProfile,
-} from "@/shared/lib/taste-profile";
-
-const CONTENT_CATEGORY_OPTIONS = CATEGORY_LABELS.map((label) => ({
-  label,
-  slug: toCategorySlug(label),
-}));
-
-/**
- * Clamp numeric speed values to allowed settings ranges.
- */
-const clamp = (value: number, min: number, max: number) =>
-  Math.min(max, Math.max(min, value));
-
-/**
- * Apply selected theme preference to the document root.
- */
-const applyThemePreference = (themePreference: ThemePreference) => {
-  if (typeof document === "undefined") {
-    return; // Skip theme updates during SSR.
-  }
-
-  if (themePreference === "system") {
-    delete document.documentElement.dataset.theme; // Revert to system theme when selected.
-    return;
-  }
-
-  document.documentElement.dataset.theme = themePreference; // Force explicit light or dark theme.
-};
 
 /**
  * Profile settings panel for account, content, security, and theme preferences.
  */
 export default function ProfileSettings() {
-  const hasMountedRef = useRef(false);
-  const hasTasteMountedRef = useRef(false);
-  const skipNextTasteWriteRef = useRef(false);
   const { listNames } = useWishlist(); // Wishlist list labels used for list-based recommendations.
-  const [settings, setSettings] = useState<ProfileSettingsState>(
-    () => readStoredProfileSettings()?.settings ?? DEFAULT_SETTINGS,
-  ); // Initialize account/security settings from local storage once.
-  const [themePreference, setThemePreference] = useState<ThemePreference>(
-    () => readStoredProfileSettings()?.themePreference ?? "system",
-  ); // Initialize theme preference from local storage once.
-  const [speedPreferences, setSpeedPreferences] = useState<FeedSpeedPreferences>(
-    () => readStoredProfileSettings()?.speedPreferences ?? DEFAULT_SPEED_PREFERENCES,
-  ); // Initialize feed speed preferences from local storage once.
-  const [contentPreferences, setContentPreferences] =
-    useState<ContentPreferencesState>(
-      () =>
-        readStoredProfileSettings()?.contentPreferences ??
-        DEFAULT_CONTENT_PREFERENCES,
-    ); // Initialize content preferences from local storage once.
-  const [tasteProfile, setTasteProfile] = useState<TasteProfile>(
-    () => readTasteProfile() ?? createDefaultTasteProfile(),
-  ); // Initialize taste profile state from local storage once.
-  const [isTasteQuizOpen, setIsTasteQuizOpen] = useState(false);
-
-  /**
-   * Clear the selected recommendation list if it no longer exists.
-   */
-  useEffect(() => {
-    if (!contentPreferences.recommendationListName) {
-      return undefined; // Skip validation when no list is selected.
-    }
-
-    if (listNames.includes(contentPreferences.recommendationListName)) {
-      return undefined; // Keep selection when the list still exists.
-    }
-
-    if (typeof window === "undefined") {
-      return undefined; // Skip deferred state updates during SSR.
-    }
-
-    const timeoutId = window.setTimeout(() => {
-      setContentPreferences((prev) => ({
-        ...prev,
-        recommendationListName: null,
-      })); // Reset missing list preference to avoid stale personalization.
-    }, 0); // Defer to avoid render-phase lint warnings.
-
-    return () => {
-      window.clearTimeout(timeoutId); // Clean up deferred reset when list names change quickly.
-    };
-  }, [contentPreferences.recommendationListName, listNames]);
-
-  /**
-   * Persist settings and theme whenever values change after first render.
-   */
-  useEffect(() => {
-    if (!hasMountedRef.current) {
-      hasMountedRef.current = true; // Skip first write and only apply theme.
-      applyThemePreference(themePreference); // Apply initial theme immediately.
-      return;
-    }
-
-    window.localStorage.setItem(
-      PROFILE_SETTINGS_STORAGE_KEY,
-      JSON.stringify({
-        settings,
-        themePreference,
-        speedPreferences,
-        contentPreferences,
-      }),
-    ); // Persist latest profile + speed + content preferences.
-    applyThemePreference(themePreference); // Keep theme synced with selected preference.
-  }, [settings, themePreference, speedPreferences, contentPreferences]);
-
-  /**
-   * Persist taste profile updates after first render.
-   */
-  useEffect(() => {
-    if (!hasTasteMountedRef.current) {
-      hasTasteMountedRef.current = true; // Skip first write to avoid clobbering stored state.
-      return;
-    }
-
-    if (skipNextTasteWriteRef.current) {
-      skipNextTasteWriteRef.current = false; // Consume one-shot write skip used for clearing.
-      return;
-    }
-
-    writeTasteProfile(tasteProfile); // Persist taste profile changes.
-  }, [tasteProfile]);
-
-  /**
-   * Update cozy speed while preserving the minimum gap above quick speed.
-   */
-  const handleCozySpeedChange = (nextValue: number) => {
-    setSpeedPreferences((prev) => {
-      const cozyScale = clamp(
-        nextValue,
-        SPEED_LIMITS.cozyMin,
-        SPEED_LIMITS.cozyMax,
-      );
-      const maxQuick = Math.min(
-        SPEED_LIMITS.quickMax,
-        cozyScale - SPEED_LIMITS.minGap,
-      );
-      const quickScale = clamp(
-        prev.quickScale,
-        SPEED_LIMITS.quickMin,
-        Math.max(SPEED_LIMITS.quickMin, maxQuick),
-      );
-
-      return {
-        cozyScale,
-        quickScale,
-      };
-    });
-  };
-
-  /**
-   * Update quick speed while preserving the minimum gap below cozy speed.
-   */
-  const handleQuickSpeedChange = (nextValue: number) => {
-    setSpeedPreferences((prev) => {
-      const quickScale = clamp(
-        nextValue,
-        SPEED_LIMITS.quickMin,
-        SPEED_LIMITS.quickMax,
-      );
-      const maxQuick = Math.min(quickScale, prev.cozyScale - SPEED_LIMITS.minGap);
-
-      return {
-        cozyScale: prev.cozyScale,
-        quickScale: clamp(maxQuick, SPEED_LIMITS.quickMin, SPEED_LIMITS.quickMax),
-      };
-    });
-  };
-
-  /**
-   * Toggle a preferred category chip for content personalization.
-   */
-  const handleCategoryToggle = (categorySlug: string) => {
-    setContentPreferences((prev) => {
-      const hasCategory = prev.preferredCategorySlugs.includes(categorySlug);
-
-      return {
-        ...prev,
-        preferredCategorySlugs: hasCategory
-          ? prev.preferredCategorySlugs.filter((slug) => slug !== categorySlug)
-          : [...prev.preferredCategorySlugs, categorySlug],
-      };
-    });
-  };
-
-  /**
-   * Update marketing email frequency preference.
-   */
-  const handleEmailFrequencyChange = (nextFrequency: EmailFrequency) => {
-    setContentPreferences((prev) => ({
-      ...prev,
-      emailFrequency: nextFrequency,
-    }));
-  };
-
-  /**
-   * Choose a wishlist list to bias feed recommendations.
-   */
-  const handleRecommendationListChange = (nextValue: string) => {
-    setContentPreferences((prev) => ({
-      ...prev,
-      recommendationListName: nextValue ? nextValue : null,
-    })); // Persist list selection (or clear when "None" is chosen).
-  };
-
-  /**
-   * Toggle personalization application for the home feed.
-   */
-  const handlePersonalizationToggle = (enabled: boolean) => {
-    setTasteProfile((prev) => setTastePersonalizationEnabled(prev, enabled));
-  };
-
-  /**
-   * Clear local-first personalization data for privacy controls.
-   */
-  const handleClearPersonalization = () => {
-    skipNextTasteWriteRef.current = true; // Avoid immediately recreating cleared storage payloads.
-    clearTasteProfile(); // Remove taste profile from local storage.
-    clearRecentlyViewed(); // Clear recently viewed personalization state.
-    setTasteProfile(createDefaultTasteProfile()); // Reset taste profile in memory.
-    setContentPreferences(DEFAULT_CONTENT_PREFERENCES); // Reset stored content preferences.
-  };
-
-  /**
-   * Apply onboarding quiz answers to content and taste preferences.
-   */
-  const handleTasteQuizApply = (nextCategorySlugs: string[], nextVibeTags: string[]) => {
-    setContentPreferences((prev) => ({
-      ...prev,
-      preferredCategorySlugs: nextCategorySlugs,
-    })); // Persist category taste selections.
-    setTasteProfile((prev) => applyTasteQuizSelections(prev, nextCategorySlugs, nextVibeTags)); // Seed taste weights.
-  };
+  const {
+    settings,
+    themePreference,
+    speedPreferences,
+    contentPreferences,
+    tasteProfile,
+    isTasteQuizOpen,
+    setIsTasteQuizOpen,
+    setThemePreference,
+    handleDisplayNameChange,
+    handleMarketingEmailsToggle,
+    handleLoginAlertsToggle,
+    handleTwoFactorToggle,
+    handleCozySpeedChange,
+    handleQuickSpeedChange,
+    handleCategoryToggle,
+    handleRecommendationListChange,
+    handleEmailFrequencyChange,
+    handlePersonalizationToggle,
+    handleClearPersonalization,
+    handleTasteQuizApply,
+  } = useProfileSettingsState({ listNames }); // Centralize profile settings state + persistence.
 
   return (
     <section
@@ -277,225 +52,38 @@ export default function ProfileSettings() {
         </p>
       </header>
 
-      {/* Account preferences section. */}
-      <div className={styles.profileSettings__section}>
-        <h3 className={styles.profileSettings__sectionTitle}>Account</h3>
+      <ProfileSettingsAccountSection
+        settings={settings}
+        speedPreferences={speedPreferences}
+        onDisplayNameChange={handleDisplayNameChange} // Update display name preference.
+        onMarketingEmailsToggle={handleMarketingEmailsToggle} // Toggle marketing email preference.
+        onCozySpeedChange={handleCozySpeedChange} // Update cozy speed multiplier.
+        onQuickSpeedChange={handleQuickSpeedChange} // Update quick speed multiplier.
+      />
 
-        <label className={styles.profileSettings__field}>
-          <span className={styles.profileSettings__label}>Display name</span>
-          <input
-            className={styles.profileSettings__input}
-            type="text"
-            value={settings.displayName}
-            onChange={(event) =>
-              setSettings((prev) => ({ ...prev, displayName: event.target.value }))
-            } // Update display name preference.
-            placeholder="How your profile should appear"
-          />
-        </label>
+      <ProfileSettingsContentSection
+        listNames={listNames}
+        contentPreferences={contentPreferences}
+        personalizationEnabled={tasteProfile.personalizationEnabled}
+        onTasteQuizOpen={() => setIsTasteQuizOpen(true)} // Open the optional onboarding taste quiz.
+        onCategoryToggle={handleCategoryToggle} // Toggle category taste preference.
+        onRecommendationListChange={handleRecommendationListChange} // Update list-based recommendation selection.
+        onEmailFrequencyChange={handleEmailFrequencyChange} // Update email cadence preference.
+        onPersonalizationToggle={handlePersonalizationToggle} // Toggle personalization enablement.
+        onClearPersonalization={handleClearPersonalization} // Clear local-first personalization state.
+      />
 
-        <label className={styles.profileSettings__toggleRow}>
-          <input
-            className={styles.profileSettings__checkbox}
-            type="checkbox"
-            checked={settings.marketingEmails}
-            onChange={(event) =>
-              setSettings((prev) => ({
-                ...prev,
-                marketingEmails: event.target.checked,
-              }))
-            } // Toggle marketing email preference.
-          />
-          <span>Receive weekly deal emails</span>
-        </label>
+      <ProfileSettingsSecuritySection
+        loginAlerts={settings.loginAlerts}
+        requireTwoFactor={settings.requireTwoFactor}
+        onLoginAlertsToggle={handleLoginAlertsToggle} // Toggle sign-in alert preference.
+        onTwoFactorToggle={handleTwoFactorToggle} // Toggle 2FA preference stub.
+      />
 
-        {/* Feed speed settings consumed by the home speed toggle. */}
-        <div className={styles.profileSettings__speedGrid}>
-          <label className={styles.profileSettings__field}>
-            <span className={styles.profileSettings__label}>Cozy speed (slow mode)</span>
-            <input
-              className={styles.profileSettings__input}
-              type="number"
-              min={SPEED_LIMITS.cozyMin}
-              max={SPEED_LIMITS.cozyMax}
-              step="0.01"
-              value={speedPreferences.cozyScale.toFixed(2)}
-              onChange={(event) =>
-                handleCozySpeedChange(Number.parseFloat(event.target.value || "0"))
-              } // Update cozy speed multiplier.
-            />
-          </label>
-
-          <label className={styles.profileSettings__field}>
-            <span className={styles.profileSettings__label}>Quick speed (fast mode)</span>
-            <input
-              className={styles.profileSettings__input}
-              type="number"
-              min={SPEED_LIMITS.quickMin}
-              max={SPEED_LIMITS.quickMax}
-              step="0.01"
-              value={speedPreferences.quickScale.toFixed(2)}
-              onChange={(event) =>
-                handleQuickSpeedChange(Number.parseFloat(event.target.value || "0"))
-              } // Update quick speed multiplier.
-            />
-          </label>
-        </div>
-
-        <p className={styles.profileSettings__hint}>
-          Lower numbers scroll faster. Quick stays faster than cozy.
-        </p>
-      </div>
-
-      {/* Content preferences section for category taste and cadence. */}
-      <div className={styles.profileSettings__section}>
-        <h3 className={styles.profileSettings__sectionTitle}>Content</h3>
-
-        <div className={styles.profileSettings__actions}>
-          <button
-            className={styles.profileSettings__actionButton}
-            type="button"
-            onClick={() => setIsTasteQuizOpen(true)} // Open the optional onboarding taste quiz.
-          >
-            Take the taste quiz
-          </button>
-        </div>
-
-        <div className={styles.profileSettings__chipGrid}>
-          {CONTENT_CATEGORY_OPTIONS.map((option) => {
-            const isSelected = contentPreferences.preferredCategorySlugs.includes(
-              option.slug,
-            );
-
-            return (
-              <button
-                key={option.slug}
-                className={`${styles.profileSettings__chip} ${
-                  isSelected ? styles["profileSettings__chip--active"] : ""
-                }`}
-                type="button"
-                onClick={() => handleCategoryToggle(option.slug)} // Toggle category taste preference.
-                aria-pressed={isSelected}
-              >
-                {option.label}
-              </button>
-            );
-          })}
-        </div>
-
-        <label className={styles.profileSettings__field}>
-          <span className={styles.profileSettings__label}>Recommend based on a list</span>
-          <select
-            className={styles.profileSettings__select}
-            value={contentPreferences.recommendationListName ?? ""}
-            onChange={(event) => handleRecommendationListChange(event.target.value)} // Update list-based recommendation selection.
-          >
-            <option value="">None</option>
-            {listNames.map((name) => (
-              <option key={name} value={name}>
-                {name}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <p className={styles.profileSettings__hint}>
-          Picks on the home feed will lean toward items similar to what you save in that list.
-        </p>
-
-        <label className={styles.profileSettings__field}>
-          <span className={styles.profileSettings__label}>Email frequency</span>
-          <select
-            className={styles.profileSettings__select}
-            value={contentPreferences.emailFrequency}
-            onChange={(event) =>
-              handleEmailFrequencyChange(event.target.value as EmailFrequency)
-            } // Update content email frequency preference.
-          >
-            <option value="weekly">Weekly</option>
-            <option value="twice-weekly">Twice Weekly</option>
-            <option value="daily">Daily</option>
-          </select>
-        </label>
-
-        <label className={styles.profileSettings__toggleRow}>
-          <input
-            className={styles.profileSettings__checkbox}
-            type="checkbox"
-            checked={tasteProfile.personalizationEnabled}
-            onChange={(event) => handlePersonalizationToggle(event.target.checked)} // Toggle personalization enablement.
-          />
-          <span>Personalize my feed (local-only)</span>
-        </label>
-
-        <div className={styles.profileSettings__actions}>
-          <button
-            className={styles.profileSettings__dangerButton}
-            type="button"
-            onClick={handleClearPersonalization} // Clear taste profile and recently viewed data.
-          >
-            Clear personalization data
-          </button>
-        </div>
-      </div>
-
-      {/* Security preferences section. */}
-      <div className={styles.profileSettings__section}>
-        <h3 className={styles.profileSettings__sectionTitle}>Security</h3>
-
-        <label className={styles.profileSettings__toggleRow}>
-          <input
-            className={styles.profileSettings__checkbox}
-            type="checkbox"
-            checked={settings.loginAlerts}
-            onChange={(event) =>
-              setSettings((prev) => ({ ...prev, loginAlerts: event.target.checked }))
-            } // Toggle sign-in alert preference.
-          />
-          <span>Notify me about new sign-ins</span>
-        </label>
-
-        <label className={styles.profileSettings__toggleRow}>
-          <input
-            className={styles.profileSettings__checkbox}
-            type="checkbox"
-            checked={settings.requireTwoFactor}
-            onChange={(event) =>
-              setSettings((prev) => ({
-                ...prev,
-                requireTwoFactor: event.target.checked,
-              }))
-            } // Toggle 2FA preference stub.
-          />
-          <span>Require two-factor verification (stub)</span>
-        </label>
-      </div>
-
-      {/* Theme preference section. */}
-      <div className={styles.profileSettings__section}>
-        <h3 className={styles.profileSettings__sectionTitle}>Appearance</h3>
-
-        <div
-          className={styles.profileSettings__themeRow}
-          role="group"
-          aria-label="Theme preference"
-        >
-          {(["system", "light", "dark"] as ThemePreference[]).map((option) => (
-            <button
-              key={option}
-              className={`${styles.profileSettings__themeButton} ${
-                themePreference === option
-                  ? styles["profileSettings__themeButton--active"]
-                  : ""
-              }`}
-              type="button"
-              onClick={() => setThemePreference(option)} // Set theme preference and persist.
-            >
-              {option}
-            </button>
-          ))}
-        </div>
-      </div>
+      <ProfileSettingsAppearanceSection
+        themePreference={themePreference}
+        onThemeChange={setThemePreference} // Persist theme preference.
+      />
 
       {/* Autosave helper note. */}
       <p className={styles.profileSettings__status} role="status">
@@ -511,3 +99,4 @@ export default function ProfileSettings() {
     </section>
   );
 }
+

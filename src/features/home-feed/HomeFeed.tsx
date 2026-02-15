@@ -3,63 +3,21 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCategoryFilter } from "@/features/category-filter/CategoryFilterProvider";
-import { getRecentlyViewedIds } from "@/shared/lib/recently-viewed";
-import {
-  DEFAULT_CONTENT_PREFERENCES,
-  DEFAULT_SPEED_PREFERENCES,
-  PROFILE_SETTINGS_STORAGE_KEY,
-  FeedSpeedPreferences,
-  readStoredProfileSettings,
-} from "@/shared/lib/profile-settings";
-import {
-  WISHLIST_EVENT,
-  WISHLIST_LISTS_STORAGE_KEY,
-} from "@/features/wishlist/wishlist-constants";
-import {
-  TASTE_PROFILE_STORAGE_KEY,
-  TasteProfile,
-  createDefaultTasteProfile,
-  readTasteProfile,
-} from "@/shared/lib/taste-profile";
 import { Product } from "@/shared/lib/types";
 import { toCategorySlug } from "@/shared/lib/categories";
 import { formatCategoryLabel } from "@/features/home-feed/home-feed-utils";
-import SortDropdown, { SortOption } from "@/features/home-feed/SortDropdown";
+import HomeFeedHeader from "@/features/home-feed/HomeFeedHeader";
+import { SortOption } from "@/features/home-feed/SortDropdown";
 import ScrollingColumn from "@/features/home-feed/ScrollingColumn";
 import {
   buildCardDecks,
   normalizeText,
   rankProductsForUser,
 } from "@/features/home-feed/deck-utils";
+import useHomeFeedPreferences from "@/features/home-feed/useHomeFeedPreferences";
 import styles from "@/features/home-feed/HomeFeed.module.css";
 
 const BASE_COLUMN_DURATIONS = [38, 46, 54, 62, 70]; // Base scroll speeds per column.
-
-/**
- * Read wishlist list ids from local storage for list-based recommendations.
- */
-const readWishlistListIdsFromStorage = (listName: string) => {
-  if (typeof window === "undefined") {
-    return [] as string[]; // Skip storage reads during SSR.
-  }
-
-  try {
-    const raw = window.localStorage.getItem(WISHLIST_LISTS_STORAGE_KEY); // Read wishlist list payload.
-    if (!raw) {
-      return [] as string[]; // No list data saved yet.
-    }
-
-    const parsed = JSON.parse(raw) as {
-      lists?: Record<string, unknown>;
-    };
-    const list = parsed.lists?.[listName]; // Grab the requested list ids.
-
-    return Array.isArray(list) ? list.map(String) : ([] as string[]);
-  } catch (error) {
-    console.warn("Unable to read wishlist list ids", error); // Log parse/storage issues.
-    return [] as string[]; // Fail closed on parse errors.
-  }
-};
 
 /**
  * Client-side feed renderer with sorting and search.
@@ -76,191 +34,10 @@ export default function HomeFeed({
   const router = useRouter(); // Router for modal navigation.
   const [sortOption, setSortOption] = useState<SortOption>("newest");
   const [speedMode, setSpeedMode] = useState<"cozy" | "quick">("cozy");
-  const [speedPreferences, setSpeedPreferences] = useState<FeedSpeedPreferences>(
-    DEFAULT_SPEED_PREFERENCES,
-  ); // Load speed multipliers from saved profile settings.
-  const [preferredCategorySlugs, setPreferredCategorySlugs] = useState<string[]>(
-    DEFAULT_CONTENT_PREFERENCES.preferredCategorySlugs,
-  ); // Load preferred category slugs from saved content settings.
-  const [recommendationListName, setRecommendationListName] = useState<
-    string | null
-  >(DEFAULT_CONTENT_PREFERENCES.recommendationListName); // Load selected wishlist list for recommendations.
-  const [recommendationListIds, setRecommendationListIds] = useState<string[]>([]);
-  const [tasteProfile, setTasteProfile] = useState<TasteProfile | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [personalizationSeed, setPersonalizationSeed] = useState(0);
-  const [recentlyViewedIds, setRecentlyViewedIds] = useState<string[]>([]);
+  const { speedPreferences, preferredCategorySlugs, recommendationListIds, tasteProfile, recentlyViewedIds, isModalOpen } =
+    useHomeFeedPreferences(); // Load personalization sources (profile + taste + wishlist).
   const { selectedCategory, selectedSubCategory, searchQuery, clearFilters } =
     useCategoryFilter(); // Shared category filter + search query.
-
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return undefined; // Skip storage sync during SSR.
-    }
-
-    const timeoutId = window.setTimeout(() => {
-      setRecentlyViewedIds(getRecentlyViewedIds()); // Sync recently viewed IDs after mount.
-    }, 0); // Defer to avoid hydration mismatches and render-phase lint warnings.
-
-    return () => {
-      window.clearTimeout(timeoutId); // Clean up deferred sync when re-running.
-    };
-  }, [personalizationSeed]);
-
-  /**
-   * Load saved cozy/quick speed preferences from profile settings.
-   */
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return undefined; // Skip local storage access during SSR.
-    }
-
-    const timeoutId = window.setTimeout(() => {
-      const stored = readStoredProfileSettings(); // Read persisted profile settings.
-      setSpeedPreferences(stored?.speedPreferences ?? DEFAULT_SPEED_PREFERENCES); // Fall back to defaults when missing.
-      setPreferredCategorySlugs(
-        stored?.contentPreferences.preferredCategorySlugs ??
-          DEFAULT_CONTENT_PREFERENCES.preferredCategorySlugs,
-      ); // Sync preferred category slugs for personalization.
-      setRecommendationListName(
-        stored?.contentPreferences.recommendationListName ??
-          DEFAULT_CONTENT_PREFERENCES.recommendationListName,
-      ); // Sync list-based recommendation selection.
-    }, 0);
-
-    const handleStorage = (event: StorageEvent) => {
-      if (event.key !== PROFILE_SETTINGS_STORAGE_KEY) {
-        return; // Ignore unrelated local storage updates.
-      }
-
-      const stored = readStoredProfileSettings(); // Read latest settings after storage changes.
-      setSpeedPreferences(stored?.speedPreferences ?? DEFAULT_SPEED_PREFERENCES); // Keep speed controls in sync.
-      setPreferredCategorySlugs(
-        stored?.contentPreferences.preferredCategorySlugs ??
-          DEFAULT_CONTENT_PREFERENCES.preferredCategorySlugs,
-      ); // Keep preferred categories in sync.
-      setRecommendationListName(
-        stored?.contentPreferences.recommendationListName ??
-          DEFAULT_CONTENT_PREFERENCES.recommendationListName,
-      ); // Keep list-based recommendations in sync.
-    };
-
-    window.addEventListener("storage", handleStorage);
-
-    return () => {
-      window.clearTimeout(timeoutId); // Clean up deferred settings read.
-      window.removeEventListener("storage", handleStorage); // Clean up storage listener.
-    };
-  }, []);
-
-  /**
-   * Sync the selected wishlist list ids for list-based recommendations.
-   */
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return undefined; // Skip storage access during SSR.
-    }
-
-    if (!recommendationListName) {
-      const timeoutId = window.setTimeout(() => {
-        setRecommendationListIds([]); // Clear list ids when no recommendation list is selected.
-      }, 0); // Defer to avoid render-phase lint warnings.
-
-      return () => {
-        window.clearTimeout(timeoutId); // Clean up deferred clear when changing selection.
-      };
-    }
-
-    const syncListIds = () => {
-      setRecommendationListIds(
-        readWishlistListIdsFromStorage(recommendationListName),
-      ); // Refresh ids from local storage snapshot.
-    };
-
-    const timeoutId = window.setTimeout(() => {
-      syncListIds(); // Load list ids after mount and list selection changes.
-    }, 0);
-
-    const handleStorage = (event: StorageEvent) => {
-      if (event.key !== WISHLIST_LISTS_STORAGE_KEY) {
-        return; // Ignore unrelated local storage updates.
-      }
-
-      syncListIds(); // Refresh on cross-tab wishlist list updates.
-    };
-
-    const handleWishlistChange = () => {
-      syncListIds(); // Refresh on same-tab wishlist changes.
-    };
-
-    window.addEventListener("storage", handleStorage);
-    window.addEventListener(WISHLIST_EVENT, handleWishlistChange);
-
-    return () => {
-      window.clearTimeout(timeoutId); // Clean up deferred hydration read.
-      window.removeEventListener("storage", handleStorage); // Clean up storage listener.
-      window.removeEventListener(WISHLIST_EVENT, handleWishlistChange); // Clean up wishlist listener.
-    };
-  }, [recommendationListName]);
-
-  /**
-   * Load local taste profile preferences for personalization scoring.
-   */
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return undefined; // Skip local storage access during SSR.
-    }
-
-    const timeoutId = window.setTimeout(() => {
-      setTasteProfile(readTasteProfile() ?? createDefaultTasteProfile()); // Hydrate taste profile after mount.
-    }, 0);
-
-    const handleTasteProfileUpdated = (event: Event) => {
-      const customEvent = event as CustomEvent<{ profile?: TasteProfile | null }>;
-      if (customEvent.detail && "profile" in customEvent.detail) {
-        setTasteProfile(customEvent.detail.profile ?? createDefaultTasteProfile()); // Apply event payload when present.
-        return;
-      }
-
-      setTasteProfile(readTasteProfile() ?? createDefaultTasteProfile()); // Fall back to stored profile.
-    };
-
-    const handleStorage = (event: StorageEvent) => {
-      if (event.key !== TASTE_PROFILE_STORAGE_KEY) {
-        return; // Ignore unrelated local storage updates.
-      }
-
-      setTasteProfile(readTasteProfile() ?? createDefaultTasteProfile()); // Keep taste profile in sync across tabs.
-    };
-
-    window.addEventListener("taste-profile:updated", handleTasteProfileUpdated);
-    window.addEventListener("storage", handleStorage);
-
-    return () => {
-      window.clearTimeout(timeoutId); // Clean up deferred hydration read.
-      window.removeEventListener("taste-profile:updated", handleTasteProfileUpdated); // Clean up taste listener.
-      window.removeEventListener("storage", handleStorage); // Clean up storage listener.
-    };
-  }, []);
-
-  useEffect(() => {
-    const handleModalToggle = (event: Event) => {
-      const customEvent = event as CustomEvent<{ open?: boolean }>;
-      const isOpen = Boolean(customEvent.detail?.open);
-
-      setIsModalOpen(isOpen); // Track modal open state.
-
-      if (!isOpen) {
-        setPersonalizationSeed((prev) => prev + 1); // Refresh personalization after closing.
-      }
-    };
-
-    window.addEventListener("modal:toggle", handleModalToggle); // Listen for modal open/close.
-
-    return () => {
-      window.removeEventListener("modal:toggle", handleModalToggle); // Clean up listener.
-    };
-  }, []);
 
   /**
    * Lock the middle content scroller on mobile while the home feed auto-scrolls.
@@ -282,7 +59,6 @@ export default function HomeFeed({
   const effectiveTitle = categorySource
     ? `Today's ${displayCategory} Finds`
     : title; // Fall back when no category filter is selected.
-
 
   const personalizationEnabled = tasteProfile?.personalizationEnabled ?? true; // Default personalization to enabled.
   const shouldPersonalize =
@@ -395,67 +171,16 @@ export default function HomeFeed({
   return (
     <section className={styles.homeFeed} aria-label={resultsLabel}>
       {/* Header with title and controls. */}
-      <div className={styles.homeFeed__header}>
-        {/* Title and helper text. */}
-        <div className={styles.homeFeed__titleGroup}>
-          <h1 className={styles.homeFeed__title}>{effectiveTitle}</h1>
-        </div>
-
-        {/* Browse controls (categories, speed, sort). */}
-        <div className={styles.homeFeed__controls}>
-          {/* Category shortcut for mobile browsing. */}
-          <button
-            className={styles.homeFeed__categoryTrigger}
-            type="button"
-            onClick={() =>
-              window.dispatchEvent(
-                new CustomEvent("mobile:categories", { detail: { open: true } }),
-              )
-            } // Open mobile categories sheet.
-            aria-label="Browse categories"
-          >
-            ☰ Categories
-          </button>
-
-          <button
-            className={`${styles.homeFeed__speedToggle} ${
-              speedMode === "quick" ? styles["homeFeed__speedToggle--quick"] : ""
-            }`}
-            type="button"
-            onClick={() =>
-              setSpeedMode((prev) => (prev === "cozy" ? "quick" : "cozy"))
-            } // Toggle between cozy and quick speeds.
-            aria-pressed={speedMode === "quick"}
-            aria-label={
-              speedMode === "quick"
-                ? "Switch to cozy scroll speed"
-                : "Switch to quick scroll speed"
-            }
-          >
-            <span className={styles.homeFeed__speedThumb} aria-hidden="true" />
-            <span
-              className={styles.homeFeed__speedIcon}
-              data-side="left"
-              aria-hidden="true"
-            >
-              🐢
-            </span>
-            <span
-              className={styles.homeFeed__speedIcon}
-              data-side="right"
-              aria-hidden="true"
-            >
-              🐇
-            </span>
-          </button>
-
-          {/* Styled sort dropdown. */}
-          <SortDropdown
-            value={sortOption}
-            onChange={setSortOption} // Update the selected sort option.
-          />
-        </div>
-      </div>
+      <HomeFeedHeader
+        title={effectiveTitle}
+        speedMode={speedMode}
+        sortOption={sortOption}
+        onOpenCategories={() =>
+          window.dispatchEvent(new CustomEvent("mobile:categories", { detail: { open: true } }))
+        } // Open the mobile category sheet from the feed header.
+        onToggleSpeedMode={() => setSpeedMode((prev) => (prev === "cozy" ? "quick" : "cozy"))} // Toggle between cozy and quick speeds.
+        onSortChange={setSortOption} // Update the selected sort option.
+      />
 
       {/* Animated columns of product cards. */}
       <div className={styles.homeFeed__columns}>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Cormorant, Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import TopBar from "@/features/top-bar/TopBar";
-import MobileBottomNav from "@/features/top-bar/MobileBottomNav";
+import MobileBottomNav from "@/features/top-bar/mobile/MobileBottomNav";
 import CategoryFilterProvider from "@/features/category-filter/CategoryFilterProvider";
 import Footer from "@/shared/components/footer/Footer";
 import EmailCaptureModal from "@/features/email-capture/EmailCaptureModal";
