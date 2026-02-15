@@ -55,6 +55,12 @@ This guide defines where agent automation should read/write today and where it w
 - `GET /api/agent/submissions/pending`
 - `POST /api/agent/submissions/resolve`
 
+## SQL Data API Surface (Frontend Wiring)
+- `GET /data/products` (catalog listing for SQL mode)
+- `GET /data/products/:slug` (single product lookup for SQL mode)
+- `POST /data/wishlist/sync` (guest/account wishlist merge + ack pending ops)
+- `POST /data/email-captures` (email list capture persistence)
+
 ## Auth Surface (Account Wiring)
 - Frontend account wiring now expects:
   - `POST /auth/login`

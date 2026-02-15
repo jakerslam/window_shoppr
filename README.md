@@ -42,6 +42,14 @@ Planned ingestion (agent‑driven):
 
 See: `docs/agent/README.md`, `docs/agent/SKILL.md`, and `docs/agent/AGENT_SKILL.md`.
 
+### Backend Wiring (SQL/API)
+- `NEXT_PUBLIC_DATA_API_URL` (optional): enables SQL-backed data API wiring for:
+- `GET /data/products`
+- `GET /data/products/:slug`
+- `POST /data/wishlist/sync`
+- `POST /data/email-captures`
+- `NEXT_PUBLIC_AUTH_API_URL` (optional): enables auth backend wiring (`/auth/*` routes).
+
 ## Scripts
 - `npm run dev` — local dev server
 - `npm run lint` — lint checks

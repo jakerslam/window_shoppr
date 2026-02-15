@@ -102,7 +102,7 @@ export default function EmailCaptureModal() {
         return;
       }
 
-      throw new Error("Submission failed");
+      throw new Error(result.message ?? "Submission failed");
     } catch (error) {
       console.warn("Email capture failed", error); // Log submission errors.
       setStatus("error");

@@ -10,6 +10,7 @@ import {
   WishlistListsState,
   readWishlistListsFromStorage,
 } from "@/features/wishlist/lib/wishlist-storage";
+import useWishlistSqlSyncBridge from "@/features/wishlist/lib/useWishlistSqlSyncBridge";
 
 /**
  * Resolve a stable account id for sync payloads from the auth session stub.
@@ -27,6 +28,8 @@ const resolveWishlistAccountId = () => {
  * Sync helper hook for queueing operations and emitting account-sync requests.
  */
 export default function useWishlistAccountSync() {
+  useWishlistSqlSyncBridge(); // Forward sync events to SQL API bridge.
+
   const enqueueWishlistSyncOperation = useCallback(
     ({
       nextState,

@@ -6,6 +6,7 @@ import {
   normalizeCatalogSource,
   normalizeProductSource,
 } from "@/shared/lib/catalog/products";
+import { requestDataApi } from "@/shared/lib/platform/data-api";
 
 const DEV_LOADING_DELAY_MS = 400; // Artificial delay to preview loading UI in dev.
 
@@ -19,22 +20,71 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
  */
 const shouldDelay = () => process.env.NODE_ENV === "development"; // Only delay in dev.
 
-
 /**
- * Placeholder for future SQL-backed product retrieval.
+ * Normalize product-list payloads from SQL data API responses.
  */
-export const fetchProductsFromSql = async (): Promise<Product[] | null> => {
-  return null; // TODO: replace with SQL query logic.
+const parseProductListPayload = (payload: unknown) => {
+  if (Array.isArray(payload)) {
+    return payload as Product[]; // Support direct list responses.
+  }
+
+  if (
+    payload &&
+    typeof payload === "object" &&
+    "products" in payload &&
+    Array.isArray((payload as { products?: unknown }).products)
+  ) {
+    return (payload as { products: Product[] }).products; // Support enveloped list responses.
+  }
+
+  return null;
 };
 
 /**
- * Placeholder for future SQL-backed single product retrieval.
+ * Normalize single-product payloads from SQL data API responses.
+ */
+const parseProductPayload = (payload: unknown) => {
+  if (!payload || typeof payload !== "object") {
+    return null; // Ignore invalid product payloads.
+  }
+
+  if ("product" in payload && (payload as { product?: unknown }).product) {
+    return (payload as { product: Product }).product; // Support enveloped product responses.
+  }
+
+  return payload as Product; // Support direct product responses.
+};
+
+/**
+ * SQL-backed product retrieval via configurable external data API.
+ */
+export const fetchProductsFromSql = async (): Promise<Product[] | null> => {
+  const response = await requestDataApi<unknown>({
+    path: "/data/products",
+    method: "GET",
+  }); // Request catalog rows from external SQL-backed API.
+  if (!response || !response.ok) {
+    return null; // Fall back to JSON when API is unavailable or returns errors.
+  }
+
+  return parseProductListPayload(response.data);
+};
+
+/**
+ * SQL-backed single product retrieval via configurable external data API.
  */
 export const fetchProductBySlugFromSql = async (
   slug: string,
 ): Promise<Product | null> => {
-  void slug; // TODO: use slug when SQL is wired.
-  return null; // TODO: replace with SQL query logic.
+  const response = await requestDataApi<unknown>({
+    path: `/data/products/${encodeURIComponent(slug)}`,
+    method: "GET",
+  }); // Request single product row by slug from external API.
+  if (!response || !response.ok) {
+    return null; // Fall back to JSON when API is unavailable or returns errors.
+  }
+
+  return parseProductPayload(response.data);
 };
 
 /**

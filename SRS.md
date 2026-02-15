@@ -1,9 +1,9 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 67/90 (74.4%)  ███████████████░░░░░
+Overall: 68/90 (75.6%)  ███████████████░░░░░
 Frontend: 51/64 (79.7%) ███████████████░░░░░
-Backend: 15/22 (68.2%)  ██████████████░░░░░░
+Backend: 16/22 (72.7%)  ███████████████░░░░░
 Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░░░
 
 
@@ -73,10 +73,10 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] R29: Agent ingestion API stub (authenticated upsert endpoint + schema validation + draft/publish state)
 - [x] R12.3: Account management wiring (backend/auth integration)
 - [x] R12.4: Auth gate for profile/settings and notifications (require login/signup session after auth backend is live)
-- [NEXT] 🔵 R30: SQL data layer wiring (products, wishlist, email capture submissions)
+- [x] R30: SQL data layer wiring (products, wishlist, email capture submissions)
 
 ## Analytics & Revenue
-- [ ] R29.9: Post-click purchase confirmation prompt ("Did you buy this?" + review reminder hook)
+- [NEXT] 🔵 R29.9: Post-click purchase confirmation prompt ("Did you buy this?" + review reminder hook)
 - [ ] R29.8: Social proof counts (display save count on product pages + cards)
 - [ ] R29.5: User-submitted deals (submit link + optional price/info; moderation queue for AI agent/gatekeeper; auto-enrich into draft products; optional revenue share later)
 - [ ] R29.4: Native ad cards (occasional sponsored cards in feed, non-disruptive)
