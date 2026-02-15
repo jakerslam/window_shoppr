@@ -864,3 +864,23 @@
     align-self: center;
   }
 }
+
+@media (max-width: 820px) {
+  .topBar__iconButton,
+  .topBar__iconButton.topBar__mobileSubmit {
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    border-radius: 999px;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-muted);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .topBar__iconGraphic {
+    width: 22px;
+    height: 22px;
+  }
+}
