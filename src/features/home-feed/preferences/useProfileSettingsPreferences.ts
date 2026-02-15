@@ -7,7 +7,7 @@ import {
   FeedSpeedPreferences,
   PROFILE_SETTINGS_STORAGE_KEY,
   readStoredProfileSettings,
-} from "@/shared/lib/profile-settings";
+} from "@/shared/lib/profile/profile-settings";
 
 /**
  * Load and keep profile settings in sync (speed preferences + content preferences).

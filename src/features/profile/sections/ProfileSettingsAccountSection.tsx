@@ -4,7 +4,7 @@ import {
   SPEED_LIMITS,
   FeedSpeedPreferences,
   ProfileSettingsState,
-} from "@/shared/lib/profile-settings";
+} from "@/shared/lib/profile/profile-settings";
 import styles from "@/features/profile/ProfileSettings.module.css";
 
 /**

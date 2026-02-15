@@ -19,6 +19,7 @@ This document defines how code is implemented and maintained for Window Shoppr. 
 - Split TS/TSX files when they exceed `220` lines.
 - Split TS/TSX files earlier (around `120+` lines) when they mix multiple concerns (state orchestration + heavy rendering + utilities).
 - If a folder exceeds `8` files, introduce subfolders by concern.
+- Exception: `src/app` route roots may exceed `8` files when required by Next.js App Router conventions; prefer route groups only when they improve clarity, not just to satisfy a numeric threshold.
 - Keep constants in the feature folder when they are feature-only; move to `src/shared/lib/*` only when reused.
 
 ## React And State Rules

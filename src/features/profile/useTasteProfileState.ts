@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { clearRecentlyViewed } from "@/shared/lib/recently-viewed";
+import { clearRecentlyViewed } from "@/shared/lib/engagement/recently-viewed";
 import {
   TasteProfile,
   applyTasteQuizSelections,
@@ -10,7 +10,7 @@ import {
   readTasteProfile,
   setTastePersonalizationEnabled,
   writeTasteProfile,
-} from "@/shared/lib/taste-profile";
+} from "@/shared/lib/profile/taste-profile";
 
 /**
  * Taste profile state + persistence wrapper used by profile settings.

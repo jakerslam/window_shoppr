@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { submitEmailCapture } from "@/shared/lib/email";
+import { submitEmailCapture } from "@/shared/lib/engagement/email";
 import styles from "@/features/email-capture/EmailCaptureModal.module.css";
 
 const DISMISSED_KEY = "windowShopprEmailDismissed"; // Local storage key for dismissal.

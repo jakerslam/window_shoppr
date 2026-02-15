@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { CATEGORY_LABELS, toCategorySlug } from "@/shared/lib/categories";
-import { PREFERENCE_QUESTION_BANK } from "@/shared/lib/preference-questions";
+import { CATEGORY_LABELS, toCategorySlug } from "@/shared/lib/catalog/categories";
+import { PREFERENCE_QUESTION_BANK } from "@/shared/lib/profile/preference-questions";
 import useTasteQuizModalLifecycle from "@/features/preference-capture/useTasteQuizModalLifecycle";
 import { formatTemplate } from "@/features/preference-capture/taste-quiz/taste-quiz-utils";
 import TasteQuizStepCategories from "@/features/preference-capture/taste-quiz/TasteQuizStepCategories";

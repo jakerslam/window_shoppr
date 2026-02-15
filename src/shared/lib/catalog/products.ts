@@ -1,6 +1,6 @@
 import productsJson from "@/data/products.json";
-import { ProductCatalogSchema } from "@/shared/lib/schema";
-import { Product } from "@/shared/lib/types";
+import { ProductCatalogSchema } from "@/shared/lib/catalog/schema";
+import { Product } from "@/shared/lib/catalog/types";
 
 /**
  * Static product catalog fallback for client-only experiences.

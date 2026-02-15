@@ -89,6 +89,7 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] R43: Notifications UI (feed + badge + placeholder list)
 - [x] R44: Profile settings section (account + security preferences + theme toggle)
 - [x] R49: Settings toggle for feed speed preference (cozy/quick) with persisted user choice
+- [ ] R50: Product media overflow navigation (when image/video thumbnails exceed viewport, show horizontal side-scroll with swipe support and arrow controls).
 - [x] R45: Content preferences section (category taste + email frequency)
 - [x] R29.10: Preference capture (optional onboarding quiz + trickle questions; build a local-first taste profile with privacy controls)
 - [x] R29.10.1: Preference question bank config (drive onboarding + trickle prompts from a data file for easy edits)
@@ -150,6 +151,7 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] Q6: Refactor hardening pass (mobile overlay state cleanup + lint warnings removed)
 - [x] Q7: Account settings now control cozy/quick feed speed multipliers used by the home speed toggle
 - [ ] Q8: Remove placeholder/fake notifications after notifications are gated behind login (no fake items; show empty state until backend is live)
+- [ ] Q9: Keep wishlist "Removed from {list} / click to undo" ghost card locked to standard wishlist card dimensions so row height/width never expands.
 
 ## Notes
 - Positioning (later): "Yelp for products" across retailers (cross-site reviews + community trust layer)

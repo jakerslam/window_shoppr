@@ -1,10 +1,10 @@
-import { Product } from "@/shared/lib/types";
-import { ProductCatalogSchema, ProductSchema } from "@/shared/lib/schema";
+import { Product } from "@/shared/lib/catalog/types";
+import { ProductCatalogSchema, ProductSchema } from "@/shared/lib/catalog/schema";
 import {
   FALLBACK_PRODUCTS,
   normalizeCatalogSource,
   normalizeProductSource,
-} from "@/shared/lib/products";
+} from "@/shared/lib/catalog/products";
 
 const DEV_LOADING_DELAY_MS = 400; // Artificial delay to preview loading UI in dev.
 

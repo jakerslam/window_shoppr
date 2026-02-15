@@ -1,5 +1,5 @@
 import type { NextConfig } from "next";
-import { buildSecurityHeaders } from "./src/shared/lib/security";
+import { buildSecurityHeaders } from "./src/shared/lib/platform/security";
 
 const REPO_NAME = "window_shoppr"; // GitHub Pages repo name.
 const isProd = process.env.NODE_ENV === "production"; // Detect production builds.

@@ -52,6 +52,6 @@ If you want the agent to populate the catalog now:
 
 ## References
 - Agent skill doc: `docs/agent/AGENT_SKILL.md`
-- Category config: `src/shared/lib/categories.ts`
-- Product types: `src/shared/lib/types.ts`
-- Data loader: `src/shared/lib/data.ts`
+- Category config: `src/shared/lib/catalog/categories.ts`
+- Product types: `src/shared/lib/catalog/types.ts`
+- Data loader: `src/shared/lib/catalog/data.ts`

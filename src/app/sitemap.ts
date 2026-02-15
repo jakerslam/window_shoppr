@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
-import { fetchProducts } from "@/shared/lib/data";
-import { SITE_URL } from "@/shared/lib/seo";
-import { getAvailableCategories, toCategorySlug } from "@/shared/lib/categories";
+import { fetchProducts } from "@/shared/lib/catalog/data";
+import { SITE_URL } from "@/shared/lib/platform/seo";
+import { getAvailableCategories, toCategorySlug } from "@/shared/lib/catalog/categories";
 
 export const dynamic = "force-static"; // Required for static export.
 

@@ -33,7 +33,7 @@ Open http://localhost:3000
 - `docs/agent` — Agent integration docs (planned ingestion/moderation API)
 
 ## Data + Ingestion
-The current build reads from `src/data/products.json` and normalizes source metadata in `src/shared/lib/data.ts`.
+The current build reads from `src/data/products.json` and normalizes source metadata in `src/shared/lib/catalog/data.ts`.
 
 Planned ingestion (agent‑driven):
 - Idempotent upsert using `source + externalId`

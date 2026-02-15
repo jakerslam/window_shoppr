@@ -3,7 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { useMemo, useState } from "react";
 import WishlistSaveButton from "@/features/wishlist/WishlistSaveButton";
-import { toAssetPath } from "@/shared/lib/assets";
+import { toAssetPath } from "@/shared/lib/catalog/assets";
 import styles from "@/features/product-detail/ProductDetail.module.css";
 
 /**

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { getRecentlyViewedIds } from "@/shared/lib/recently-viewed";
+import { getRecentlyViewedIds } from "@/shared/lib/engagement/recently-viewed";
 
 /**
  * Hydrate recently viewed ids after mount to avoid SSR mismatches.

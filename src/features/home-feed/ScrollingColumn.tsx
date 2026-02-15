@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { Product } from "@/shared/lib/types";
+import { Product } from "@/shared/lib/catalog/types";
 import ProductCard from "@/shared/components/product-card/ProductCard";
 import WishlistSaveButton from "@/features/wishlist/WishlistSaveButton";
 import useColumnMotion from "@/features/home-feed/scrolling-column/useColumnMotion";

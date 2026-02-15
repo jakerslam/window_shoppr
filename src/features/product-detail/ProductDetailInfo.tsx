@@ -1,7 +1,7 @@
 "use client";
 
-import { Product, PRODUCT_UI } from "@/shared/lib/types";
-import { trackAffiliateClick } from "@/shared/lib/analytics";
+import { Product, PRODUCT_UI } from "@/shared/lib/catalog/types";
+import { trackAffiliateClick } from "@/shared/lib/engagement/analytics";
 import DescriptionToggle from "@/features/product-detail/DescriptionToggle";
 import ProductDetailReport from "@/features/product-detail/info/ProductDetailReport";
 import ProductDetailTaste from "@/features/product-detail/info/ProductDetailTaste";

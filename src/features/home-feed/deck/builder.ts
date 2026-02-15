@@ -1,4 +1,4 @@
-import { Product } from "@/shared/lib/types";
+import { Product } from "@/shared/lib/catalog/types";
 
 /**
  * Split products into column decks for the animated feed.

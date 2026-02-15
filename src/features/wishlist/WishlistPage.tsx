@@ -2,8 +2,8 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Product } from "@/shared/lib/types";
-import { FALLBACK_PRODUCTS } from "@/shared/lib/products";
+import { Product } from "@/shared/lib/catalog/types";
+import { FALLBACK_PRODUCTS } from "@/shared/lib/catalog/products";
 import { ALL_LIST_LABEL, DEFAULT_WISHLIST_NAME } from "@/features/wishlist/wishlist-constants";
 import { useWishlist } from "@/features/wishlist/wishlist";
 import WishlistHeader from "@/features/wishlist/wishlist-page/WishlistHeader";

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { Product } from "@/shared/lib/types";
+import type { Product } from "@/shared/lib/catalog/types";
 
 const ISO_DATE_TIME_SCHEMA = z.string().datetime({ offset: true }); // Accept "Z" and "+00:00" style ISO datetimes.
 

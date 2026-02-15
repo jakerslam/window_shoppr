@@ -1,7 +1,7 @@
 "use client";
 
-import { CATEGORY_LABELS, toCategorySlug } from "@/shared/lib/categories";
-import { ContentPreferencesState, EmailFrequency } from "@/shared/lib/profile-settings";
+import { CATEGORY_LABELS, toCategorySlug } from "@/shared/lib/catalog/categories";
+import { ContentPreferencesState, EmailFrequency } from "@/shared/lib/profile/profile-settings";
 import styles from "@/features/profile/ProfileSettings.module.css";
 
 const CONTENT_CATEGORY_OPTIONS = CATEGORY_LABELS.map((label) => ({

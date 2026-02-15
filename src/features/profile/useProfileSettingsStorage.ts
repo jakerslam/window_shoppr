@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { ContentPreferencesState, DEFAULT_CONTENT_PREFERENCES, DEFAULT_SETTINGS, DEFAULT_SPEED_PREFERENCES, EmailFrequency, FeedSpeedPreferences, PROFILE_SETTINGS_STORAGE_KEY, ProfileSettingsState, SPEED_LIMITS, ThemePreference, readStoredProfileSettings } from "@/shared/lib/profile-settings";
+import { ContentPreferencesState, DEFAULT_CONTENT_PREFERENCES, DEFAULT_SETTINGS, DEFAULT_SPEED_PREFERENCES, EmailFrequency, FeedSpeedPreferences, PROFILE_SETTINGS_STORAGE_KEY, ProfileSettingsState, SPEED_LIMITS, ThemePreference, readStoredProfileSettings } from "@/shared/lib/profile/profile-settings";
 /**
  * Clamp numeric values to allowed settings ranges.
  */

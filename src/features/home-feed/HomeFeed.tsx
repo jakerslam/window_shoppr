@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCategoryFilter } from "@/features/category-filter/CategoryFilterProvider";
-import { Product } from "@/shared/lib/types";
-import { toCategorySlug } from "@/shared/lib/categories";
+import { Product } from "@/shared/lib/catalog/types";
+import { toCategorySlug } from "@/shared/lib/catalog/categories";
 import { formatCategoryLabel } from "@/features/home-feed/home-feed-utils";
 import HomeFeedHeader from "@/features/home-feed/HomeFeedHeader";
 import { SortOption } from "@/features/home-feed/SortDropdown";

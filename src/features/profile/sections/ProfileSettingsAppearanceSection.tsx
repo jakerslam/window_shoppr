@@ -1,6 +1,6 @@
 "use client";
 
-import { ThemePreference } from "@/shared/lib/profile-settings";
+import { ThemePreference } from "@/shared/lib/profile/profile-settings";
 import styles from "@/features/profile/ProfileSettings.module.css";
 
 /**

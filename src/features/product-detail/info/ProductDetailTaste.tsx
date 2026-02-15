@@ -1,14 +1,14 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { Product } from "@/shared/lib/types";
+import { Product } from "@/shared/lib/catalog/types";
 import {
   TastePreferenceSignal,
   applyTasteSignal,
   getTasteProfile,
   writeTasteProfile,
-} from "@/shared/lib/taste-profile";
-import { PREFERENCE_QUESTION_BANK } from "@/shared/lib/preference-questions";
+} from "@/shared/lib/profile/taste-profile";
+import { PREFERENCE_QUESTION_BANK } from "@/shared/lib/profile/preference-questions";
 import styles from "@/features/product-detail/ProductDetail.module.css";
 
 /**

@@ -3,8 +3,8 @@
 import { useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useCategoryFilter } from "@/features/category-filter/CategoryFilterProvider";
-import { trackRecentlyViewed } from "@/shared/lib/recently-viewed";
-import { Product } from "@/shared/lib/types";
+import { trackRecentlyViewed } from "@/shared/lib/engagement/recently-viewed";
+import { Product } from "@/shared/lib/catalog/types";
 import ProductDetailActions from "@/features/product-detail/ProductDetailActions";
 import ProductDetailInfo from "@/features/product-detail/ProductDetailInfo";
 import ProductMediaGallery from "@/features/product-detail/ProductMediaGallery";

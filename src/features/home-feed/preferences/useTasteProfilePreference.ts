@@ -6,7 +6,7 @@ import {
   TasteProfile,
   createDefaultTasteProfile,
   readTasteProfile,
-} from "@/shared/lib/taste-profile";
+} from "@/shared/lib/profile/taste-profile";
 
 /**
  * Load local taste profile preferences for personalization scoring.

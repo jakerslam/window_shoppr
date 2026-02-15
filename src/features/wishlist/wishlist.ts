@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { DEFAULT_WISHLIST_NAME } from "@/features/wishlist/wishlist-constants";
-import { trackWishlistEvent } from "@/shared/lib/analytics";
+import { trackWishlistEvent } from "@/shared/lib/engagement/analytics";
 import {
   type WishlistListsState,
   broadcastWishlistChange,

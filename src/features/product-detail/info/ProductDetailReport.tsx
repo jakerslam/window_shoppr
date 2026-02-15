@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { submitReport } from "@/shared/lib/reports";
+import { submitReport } from "@/shared/lib/engagement/reports";
 import styles from "@/features/product-detail/ProductDetail.module.css";
 
 /**

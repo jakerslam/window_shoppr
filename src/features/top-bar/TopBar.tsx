@@ -3,7 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback } from "react";
 import { useCategoryFilter } from "@/features/category-filter/CategoryFilterProvider";
-import { trackSearch } from "@/shared/lib/analytics";
+import { trackSearch } from "@/shared/lib/engagement/analytics";
 import TopBarBrand from "@/features/top-bar/TopBarBrand";
 import TopBarMenu from "@/features/top-bar/TopBarMenu";
 import TopBarSearch from "@/features/top-bar/TopBarSearch";

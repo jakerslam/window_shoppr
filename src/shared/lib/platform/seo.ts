@@ -1,4 +1,4 @@
-import { PUBLIC_ENV } from "@/shared/lib/env";
+import { PUBLIC_ENV } from "@/shared/lib/platform/env";
 
 /**
  * Canonical site URL for metadata, override with NEXT_PUBLIC_SITE_URL.

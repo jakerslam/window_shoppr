@@ -1,15 +1,15 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { getRecentlyViewedIds } from "@/shared/lib/recently-viewed";
+import { getRecentlyViewedIds } from "@/shared/lib/engagement/recently-viewed";
 import {
   DEFAULT_CONTENT_PREFERENCES,
   DEFAULT_SPEED_PREFERENCES,
   FeedSpeedPreferences,
-} from "@/shared/lib/profile-settings";
+} from "@/shared/lib/profile/profile-settings";
 import {
   TasteProfile,
-} from "@/shared/lib/taste-profile";
+} from "@/shared/lib/profile/taste-profile";
 import useModalOpenPreference from "@/features/home-feed/preferences/useModalOpenPreference";
 import useProfileSettingsPreferences from "@/features/home-feed/preferences/useProfileSettingsPreferences";
 import useRecommendationListPreference from "@/features/home-feed/preferences/useRecommendationListPreference";

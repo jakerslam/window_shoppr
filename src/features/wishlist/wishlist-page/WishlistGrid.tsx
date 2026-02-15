@@ -1,6 +1,6 @@
 "use client";
 
-import { Product } from "@/shared/lib/types";
+import { Product } from "@/shared/lib/catalog/types";
 import ProductCard from "@/shared/components/product-card/ProductCard";
 import WishlistSaveButton from "@/features/wishlist/WishlistSaveButton";
 import styles from "@/features/wishlist/WishlistPage.module.css";

@@ -1,4 +1,4 @@
-import { CONTENT_SECURITY_POLICY } from "@/shared/lib/security";
+import { CONTENT_SECURITY_POLICY } from "@/shared/lib/platform/security";
 
 /**
  * Head tags that act as a fallback on static hosts (where HTTP headers may not be configurable).

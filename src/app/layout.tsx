@@ -6,8 +6,8 @@ import CategoryFilterProvider from "@/features/category-filter/CategoryFilterPro
 import Footer from "@/shared/components/footer/Footer";
 import EmailCaptureModal from "@/features/email-capture/EmailCaptureModal";
 import CookieConsent from "@/shared/components/privacy/CookieConsent";
-import { SITE_URL } from "@/shared/lib/seo";
-import { REFERRER_POLICY } from "@/shared/lib/security";
+import { SITE_URL } from "@/shared/lib/platform/seo";
+import { REFERRER_POLICY } from "@/shared/lib/platform/security";
 import "./globals.css";
 
 const jakartaSans = Plus_Jakarta_Sans({

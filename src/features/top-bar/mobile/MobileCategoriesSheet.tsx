@@ -1,6 +1,6 @@
 "use client";
 
-import { toCategorySlug } from "@/shared/lib/categories";
+import { toCategorySlug } from "@/shared/lib/catalog/categories";
 import styles from "@/features/top-bar/TopBar.module.css";
 
 type AvailableCategory = {

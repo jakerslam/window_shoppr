@@ -1,4 +1,4 @@
-import { PUBLIC_ENV } from "@/shared/lib/env";
+import { PUBLIC_ENV } from "@/shared/lib/platform/env";
 
 const BASE_PATH = PUBLIC_ENV.basePath; // Static hosting base path (validated).
 

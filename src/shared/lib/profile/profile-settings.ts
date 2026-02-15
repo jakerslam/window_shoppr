@@ -1,4 +1,4 @@
-import { CATEGORY_LABELS, toCategorySlug } from "@/shared/lib/categories";
+import { CATEGORY_LABELS, toCategorySlug } from "@/shared/lib/catalog/categories";
 
 export type ThemePreference = "system" | "light" | "dark";
 

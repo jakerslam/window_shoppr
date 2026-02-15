@@ -1,5 +1,5 @@
-import { toCategorySlug } from "@/shared/lib/categories";
-import { Product } from "@/shared/lib/types";
+import { toCategorySlug } from "@/shared/lib/catalog/categories";
+import { Product } from "@/shared/lib/catalog/types";
 
 export type TastePreferenceSignal = "like" | "dislike";
 

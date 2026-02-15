@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 
-import { toAssetPath } from "@/shared/lib/assets";
-import { Product } from "@/shared/lib/types";
+import { toAssetPath } from "@/shared/lib/catalog/assets";
+import { Product } from "@/shared/lib/catalog/types";
 import styles from "@/shared/components/product-card/ProductCard.module.css";
 
 /**

@@ -1,6 +1,6 @@
-import { Product } from "@/shared/lib/types";
-import { toCategorySlug } from "@/shared/lib/categories";
-import { TasteProfile } from "@/shared/lib/taste-profile";
+import { Product } from "@/shared/lib/catalog/types";
+import { toCategorySlug } from "@/shared/lib/catalog/categories";
+import { TasteProfile } from "@/shared/lib/profile/taste-profile";
 
 /**
  * Normalize text for consistent search matching.

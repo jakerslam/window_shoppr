@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useRef, useState } from "react";
-import { getAvailableCategories } from "@/shared/lib/categories";
-import { getProductCatalog } from "@/shared/lib/products";
-import { trackSearch } from "@/shared/lib/analytics";
+import { getAvailableCategories } from "@/shared/lib/catalog/categories";
+import { getProductCatalog } from "@/shared/lib/catalog/products";
+import { trackSearch } from "@/shared/lib/engagement/analytics";
 import { useCategoryFilter } from "@/features/category-filter/CategoryFilterProvider";
 import styles from "@/features/top-bar/TopBar.module.css";
 import { HomeIcon, SearchIcon, StarIcon, UserIcon } from "@/features/top-bar/NavIcons";
