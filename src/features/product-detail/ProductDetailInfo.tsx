@@ -6,6 +6,7 @@ import {
   awardWindowPoints,
   buildDailyWindowPointsKey,
 } from "@/shared/lib/engagement/window-points";
+import { queuePurchaseFollowup } from "@/shared/lib/engagement/purchase-followup";
 import DescriptionToggle from "@/features/product-detail/DescriptionToggle";
 import ProductDetailShareButton from "@/features/product-detail/ProductDetailShareButton";
 import ProductDetailComments from "@/features/product-detail/info/ProductDetailComments";
@@ -51,6 +52,13 @@ export default function ProductDetailInfo({
       action: "affiliate_click",
       uniqueKey: buildDailyWindowPointsKey(`affiliate-click:${product.id}`),
     }); // Award one daily click bonus per product.
+    queuePurchaseFollowup({
+      productId: product.id,
+      productSlug: product.slug,
+      productName: product.name,
+      retailer: product.retailer,
+      affiliateUrl: product.affiliateUrl,
+    }); // Queue a post-click "did you buy?" follow-up prompt.
   };
 
   return (

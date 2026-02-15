@@ -5,6 +5,7 @@ import MobileBottomNav from "@/features/top-bar/mobile/MobileBottomNav";
 import CategoryFilterProvider from "@/features/category-filter/CategoryFilterProvider";
 import Footer from "@/shared/components/footer/Footer";
 import EmailCaptureModal from "@/features/email-capture/EmailCaptureModal";
+import PurchaseFollowupPrompt from "@/features/purchase-followup/PurchaseFollowupPrompt";
 import CookieConsent from "@/shared/components/privacy/CookieConsent";
 import { SITE_URL } from "@/shared/lib/platform/seo";
 import { REFERRER_POLICY } from "@/shared/lib/platform/security";
@@ -132,6 +133,9 @@ export default function RootLayout({
 
             {/* Delayed email capture prompt. */}
             <EmailCaptureModal />
+
+            {/* Post-affiliate conversion follow-up prompt. */}
+            <PurchaseFollowupPrompt />
 
             {/* Cookie consent + affiliate disclosure banner. */}
             <CookieConsent />

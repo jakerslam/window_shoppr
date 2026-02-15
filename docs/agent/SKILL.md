@@ -136,6 +136,7 @@ This skill defines the ingestion and moderation contract for autonomous agents.
 - `moderation:queue:enqueue` (new moderation item)
 - `moderation:queue:update` (item status changed)
 - `affiliate:click` (attribution/analytics signal)
+- `purchase:followup:update` (post-click conversion prompt queue updated)
 - `agent:product:upsert` (agent upsert queued)
 - `agent:product:publish` (publish-state mutation queued)
 - `agent:moderation:resolve` (moderation resolution queued)
