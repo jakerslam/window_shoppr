@@ -3,7 +3,10 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { writeAuthSession } from "@/shared/lib/platform/auth-session";
+import {
+  signInWithEmail,
+  signInWithProvider,
+} from "@/shared/lib/platform/auth-service";
 import {
   resolvePostAuthRedirectPath,
   writeAuthRedirectPath,
@@ -28,20 +31,35 @@ export default function LoginForm({
 }) {
   const router = useRouter();
   const [statusMessage, setStatusMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Handle login submission with a stub response.
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  // Handle login submission through auth service wiring (API when configured, local fallback otherwise).
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault(); // Prevent full page reload.
+    setIsSubmitting(true); // Lock controls while auth request is in flight.
     const formData = new FormData(event.currentTarget);
     const emailValue = `${formData.get("email") ?? ""}`.trim();
+    const passwordValue = `${formData.get("password") ?? ""}`;
     const nextParam =
       typeof window === "undefined"
         ? null
         : new URLSearchParams(window.location.search).get("next");
-    writeAuthSession({ provider: "email", email: emailValue || undefined }); // Persist stub auth session for gated UI.
-    setStatusMessage("Signed in (stub session)."); // Placeholder until backend auth is wired.
+
+    const result = await signInWithEmail({
+      email: emailValue,
+      password: passwordValue,
+    }); // Attempt auth against API, then fallback local account store.
+
+    if (!result.ok) {
+      setStatusMessage(result.message); // Surface auth failure reason.
+      setIsSubmitting(false);
+      return;
+    }
+
+    setStatusMessage("Signed in."); // Confirm successful sign-in.
     const redirectPath = resolvePostAuthRedirectPath(nextParam, "/");
     router.push(redirectPath); // Return to the route the user was on before auth.
+    setIsSubmitting(false);
   };
 
   // Handle forgotten password with a stub response.
@@ -49,8 +67,9 @@ export default function LoginForm({
     setStatusMessage("Password reset stub: connect email flow."); // Placeholder for reset flow.
   };
 
-  // Handle social login stubs for future provider wiring.
-  const handleSocialLogin = (provider: string) => {
+  // Handle social login through auth service wiring.
+  const handleSocialLogin = async (provider: string) => {
+    setIsSubmitting(true); // Lock controls while provider auth is in flight.
     const normalizedProvider =
       provider === "Google"
         ? "google"
@@ -61,10 +80,18 @@ export default function LoginForm({
       typeof window === "undefined"
         ? null
         : new URLSearchParams(window.location.search).get("next");
-    writeAuthSession({ provider: normalizedProvider }); // Persist social stub session.
-    setStatusMessage(`${provider} sign-in complete (stub session).`); // Placeholder for social auth wiring.
+
+    const result = await signInWithProvider({ provider: normalizedProvider }); // Attempt provider auth against API with local fallback.
+    if (!result.ok) {
+      setStatusMessage(result.message); // Surface auth failure reason.
+      setIsSubmitting(false);
+      return;
+    }
+
+    setStatusMessage(`${provider} sign-in complete.`); // Confirm successful provider sign-in.
     const redirectPath = resolvePostAuthRedirectPath(nextParam, "/");
     router.push(redirectPath); // Return users to their last route after social login.
+    setIsSubmitting(false);
   };
 
   return (
@@ -82,21 +109,24 @@ export default function LoginForm({
         <button
           className={styles.loginForm__socialButton}
           type="button"
-          onClick={() => handleSocialLogin("Google")} // Trigger Google stub.
+          disabled={isSubmitting}
+          onClick={() => handleSocialLogin("Google")} // Trigger Google sign-in.
         >
           Continue with Google
         </button>
         <button
           className={styles.loginForm__socialButton}
           type="button"
-          onClick={() => handleSocialLogin("X")} // Trigger X stub.
+          disabled={isSubmitting}
+          onClick={() => handleSocialLogin("X")} // Trigger X sign-in.
         >
           Continue with X
         </button>
         <button
           className={styles.loginForm__socialButton}
           type="button"
-          onClick={() => handleSocialLogin("Meta")} // Trigger Meta stub.
+          disabled={isSubmitting}
+          onClick={() => handleSocialLogin("Meta")} // Trigger Meta sign-in.
         >
           Continue with Meta
         </button>
@@ -142,6 +172,7 @@ export default function LoginForm({
           <button
             className={styles.loginForm__linkButton}
             type="button"
+            disabled={isSubmitting}
             onClick={handleForgotPassword} // Trigger reset stub.
           >
             Forgot password?
@@ -149,8 +180,8 @@ export default function LoginForm({
         </div>
 
         {/* Primary submit button. */}
-        <button className={styles.loginForm__submit} type="submit">
-          Sign in
+        <button className={styles.loginForm__submit} type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Signing in..." : "Sign in"}
         </button>
       </form>
 

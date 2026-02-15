@@ -49,7 +49,7 @@ export default function ProfileSettings() {
           Profile Settings
         </h2>
         <p className={styles.profileSettings__subtitle}>
-          Account + security preferences are saved on this device.
+          Account + security preferences are saved locally and synced when signed in.
         </p>
       </header>
 

@@ -3,7 +3,10 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { writeAuthSession } from "@/shared/lib/platform/auth-session";
+import {
+  signInWithProvider,
+  signUpWithEmail,
+} from "@/shared/lib/platform/auth-service";
 import {
   resolvePostAuthRedirectPath,
   writeAuthRedirectPath,
@@ -29,28 +32,51 @@ export default function SignupForm({
   const router = useRouter();
   const [statusMessage, setStatusMessage] = useState("");
   const [wantsNewsletter, setWantsNewsletter] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Handle signup submission with a stub response.
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  // Handle signup submission through auth service wiring (API when configured, local fallback otherwise).
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault(); // Prevent full page reload.
+    setIsSubmitting(true); // Lock controls while auth request is in flight.
     const formData = new FormData(event.currentTarget);
+    const nameValue = `${formData.get("name") ?? ""}`.trim();
     const emailValue = `${formData.get("email") ?? ""}`.trim();
+    const passwordValue = `${formData.get("password") ?? ""}`;
+    const confirmPasswordValue = `${formData.get("confirm-password") ?? ""}`;
     const nextParam =
       typeof window === "undefined"
         ? null
         : new URLSearchParams(window.location.search).get("next");
-    writeAuthSession({ provider: "email", email: emailValue || undefined }); // Persist stub auth session after signup.
+
+    if (passwordValue !== confirmPasswordValue) {
+      setStatusMessage("Passwords do not match."); // Guard against mismatched credentials.
+      setIsSubmitting(false);
+      return;
+    }
+
+    const result = await signUpWithEmail({
+      email: emailValue,
+      password: passwordValue,
+      displayName: nameValue || undefined,
+      marketingEmails: wantsNewsletter,
+    }); // Attempt account creation against API, then fallback local account store.
+    if (!result.ok) {
+      setStatusMessage(result.message); // Surface auth failure reason.
+      setIsSubmitting(false);
+      return;
+    }
+
     setStatusMessage(
-      wantsNewsletter
-        ? "Account created (stub session) + newsletter opt-in captured."
-        : "Account created (stub session).",
-    ); // Placeholder for signup wiring.
+      wantsNewsletter ? "Account created + newsletter opt-in saved." : "Account created.",
+    ); // Confirm successful signup.
     const redirectPath = resolvePostAuthRedirectPath(nextParam, "/");
     router.push(redirectPath); // Return to the route the user was on before auth.
+    setIsSubmitting(false);
   };
 
-  // Handle social signup stubs for future provider wiring.
-  const handleSocialLogin = (provider: string) => {
+  // Handle social signup through auth service wiring.
+  const handleSocialLogin = async (provider: string) => {
+    setIsSubmitting(true); // Lock controls while provider auth is in flight.
     const normalizedProvider =
       provider === "Google"
         ? "google"
@@ -61,10 +87,18 @@ export default function SignupForm({
       typeof window === "undefined"
         ? null
         : new URLSearchParams(window.location.search).get("next");
-    writeAuthSession({ provider: normalizedProvider }); // Persist social signup stub session.
-    setStatusMessage(`${provider} signup complete (stub session).`); // Placeholder for social auth.
+
+    const result = await signInWithProvider({ provider: normalizedProvider }); // Attempt provider auth against API with local fallback.
+    if (!result.ok) {
+      setStatusMessage(result.message); // Surface auth failure reason.
+      setIsSubmitting(false);
+      return;
+    }
+
+    setStatusMessage(`${provider} signup complete.`); // Confirm successful provider signup.
     const redirectPath = resolvePostAuthRedirectPath(nextParam, "/");
     router.push(redirectPath); // Return users to their last route after social signup.
+    setIsSubmitting(false);
   };
 
   return (
@@ -82,21 +116,24 @@ export default function SignupForm({
         <button
           className={styles.signupForm__socialButton}
           type="button"
-          onClick={() => handleSocialLogin("Google")} // Trigger Google stub.
+          disabled={isSubmitting}
+          onClick={() => handleSocialLogin("Google")} // Trigger Google signup.
         >
           Continue with Google
         </button>
         <button
           className={styles.signupForm__socialButton}
           type="button"
-          onClick={() => handleSocialLogin("X")} // Trigger X stub.
+          disabled={isSubmitting}
+          onClick={() => handleSocialLogin("X")} // Trigger X signup.
         >
           Continue with X
         </button>
         <button
           className={styles.signupForm__socialButton}
           type="button"
-          onClick={() => handleSocialLogin("Meta")} // Trigger Meta stub.
+          disabled={isSubmitting}
+          onClick={() => handleSocialLogin("Meta")} // Trigger Meta signup.
         >
           Continue with Meta
         </button>
@@ -120,6 +157,7 @@ export default function SignupForm({
             name="name"
             placeholder="Your name"
             autoComplete="name"
+            disabled={isSubmitting}
           />
         </label>
 
@@ -132,6 +170,7 @@ export default function SignupForm({
             name="email"
             placeholder="you@example.com"
             autoComplete="email"
+            disabled={isSubmitting}
             required
           />
         </label>
@@ -145,6 +184,7 @@ export default function SignupForm({
             name="password"
             placeholder="••••••••"
             autoComplete="new-password"
+            disabled={isSubmitting}
             required
           />
         </label>
@@ -158,6 +198,7 @@ export default function SignupForm({
             name="confirm-password"
             placeholder="••••••••"
             autoComplete="new-password"
+            disabled={isSubmitting}
             required
           />
         </label>
@@ -168,6 +209,7 @@ export default function SignupForm({
             className={styles.signupForm__checkbox}
             type="checkbox"
             checked={wantsNewsletter}
+            disabled={isSubmitting}
             onChange={(event) => setWantsNewsletter(event.target.checked)} // Toggle newsletter opt-in.
           />
           <span className={styles.signupForm__checkboxLabel}>
@@ -176,8 +218,8 @@ export default function SignupForm({
         </label>
 
         {/* Primary submit button. */}
-        <button className={styles.signupForm__submit} type="submit">
-          Create account
+        <button className={styles.signupForm__submit} type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Creating..." : "Create account"}
         </button>
       </form>
 

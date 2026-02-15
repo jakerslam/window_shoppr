@@ -10,6 +10,7 @@ import {
   withAuthRedirectParam,
   writeAuthRedirectPath,
 } from "@/shared/lib/platform/auth-redirect";
+import useAuthSessionState from "@/shared/lib/platform/useAuthSessionState";
 import { useCategoryFilter } from "@/features/category-filter/CategoryFilterProvider";
 import styles from "@/features/top-bar/TopBar.module.css";
 import { HomeIcon, SearchIcon, StarIcon, UserIcon } from "@/features/top-bar/NavIcons";
@@ -23,6 +24,7 @@ import useMobileBottomNavOverlays from "@/features/top-bar/mobile/useMobileBotto
 export default function MobileBottomNav() {
   const router = useRouter();
   const pathname = usePathname();
+  const session = useAuthSessionState();
   const { clearFilters, clearCategories, setCategory, setSubCategory, searchQuery, setSearchQuery } =
     useCategoryFilter();
   const availableCategories = getAvailableCategories(
@@ -40,10 +42,13 @@ export default function MobileBottomNav() {
   const isProfileActive = normalizedPath === "/login" || normalizedPath === "/signup";
   const searchInputRef = useRef<HTMLInputElement | null>(null);
   const currentPath = useMemo(() => pathname, [pathname]); // Capture route for post-auth return.
-  const profileHref = useMemo(
-    () => withAuthRedirectParam("/login", currentPath),
-    [currentPath],
-  ); // Include a safe return target on profile/login navigation.
+  const profileHref = useMemo(() => {
+    if (session) {
+      return "/login"; // Route signed-in users directly to profile settings.
+    }
+
+    return withAuthRedirectParam("/login", currentPath); // Include return target for signed-out users.
+  }, [currentPath, session]);
 
   useMobileBottomNavOverlays({
     isCategoriesOpen,
@@ -214,7 +219,11 @@ export default function MobileBottomNav() {
         <Link
           className={`${styles.mobileNav__item} ${isProfileActive ? styles["mobileNav__item--active"] : ""}`}
           href={profileHref}
-          onClick={() => writeAuthRedirectPath(currentPath)}
+          onClick={() => {
+            if (!session) {
+              writeAuthRedirectPath(currentPath); // Persist return target when entering auth flow.
+            }
+          }}
         >
           <span className={styles.mobileNav__icon}>
             <UserIcon className={styles.mobileNav__iconGraphic} />

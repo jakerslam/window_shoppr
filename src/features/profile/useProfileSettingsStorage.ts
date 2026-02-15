@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { ContentPreferencesState, DEFAULT_CONTENT_PREFERENCES, DEFAULT_SETTINGS, DEFAULT_SPEED_PREFERENCES, EmailFrequency, FeedSpeedPreferences, PROFILE_SETTINGS_STORAGE_KEY, ProfileSettingsState, SPEED_LIMITS, ThemePreference, readStoredProfileSettings } from "@/shared/lib/profile/profile-settings";
+import { updateAccountProfile } from "@/shared/lib/platform/auth-service";
+import { readAuthSession } from "@/shared/lib/platform/auth-session";
 /**
  * Clamp numeric values to allowed settings ranges.
  */
@@ -26,6 +28,7 @@ const applyThemePreference = (themePreference: ThemePreference) => {
  */
 export default function useProfileSettingsStorage({ listNames }: { listNames: string[] }) {
   const hasMountedRef = useRef(false);
+  const accountSyncTimeoutRef = useRef<number | null>(null);
   const [settings, setSettings] = useState<ProfileSettingsState>(
     () => readStoredProfileSettings()?.settings ?? DEFAULT_SETTINGS,
   ); // Initialize account/security settings from local storage once.
@@ -39,6 +42,35 @@ export default function useProfileSettingsStorage({ listNames }: { listNames: st
     () =>
       readStoredProfileSettings()?.contentPreferences ?? DEFAULT_CONTENT_PREFERENCES,
   ); // Initialize content preferences from local storage once.
+
+  /**
+   * Hydrate account fields from the active auth session when values are available.
+   */
+  useEffect(() => {
+    const session = readAuthSession();
+    if (!session) {
+      return undefined; // Skip when users are not signed in.
+    }
+
+    if (typeof window === "undefined") {
+      return undefined; // Skip deferred state updates during SSR.
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setSettings((prev) => ({
+        ...prev,
+        displayName: prev.displayName || session.displayName || prev.displayName,
+        marketingEmails:
+          typeof session.marketingEmails === "boolean"
+            ? session.marketingEmails
+            : prev.marketingEmails,
+      })); // Keep profile settings aligned with session-managed account defaults.
+    }, 0); // Defer to avoid set-state-in-effect lint warnings.
+
+    return () => {
+      window.clearTimeout(timeoutId); // Clean up deferred hydration update.
+    };
+  }, []);
 
   /**
    * Clear the selected recommendation list if it no longer exists.
@@ -89,6 +121,30 @@ export default function useProfileSettingsStorage({ listNames }: { listNames: st
     ); // Persist latest profile + speed + content preferences.
     applyThemePreference(themePreference); // Keep theme synced with selected preference.
   }, [settings, themePreference, speedPreferences, contentPreferences]);
+
+  /**
+   * Sync account profile fields to auth service when signed in.
+   */
+  useEffect(() => {
+    const session = readAuthSession();
+    if (!session) {
+      return undefined; // Skip account sync when no session is active.
+    }
+
+    accountSyncTimeoutRef.current = window.setTimeout(() => {
+      void updateAccountProfile({
+        displayName: settings.displayName,
+        marketingEmails: settings.marketingEmails,
+      }); // Push profile updates to backend wiring (or local auth fallback).
+    }, 300); // Debounce account updates to avoid sending every keystroke.
+
+    return () => {
+      if (accountSyncTimeoutRef.current) {
+        window.clearTimeout(accountSyncTimeoutRef.current); // Cancel pending sync when input changes quickly.
+        accountSyncTimeoutRef.current = null;
+      }
+    };
+  }, [settings.displayName, settings.marketingEmails]);
 
   /**
    * Update display name preference.

@@ -5,51 +5,20 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import styles from "@/features/top-bar/TopBar.module.css";
 import { BellIcon } from "@/features/top-bar/NavIcons";
+import { INITIAL_NOTIFICATIONS } from "@/features/top-bar/notifications/constants";
+import { signOutAccount } from "@/shared/lib/platform/auth-service";
 import {
   withAuthRedirectParam,
   writeAuthRedirectPath,
 } from "@/shared/lib/platform/auth-redirect";
-
-/**
- * Notification item shape for top bar menu rendering.
- */
-type NotificationItem = {
-  id: string;
-  title: string;
-  summary: string;
-  timeLabel: string;
-  isRead: boolean;
-};
-
-const INITIAL_NOTIFICATIONS: NotificationItem[] = [
-  {
-    id: "notif-001",
-    title: "Price drop on saved item",
-    summary: "Cozy Cloud Throw Blanket is now 12% lower.",
-    timeLabel: "2h ago",
-    isRead: false,
-  },
-  {
-    id: "notif-002",
-    title: "New trending pick",
-    summary: "A top-rated desk fan was added to Tech finds.",
-    timeLabel: "Yesterday",
-    isRead: false,
-  },
-  {
-    id: "notif-003",
-    title: "Wishlist reminder",
-    summary: "You have 5 saved products with active deals.",
-    timeLabel: "2d ago",
-    isRead: true,
-  },
-];
+import useAuthSessionState from "@/shared/lib/platform/useAuthSessionState";
 
 /**
  * Right-side action buttons for notifications and account shortcuts.
  */
 export default function TopBarActions() {
   const pathname = usePathname();
+  const session = useAuthSessionState();
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [notifications, setNotifications] = useState(INITIAL_NOTIFICATIONS);
   const notificationsRef = useRef<HTMLDivElement | null>(null);
@@ -62,10 +31,20 @@ export default function TopBarActions() {
 
   const currentPath = useMemo(() => pathname, [pathname]); // Capture route for post-auth return.
 
-  const loginHref = useMemo(
-    () => withAuthRedirectParam("/login", currentPath),
-    [currentPath],
-  ); // Include a safe return target on login navigation.
+  const loginHref = useMemo(() => {
+    if (session) {
+      return "/login"; // Route signed-in users directly to profile settings.
+    }
+
+    return withAuthRedirectParam("/login", currentPath); // Include return target for signed-out users.
+  }, [currentPath, session]);
+  const loginLabel = useMemo(() => {
+    if (!session) {
+      return "Login";
+    }
+
+    return session.displayName?.trim() || "Account";
+  }, [session]);
 
   /**
    * Toggle the notifications dropdown from the bell button.
@@ -101,6 +80,13 @@ export default function TopBarActions() {
     setNotifications((prev) =>
       prev.map((notification) => ({ ...notification, isRead: true })),
     ); // Clear unread badge by setting every row to read.
+  };
+
+  /**
+   * Sign out and return to the feed.
+   */
+  const handleSignOut = async () => {
+    await signOutAccount(); // Clear local auth session and notify listeners.
   };
 
   /**
@@ -145,10 +131,24 @@ export default function TopBarActions() {
       <Link
         className={styles.topBar__actionButton}
         href={loginHref}
-        onClick={() => writeAuthRedirectPath(currentPath)}
+        onClick={() => {
+          if (!session) {
+            writeAuthRedirectPath(currentPath); // Persist return target for signed-out users.
+          }
+        }}
       >
-        Login
+        {loginLabel}
       </Link>
+
+      {session ? (
+        <button
+          className={styles.topBar__actionButton}
+          type="button"
+          onClick={handleSignOut} // Allow signed-in users to clear their session quickly.
+        >
+          Sign out
+        </button>
+      ) : null}
 
       {/* Notifications bell and dropdown menu. */}
       <div className={styles.topBar__notifications} ref={notificationsRef}>

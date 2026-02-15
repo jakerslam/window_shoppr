@@ -24,6 +24,7 @@ const BASE_PATH_SCHEMA = z
 const PUBLIC_ENV_SCHEMA = z.object({
   NEXT_PUBLIC_SITE_URL: z.string().url().optional(), // Canonical site URL for metadata/canonicals.
   NEXT_PUBLIC_BASE_PATH: BASE_PATH_SCHEMA.optional(), // Static hosting base path (e.g. /window_shoppr).
+  NEXT_PUBLIC_AUTH_API_URL: z.string().url().optional(), // Optional external auth API base URL.
 });
 
 /**
@@ -33,6 +34,7 @@ const parsePublicEnv = () => {
   const parsed = PUBLIC_ENV_SCHEMA.safeParse({
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
     NEXT_PUBLIC_BASE_PATH: process.env.NEXT_PUBLIC_BASE_PATH,
+    NEXT_PUBLIC_AUTH_API_URL: process.env.NEXT_PUBLIC_AUTH_API_URL,
   }); // Pull only public vars so this module is safe in client bundles.
 
   if (!parsed.success) {
@@ -52,6 +54,7 @@ const parsePublicEnv = () => {
   return {
     siteUrl: data.NEXT_PUBLIC_SITE_URL ?? DEFAULT_SITE_URL, // Canonical URL for metadata + sitemap.
     basePath: data.NEXT_PUBLIC_BASE_PATH ?? "", // Base path for static assets and routes.
+    authApiUrl: data.NEXT_PUBLIC_AUTH_API_URL ?? "", // Optional auth API endpoint for backend session wiring.
   };
 };
 
