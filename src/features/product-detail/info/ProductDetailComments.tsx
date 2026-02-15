@@ -1,0 +1,164 @@
+"use client";
+
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  getCommentsByProductId,
+  ProductComment,
+  submitComment,
+} from "@/shared/lib/engagement/comments";
+import styles from "@/features/product-detail/ProductDetail.module.css";
+
+const MIN_COMMENT_LENGTH = 3; // Avoid submitting empty or low-signal comments.
+const MAX_RENDERED_COMMENTS = 25; // Keep the UI compact and fast.
+
+/**
+ * Product page community notes with local-first persistence and moderation hooks.
+ */
+export default function ProductDetailComments({
+  productId,
+  productSlug,
+}: {
+  productId: string;
+  productSlug: string;
+}) {
+  const [comments, setComments] = useState<ProductComment[]>([]);
+  const [author, setAuthor] = useState("");
+  const [body, setBody] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  /**
+   * Load comments on mount for this product.
+   */
+  useEffect(() => {
+    setComments(getCommentsByProductId(productId).slice(0, MAX_RENDERED_COMMENTS));
+  }, [productId]);
+
+  /**
+   * Subscribe to cross-component comment events for live updates.
+   */
+  useEffect(() => {
+    const handleCommentSubmit = (event: Event) => {
+      const customEvent = event as CustomEvent<ProductComment>;
+      const incoming = customEvent.detail;
+
+      if (!incoming || incoming.productId !== productId) {
+        return; // Ignore comments for other products.
+      }
+
+      setComments((prev) => [incoming, ...prev].slice(0, MAX_RENDERED_COMMENTS));
+    };
+
+    window.addEventListener("comment:submit", handleCommentSubmit);
+
+    return () => {
+      window.removeEventListener("comment:submit", handleCommentSubmit);
+    };
+  }, [productId]);
+
+  const commentsLabel = useMemo(() => {
+    if (comments.length === 0) {
+      return "No community notes yet.";
+    }
+
+    return `${comments.length} community note${comments.length === 1 ? "" : "s"}`;
+  }, [comments.length]);
+
+  /**
+   * Submit a new comment with basic validation and local persistence.
+   */
+  const handleSubmit = useCallback(() => {
+    const trimmedBody = body.trim();
+
+    if (trimmedBody.length < MIN_COMMENT_LENGTH) {
+      setErrorMessage("Please add at least 3 characters.");
+      setIsSubmitted(false);
+      return;
+    }
+
+    submitComment({
+      productId,
+      productSlug,
+      author,
+      body: trimmedBody,
+    });
+
+    setBody("");
+    setErrorMessage("");
+    setIsSubmitted(true);
+  }, [author, body, productId, productSlug]);
+
+  return (
+    <section className={styles.productDetail__comments}>
+      <div className={styles.productDetail__commentsHeader}>
+        <h2 className={styles.productDetail__commentsTitle}>Community notes</h2>
+        <p className={styles.productDetail__commentsHint}>{commentsLabel}</p>
+      </div>
+
+      <div className={styles.productDetail__commentForm}>
+        <label className={styles.productDetail__reportLabel}>
+          Name (optional)
+          <input
+            className={styles.productDetail__commentInput}
+            type="text"
+            maxLength={40}
+            value={author}
+            onChange={(event) => setAuthor(event.target.value)}
+            placeholder="Anonymous"
+          />
+        </label>
+
+        <label className={styles.productDetail__reportLabel}>
+          Add a note
+          <textarea
+            className={styles.productDetail__commentTextarea}
+            rows={3}
+            maxLength={500}
+            value={body}
+            onChange={(event) => {
+              setBody(event.target.value);
+              if (errorMessage) {
+                setErrorMessage(""); // Clear validation message while user edits.
+              }
+            }}
+            placeholder="Share your experience with this product..."
+          />
+        </label>
+
+        {errorMessage ? (
+          <p className={styles.productDetail__commentError}>{errorMessage}</p>
+        ) : null}
+        {isSubmitted ? (
+          <p className={styles.productDetail__commentSuccess}>Note posted.</p>
+        ) : null}
+
+        <button
+          className={styles.productDetail__commentSubmit}
+          type="button"
+          onClick={handleSubmit}
+        >
+          Post note
+        </button>
+      </div>
+
+      {comments.length > 0 ? (
+        <ul className={styles.productDetail__commentList}>
+          {comments.map((comment) => (
+            <li key={comment.id} className={styles.productDetail__commentItem}>
+              <div className={styles.productDetail__commentMeta}>
+                <span className={styles.productDetail__commentAuthor}>
+                  {comment.author}
+                </span>
+                <time className={styles.productDetail__commentDate}>
+                  {new Date(comment.createdAt).toLocaleDateString()}
+                </time>
+              </div>
+              <p className={styles.productDetail__commentBody}>{comment.body}</p>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </section>
+  );
+}
+

@@ -4,6 +4,7 @@ import { Product, PRODUCT_UI } from "@/shared/lib/catalog/types";
 import { trackAffiliateClick } from "@/shared/lib/engagement/analytics";
 import DescriptionToggle from "@/features/product-detail/DescriptionToggle";
 import ProductDetailShareButton from "@/features/product-detail/ProductDetailShareButton";
+import ProductDetailComments from "@/features/product-detail/info/ProductDetailComments";
 import ProductDetailReport from "@/features/product-detail/info/ProductDetailReport";
 import ProductDetailTaste from "@/features/product-detail/info/ProductDetailTaste";
 import styles from "@/features/product-detail/ProductDetail.module.css";
@@ -104,6 +105,8 @@ export default function ProductDetailInfo({
       />
 
       <ProductDetailTaste product={product} />
+
+      <ProductDetailComments productId={product.id} productSlug={product.slug} />
 
       <ProductDetailReport productId={product.id} productSlug={product.slug} />
 

@@ -1,8 +1,8 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 58/89 (65.2%)  ██████████████░░░░░░
-Frontend: 48/64 (75.0%) ███████████████░░░░░
+Overall: 59/89 (66.3%)  ██████████████░░░░░░
+Frontend: 49/64 (76.6%) ███████████████░░░░░
 Backend: 9/22 (40.9%)   ████████░░░░░░░░░░░░
 Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░░░
 
@@ -96,9 +96,9 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] R29.11: List-based recommendations (use a selected list to bias feed)
 - [x] R47: Product detail share button (copy link + native share fallback)
 - [x] R48: Configurable product description collapse (x chars with Read more/Read less)
-- [NEXT] 🔵 R29.7: Product view comments section (community notes + moderation hooks later)
+- [x] R29.7: Product view comments section (community notes + moderation hooks later)
 - [x] R17.1: Loading UI (global spinner/skeletons for route + modal transitions)
-- [ ] R29.3: Gamification (window shop points + streaks + redemption hook later)
+- [NEXT] 🔵 R29.3: Gamification (window shop points + streaks + redemption hook later)
 - [ ] R29.2: Finite feed UX ("end of deck" messaging + optional reward hook)
 - [x] R15: Accessibility baseline (focus states, contrast, keyboard nav)
 - [x] R16: Responsive layout pass (mobile/tablet polish)
