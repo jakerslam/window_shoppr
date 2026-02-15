@@ -2,7 +2,12 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { writeAuthSession } from "@/shared/lib/platform/auth-session";
+import {
+  resolvePostAuthRedirectPath,
+  writeAuthRedirectPath,
+} from "@/shared/lib/platform/auth-redirect";
 import styles from "@/features/auth/LoginForm.module.css";
 
 /**
@@ -21,6 +26,7 @@ export default function LoginForm({
   switchLinkLabel?: string;
   switchLinkHref?: string;
 }) {
+  const router = useRouter();
   const [statusMessage, setStatusMessage] = useState("");
 
   // Handle login submission with a stub response.
@@ -28,8 +34,14 @@ export default function LoginForm({
     event.preventDefault(); // Prevent full page reload.
     const formData = new FormData(event.currentTarget);
     const emailValue = `${formData.get("email") ?? ""}`.trim();
+    const nextParam =
+      typeof window === "undefined"
+        ? null
+        : new URLSearchParams(window.location.search).get("next");
     writeAuthSession({ provider: "email", email: emailValue || undefined }); // Persist stub auth session for gated UI.
     setStatusMessage("Signed in (stub session)."); // Placeholder until backend auth is wired.
+    const redirectPath = resolvePostAuthRedirectPath(nextParam, "/");
+    router.push(redirectPath); // Return to the route the user was on before auth.
   };
 
   // Handle forgotten password with a stub response.
@@ -45,8 +57,14 @@ export default function LoginForm({
         : provider === "X"
           ? "x"
           : "meta";
+    const nextParam =
+      typeof window === "undefined"
+        ? null
+        : new URLSearchParams(window.location.search).get("next");
     writeAuthSession({ provider: normalizedProvider }); // Persist social stub session.
     setStatusMessage(`${provider} sign-in complete (stub session).`); // Placeholder for social auth wiring.
+    const redirectPath = resolvePostAuthRedirectPath(nextParam, "/");
+    router.push(redirectPath); // Return users to their last route after social login.
   };
 
   return (
@@ -146,7 +164,17 @@ export default function LoginForm({
       {/* Switch to account creation flow. */}
       <div className={styles.loginForm__switchRow}>
         <span className={styles.loginForm__switchText}>{switchLabel}</span>
-        <Link className={styles.loginForm__switchLink} href={switchLinkHref}>
+        <Link
+          className={styles.loginForm__switchLink}
+          href={switchLinkHref}
+          onClick={() => {
+            const nextParam =
+              typeof window === "undefined"
+                ? null
+                : new URLSearchParams(window.location.search).get("next");
+            writeAuthRedirectPath(nextParam); // Persist target when switching to signup.
+          }}
+        >
           {switchLinkLabel}
         </Link>
       </div>

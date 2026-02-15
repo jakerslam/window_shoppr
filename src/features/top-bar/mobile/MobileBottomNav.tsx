@@ -2,10 +2,14 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { getAvailableCategories } from "@/shared/lib/catalog/categories";
 import { getProductCatalog } from "@/shared/lib/catalog/products";
 import { trackSearch } from "@/shared/lib/engagement/analytics";
+import {
+  withAuthRedirectParam,
+  writeAuthRedirectPath,
+} from "@/shared/lib/platform/auth-redirect";
 import { useCategoryFilter } from "@/features/category-filter/CategoryFilterProvider";
 import styles from "@/features/top-bar/TopBar.module.css";
 import { HomeIcon, SearchIcon, StarIcon, UserIcon } from "@/features/top-bar/NavIcons";
@@ -35,6 +39,11 @@ export default function MobileBottomNav() {
   const isWishlistActive = normalizedPath === "/wishlist";
   const isProfileActive = normalizedPath === "/login" || normalizedPath === "/signup";
   const searchInputRef = useRef<HTMLInputElement | null>(null);
+  const currentPath = useMemo(() => pathname, [pathname]); // Capture route for post-auth return.
+  const profileHref = useMemo(
+    () => withAuthRedirectParam("/login", currentPath),
+    [currentPath],
+  ); // Include a safe return target on profile/login navigation.
 
   useMobileBottomNavOverlays({
     isCategoriesOpen,
@@ -202,7 +211,11 @@ export default function MobileBottomNav() {
         </Link>
 
         {/* Profile shortcut. */}
-        <Link className={`${styles.mobileNav__item} ${isProfileActive ? styles["mobileNav__item--active"] : ""}`} href="/login">
+        <Link
+          className={`${styles.mobileNav__item} ${isProfileActive ? styles["mobileNav__item--active"] : ""}`}
+          href={profileHref}
+          onClick={() => writeAuthRedirectPath(currentPath)}
+        >
           <span className={styles.mobileNav__icon}>
             <UserIcon className={styles.mobileNav__iconGraphic} />
           </span>

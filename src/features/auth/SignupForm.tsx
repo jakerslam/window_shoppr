@@ -2,7 +2,12 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { writeAuthSession } from "@/shared/lib/platform/auth-session";
+import {
+  resolvePostAuthRedirectPath,
+  writeAuthRedirectPath,
+} from "@/shared/lib/platform/auth-redirect";
 import styles from "@/features/auth/SignupForm.module.css";
 
 /**
@@ -21,6 +26,7 @@ export default function SignupForm({
   switchLinkLabel?: string;
   switchLinkHref?: string;
 }) {
+  const router = useRouter();
   const [statusMessage, setStatusMessage] = useState("");
   const [wantsNewsletter, setWantsNewsletter] = useState(true);
 
@@ -29,12 +35,18 @@ export default function SignupForm({
     event.preventDefault(); // Prevent full page reload.
     const formData = new FormData(event.currentTarget);
     const emailValue = `${formData.get("email") ?? ""}`.trim();
+    const nextParam =
+      typeof window === "undefined"
+        ? null
+        : new URLSearchParams(window.location.search).get("next");
     writeAuthSession({ provider: "email", email: emailValue || undefined }); // Persist stub auth session after signup.
     setStatusMessage(
       wantsNewsletter
         ? "Account created (stub session) + newsletter opt-in captured."
         : "Account created (stub session).",
     ); // Placeholder for signup wiring.
+    const redirectPath = resolvePostAuthRedirectPath(nextParam, "/");
+    router.push(redirectPath); // Return to the route the user was on before auth.
   };
 
   // Handle social signup stubs for future provider wiring.
@@ -45,8 +57,14 @@ export default function SignupForm({
         : provider === "X"
           ? "x"
           : "meta";
+    const nextParam =
+      typeof window === "undefined"
+        ? null
+        : new URLSearchParams(window.location.search).get("next");
     writeAuthSession({ provider: normalizedProvider }); // Persist social signup stub session.
     setStatusMessage(`${provider} signup complete (stub session).`); // Placeholder for social auth.
+    const redirectPath = resolvePostAuthRedirectPath(nextParam, "/");
+    router.push(redirectPath); // Return users to their last route after social signup.
   };
 
   return (
@@ -173,7 +191,17 @@ export default function SignupForm({
       {/* Switch back to login flow. */}
       <div className={styles.signupForm__switchRow}>
         <span className={styles.signupForm__switchText}>{switchLabel}</span>
-        <Link className={styles.signupForm__switchLink} href={switchLinkHref}>
+        <Link
+          className={styles.signupForm__switchLink}
+          href={switchLinkHref}
+          onClick={() => {
+            const nextParam =
+              typeof window === "undefined"
+                ? null
+                : new URLSearchParams(window.location.search).get("next");
+            writeAuthRedirectPath(nextParam); // Persist target when switching back to login.
+          }}
+        >
           {switchLinkLabel}
         </Link>
       </div>

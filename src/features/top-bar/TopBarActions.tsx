@@ -2,8 +2,13 @@
 
 import Link from "next/link";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import styles from "@/features/top-bar/TopBar.module.css";
 import { BellIcon } from "@/features/top-bar/NavIcons";
+import {
+  withAuthRedirectParam,
+  writeAuthRedirectPath,
+} from "@/shared/lib/platform/auth-redirect";
 
 /**
  * Notification item shape for top bar menu rendering.
@@ -44,6 +49,7 @@ const INITIAL_NOTIFICATIONS: NotificationItem[] = [
  * Right-side action buttons for notifications and account shortcuts.
  */
 export default function TopBarActions() {
+  const pathname = usePathname();
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [notifications, setNotifications] = useState(INITIAL_NOTIFICATIONS);
   const notificationsRef = useRef<HTMLDivElement | null>(null);
@@ -53,6 +59,13 @@ export default function TopBarActions() {
     () => notifications.filter((notification) => !notification.isRead).length,
     [notifications],
   ); // Compute unread badge count from local notification state.
+
+  const currentPath = useMemo(() => pathname, [pathname]); // Capture route for post-auth return.
+
+  const loginHref = useMemo(
+    () => withAuthRedirectParam("/login", currentPath),
+    [currentPath],
+  ); // Include a safe return target on login navigation.
 
   /**
    * Toggle the notifications dropdown from the bell button.
@@ -129,7 +142,11 @@ export default function TopBarActions() {
       </Link>
 
       {/* Desktop-only login shortcut. */}
-      <Link className={styles.topBar__actionButton} href="/login">
+      <Link
+        className={styles.topBar__actionButton}
+        href={loginHref}
+        onClick={() => writeAuthRedirectPath(currentPath)}
+      >
         Login
       </Link>
 

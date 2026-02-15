@@ -2,12 +2,17 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   getCommentsByProductId,
   ProductComment,
   submitComment,
 } from "@/shared/lib/engagement/comments";
 import { readAuthSession } from "@/shared/lib/platform/auth-session";
+import {
+  withAuthRedirectParam,
+  writeAuthRedirectPath,
+} from "@/shared/lib/platform/auth-redirect";
 import styles from "@/features/product-detail/ProductDetail.module.css";
 
 const MIN_COMMENT_LENGTH = 3; // Avoid submitting empty or low-signal comments.
@@ -23,6 +28,7 @@ export default function ProductDetailComments({
   productId: string;
   productSlug: string;
 }) {
+  const pathname = usePathname();
   const [commentsVersion, setCommentsVersion] = useState(0);
   const [author, setAuthor] = useState("");
   const [body, setBody] = useState("");
@@ -30,9 +36,7 @@ export default function ProductDetailComments({
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   void commentsVersion; // Rerender trigger for comment refresh events.
-  const comments = isAuthenticated
-    ? getCommentsByProductId(productId).slice(0, MAX_RENDERED_COMMENTS)
-    : []; // Read visible comments from local storage when auth/session state changes.
+  const comments = getCommentsByProductId(productId).slice(0, MAX_RENDERED_COMMENTS); // Read visible comments from local storage when events trigger rerenders.
 
   /**
    * Keep comment gating in sync with the current auth session stub.
@@ -93,12 +97,20 @@ export default function ProductDetailComments({
     return `${comments.length} community note${comments.length === 1 ? "" : "s"}`;
   }, [comments.length]);
 
+  const currentPath = useMemo(() => pathname, [pathname]); // Capture the current route for post-auth return.
+
+  const loginHref = useMemo(
+    () => withAuthRedirectParam("/login", currentPath),
+    [currentPath],
+  ); // Preserve current location when prompting login.
+
   /**
    * Submit a new comment with basic validation and local persistence.
    */
   const handleSubmit = useCallback(() => {
     if (!isAuthenticated) {
       setErrorMessage("Please sign in to post a note.");
+      setIsSubmitted(false);
       return;
     }
 
@@ -123,22 +135,6 @@ export default function ProductDetailComments({
     setIsSubmitted(true);
   }, [author, body, isAuthenticated, productId, productSlug]);
 
-  if (!isAuthenticated) {
-    return (
-      <section className={styles.productDetail__comments}>
-        <div className={styles.productDetail__commentsHeader}>
-          <h2 className={styles.productDetail__commentsTitle}>Community notes</h2>
-        </div>
-        <p className={styles.productDetail__commentsHint}>
-          Sign in to view and post notes on this product.
-        </p>
-        <Link className={styles.productDetail__commentLogin} href="/login">
-          Sign in to comment
-        </Link>
-      </section>
-    );
-  }
-
   return (
     <section className={styles.productDetail__comments}>
       <div className={styles.productDetail__commentsHeader}>
@@ -146,51 +142,66 @@ export default function ProductDetailComments({
         <p className={styles.productDetail__commentsHint}>{commentsLabel}</p>
       </div>
 
-      <div className={styles.productDetail__commentForm}>
-        <label className={styles.productDetail__reportLabel}>
-          Name (optional)
-          <input
-            className={styles.productDetail__commentInput}
-            type="text"
-            maxLength={40}
-            value={author}
-            onChange={(event) => setAuthor(event.target.value)}
-            placeholder="Anonymous"
-          />
-        </label>
+      {isAuthenticated ? (
+        <div className={styles.productDetail__commentForm}>
+          <label className={styles.productDetail__reportLabel}>
+            Name (optional)
+            <input
+              className={styles.productDetail__commentInput}
+              type="text"
+              maxLength={40}
+              value={author}
+              onChange={(event) => setAuthor(event.target.value)}
+              placeholder="Anonymous"
+            />
+          </label>
 
-        <label className={styles.productDetail__reportLabel}>
-          Add a note
-          <textarea
-            className={styles.productDetail__commentTextarea}
-            rows={3}
-            maxLength={500}
-            value={body}
-            onChange={(event) => {
-              setBody(event.target.value);
-              if (errorMessage) {
-                setErrorMessage(""); // Clear validation message while user edits.
-              }
-            }}
-            placeholder="Share your experience with this product..."
-          />
-        </label>
+          <label className={styles.productDetail__reportLabel}>
+            Add a note
+            <textarea
+              className={styles.productDetail__commentTextarea}
+              rows={3}
+              maxLength={500}
+              value={body}
+              onChange={(event) => {
+                setBody(event.target.value);
+                if (errorMessage) {
+                  setErrorMessage(""); // Clear validation message while user edits.
+                }
+              }}
+              placeholder="Share your experience with this product..."
+            />
+          </label>
 
-        {errorMessage ? (
-          <p className={styles.productDetail__commentError}>{errorMessage}</p>
-        ) : null}
-        {isSubmitted ? (
-          <p className={styles.productDetail__commentSuccess}>Note posted.</p>
-        ) : null}
+          {errorMessage ? (
+            <p className={styles.productDetail__commentError}>{errorMessage}</p>
+          ) : null}
+          {isSubmitted ? (
+            <p className={styles.productDetail__commentSuccess}>Note posted.</p>
+          ) : null}
 
-        <button
-          className={styles.productDetail__commentSubmit}
-          type="button"
-          onClick={handleSubmit}
-        >
-          Post note
-        </button>
-      </div>
+          <button
+            className={styles.productDetail__commentSubmit}
+            type="button"
+            onClick={handleSubmit}
+          >
+            Post note
+          </button>
+        </div>
+      ) : (
+        <div className={styles.productDetail__commentForm}>
+          <p className={styles.productDetail__commentsHint}>
+            Sign in to post a note.
+          </p>
+          <Link
+            className={styles.productDetail__commentLogin}
+            href={loginHref}
+            onClick={() => writeAuthRedirectPath(currentPath)}
+          >
+            Sign in to comment
+          </Link>
+        </div>
+      )}
 
       {comments.length > 0 ? (
         <ul className={styles.productDetail__commentList}>
