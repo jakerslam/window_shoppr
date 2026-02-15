@@ -3,50 +3,46 @@ import type { SVGProps } from "react";
 type SpeedIconProps = SVGProps<SVGSVGElement>;
 
 /**
- * Monochrome turtle icon for cozy speed mode.
+ * Filled turtle silhouette for cozy mode.
  */
 export function TurtleSpeedIcon(props: SpeedIconProps) {
   return (
     <svg
       viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      fill="currentColor"
       aria-hidden="true"
       focusable="false"
       {...props}
     >
-      <path d="M8 10.5h7.5c2.1 0 3.8 1.7 3.8 3.8S17.6 18 15.5 18H8.2c-2.9 0-5.2-2.1-5.2-4.7s2.3-4.8 5-4.8z" />
-      <path d="M17.8 12.2h1.8a1.4 1.4 0 0 1 0 2.8h-1.3" />
-      <path d="M7 18v1.3M11 18v1.3M14.8 18v1.3" />
-      <path d="M8.2 10.5V9.2a2.4 2.4 0 0 1 2.4-2.4h2.1a2.4 2.4 0 0 1 2.4 2.4v1.3" />
+      <ellipse cx="11.5" cy="13.5" rx="6.5" ry="4.6" />
+      <circle cx="18.8" cy="13.4" r="1.4" />
+      <rect x="7.1" y="17.3" width="2.2" height="1.8" rx="0.4" />
+      <rect x="10.4" y="17.3" width="2.2" height="1.8" rx="0.4" />
+      <rect x="13.7" y="17.3" width="2.2" height="1.8" rx="0.4" />
+      <path d="M9.2 9.8a2.9 2.9 0 0 1 5.8 0v0.9H9.2Z" />
     </svg>
   );
 }
 
 /**
- * Monochrome rabbit icon for quick speed mode.
+ * Filled rabbit silhouette for quick mode.
  */
 export function RabbitSpeedIcon(props: SpeedIconProps) {
   return (
     <svg
       viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      fill="currentColor"
       aria-hidden="true"
       focusable="false"
       {...props}
     >
-      <path d="M8.6 10.6V6.2a1.4 1.4 0 0 1 2.8 0v3.1" />
-      <path d="M12.1 10.2V5.4a1.4 1.4 0 0 1 2.8 0v4.1" />
-      <path d="M7 17.6h6.8c2 0 3.6-1.5 3.6-3.4S15.8 11 13.8 11H9.9C8.3 11 7 12.2 7 13.8v3.8z" />
-      <path d="M5.4 14.2c0 1.7-1.1 2.8-2.4 2.8" />
-      <path d="M10.8 17.6v1.3M14.2 17.6v1.3" />
+      <ellipse cx="12.7" cy="15.2" rx="5.2" ry="3.9" />
+      <circle cx="8.6" cy="13.3" r="2.3" />
+      <ellipse cx="8.2" cy="8.1" rx="1.2" ry="3.2" transform="rotate(-18 8.2 8.1)" />
+      <ellipse cx="10.8" cy="7.7" rx="1.2" ry="3.2" transform="rotate(10 10.8 7.7)" />
+      <circle cx="18.4" cy="14.9" r="1.5" />
+      <rect x="11.1" y="18.2" width="1.9" height="1.4" rx="0.3" />
+      <rect x="14.1" y="18.2" width="1.9" height="1.4" rx="0.3" />
     </svg>
   );
 }

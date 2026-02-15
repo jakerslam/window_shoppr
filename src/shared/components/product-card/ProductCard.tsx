@@ -8,9 +8,12 @@ import {
 } from "@/shared/lib/catalog/deals";
 import { Product } from "@/shared/lib/catalog/types";
 import {
-  formatSaveCountLabel,
+  formatCompactCount,
+  SOCIAL_PROOF_MIN_COUNT,
   useProductSaveCount,
 } from "@/shared/lib/engagement/social-proof";
+import { useProductCommentCount } from "@/shared/lib/engagement/comment-counts";
+import CommentIcon from "@/shared/components/icons/CommentIcon";
 import ProductCardShareButton from "@/shared/components/product-card/ProductCardShareButton";
 import styles from "@/shared/components/product-card/ProductCard.module.css";
 
@@ -50,12 +53,13 @@ export default function ProductCard({
   const isDealActive = isDealWindowActive(product.dealEndsAt); // Disable deal-only UI once expiration is in the past.
   const hasDeal = hasPriceDeal && isDealActive; // Show strike pricing only while the deal window is active.
   const dealLabel = formatDealTimeRemaining(product.dealEndsAt); // Compute active deal timer when available.
-  const showDealBadge = hasDeal || Boolean(dealLabel); // Show badge only for currently active deals.
+  const showDealBadge = Boolean(dealLabel); // Show badge only when a concrete remaining-time label exists.
   const imageSrc = toAssetPath(product.images[0] ?? "/images/product-placeholder.svg"); // Use first image or fallback.
   const isCompact = variant === "compact"; // Toggle compact styling for dense layouts.
   const saveCount = useProductSaveCount(product.id, product.saveCount ?? 0); // Subscribe to live save-count updates for this product.
-  const saveCountLabel = formatSaveCountLabel(saveCount); // Render compact human-readable save count text.
-  const showSaveCount = saveCount >= 5; // Hide weak social proof until count crosses the trust threshold.
+  const commentCount = useProductCommentCount(product.id); // Subscribe to local comment count updates.
+  const showSaveCount = saveCount >= SOCIAL_PROOF_MIN_COUNT; // Hide weak social proof until count crosses the trust threshold.
+  const showCommentCount = commentCount >= SOCIAL_PROOF_MIN_COUNT; // Hide weak social proof until count crosses the trust threshold.
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
     if (event.key === "Enter" || event.key === " ") {
@@ -78,9 +82,9 @@ export default function ProductCard({
       {/* Image section kept square regardless of source image ratio. */}
       <div className={styles.productCard__media}>
         {/* Deal badge for discounted items. */}
-        {showDealBadge && (
-          <span className={styles.productCard__badge}>Deal</span>
-        )}
+        {showDealBadge ? (
+          <span className={styles.productCard__badge}>{dealLabel}</span>
+        ) : null}
         <img
           className={styles.productCard__image}
           src={imageSrc}
@@ -110,7 +114,7 @@ export default function ProductCard({
             <span className={styles.productCard__price}>
               {formatPrice(product.price)}
             </span>
-            {hasDeal && !isCompact && ( // Hide strike price in compact mode.
+            {hasDeal && (
               <span className={styles.productCard__originalPrice}>
                 {formatPrice(product.originalPrice ?? product.price)}
               </span>
@@ -127,19 +131,36 @@ export default function ProductCard({
         </div>
 
         <div className={styles.productCard__actions}>
+          <div className={styles.productCard__socialGroup}>
+            {showSaveCount ? (
+              <span className={styles.productCard__socialCount}>
+                {formatCompactCount(saveCount)}
+              </span>
+            ) : null}
+
+            {/* Save button injected by the parent feature (wishlist/feed). */}
+            {renderSaveButton
+              ? renderSaveButton({
+                  buttonClassName: styles.productCard__wishlist, // Base button styles.
+                  savedClassName: styles["productCard__wishlist--saved"], // Saved-state styles.
+                  wrapperClassName: styles.productCard__wishlistWrap, // Positioning wrapper styles.
+                })
+              : null}
+          </div>
+
+          <div className={styles.productCard__socialGroup}>
+            {showCommentCount ? (
+              <span className={styles.productCard__socialCount}>
+                {formatCompactCount(commentCount)}
+              </span>
+            ) : null}
+
+            <span className={styles.productCard__commentIcon} aria-hidden="true">
+              <CommentIcon />
+            </span>
+          </div>
+
           {/* Save button injected by the parent feature (wishlist/feed). */}
-          {renderSaveButton
-            ? renderSaveButton({
-                buttonClassName: styles.productCard__wishlist, // Base button styles.
-                savedClassName: styles["productCard__wishlist--saved"], // Saved-state styles.
-                wrapperClassName: styles.productCard__wishlistWrap, // Positioning wrapper styles.
-              })
-            : null}
-
-          {showSaveCount ? (
-            <span className={styles.productCard__saveCount}>{saveCountLabel}</span>
-          ) : null}
-
           <ProductCardShareButton
             productName={product.name}
             productSlug={product.slug}

@@ -5,6 +5,7 @@ import { requestDataApi } from "@/shared/lib/platform/data-api";
 
 const SAVE_COUNTS_STORAGE_KEY = "window_shoppr_product_save_counts"; // Local storage key for social-proof save counts.
 const SAVE_COUNTS_EVENT = "social-proof:save-counts"; // Local event for same-tab save-count updates.
+export const SOCIAL_PROOF_MIN_COUNT = 5; // Hide low counts to avoid weak social proof.
 
 /**
  * Read local save-count map from storage.
@@ -86,6 +87,21 @@ export const formatSaveCountLabel = (saveCount: number) => {
   }
 
   return `${saveCount} ${saveCount === 1 ? "save" : "saves"}`;
+};
+
+/**
+ * Format counts as compact numbers without suffix text.
+ */
+export const formatCompactCount = (count: number) => {
+  if (count >= 1_000_000) {
+    return `${(count / 1_000_000).toFixed(1)}M`;
+  }
+
+  if (count >= 1_000) {
+    return `${(count / 1_000).toFixed(1)}k`;
+  }
+
+  return `${count}`;
 };
 
 /**

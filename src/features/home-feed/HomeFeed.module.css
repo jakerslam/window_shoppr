@@ -185,8 +185,8 @@
 .homeFeed__speedIcon {
   position: relative;
   z-index: 1;
-  width: 15px;
-  height: 15px;
+  width: 17px;
+  height: 17px;
   color: var(--color-text-muted);
   transition: color 200ms ease;
   justify-self: center;

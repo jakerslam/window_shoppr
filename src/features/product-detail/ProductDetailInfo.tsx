@@ -3,7 +3,9 @@
 import { Product, PRODUCT_UI } from "@/shared/lib/catalog/types";
 import { trackAffiliateClick } from "@/shared/lib/engagement/analytics";
 import {
+  formatCompactCount,
   formatSaveCountLabel,
+  SOCIAL_PROOF_MIN_COUNT,
   useProductSaveCount,
 } from "@/shared/lib/engagement/social-proof";
 import {
@@ -43,6 +45,7 @@ export default function ProductDetailInfo({
   const retailerLabel = product.retailer ?? "Retailer"; // Fall back when retailer is unknown.
   const saveCount = useProductSaveCount(product.id, product.saveCount ?? 0); // Subscribe to live save-count updates for this product.
   const saveCountLabel = formatSaveCountLabel(saveCount); // Render compact social-proof text.
+  const showSaveCount = saveCount >= SOCIAL_PROOF_MIN_COUNT; // Hide weak social proof until threshold is met.
 
   /**
    * Track outbound affiliate clicks for analytics.
@@ -102,7 +105,11 @@ export default function ProductDetailInfo({
           </div>
         </div>
         <span className={styles.productDetail__ratingText}>{ratingText}</span>
-        <span className={styles.productDetail__saveCount}>{saveCountLabel}</span>
+        {showSaveCount ? (
+          <span className={styles.productDetail__saveCount} title={saveCountLabel}>
+            {formatCompactCount(saveCount)} ★
+          </span>
+        ) : null}
       </div>
 
       <div className={styles.productDetail__actionsRow}>
