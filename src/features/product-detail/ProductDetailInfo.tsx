@@ -100,7 +100,7 @@ export default function ProductDetailInfo({
 
       <DescriptionToggle
         text={product.description}
-        previewLimit={PRODUCT_UI.DESCRIPTION_PREVIEW_LIMIT}
+        characterLimit={PRODUCT_UI.DESCRIPTION_COLLAPSE_LIMIT}
       />
 
       <ProductDetailTaste product={product} />
