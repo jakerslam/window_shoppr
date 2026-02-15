@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getAvailableCategories } from "@/shared/lib/catalog/categories";
 import { getProductCatalog } from "@/shared/lib/catalog/products";
 import { trackSearch } from "@/shared/lib/engagement/analytics";
@@ -17,6 +17,12 @@ import { HomeIcon, SearchIcon, StarIcon, UserIcon } from "@/features/top-bar/Nav
 import MobileCategoriesSheet from "@/features/top-bar/mobile/MobileCategoriesSheet";
 import MobileSearchOverlay from "@/features/top-bar/mobile/MobileSearchOverlay";
 import useMobileBottomNavOverlays from "@/features/top-bar/mobile/useMobileBottomNavOverlays";
+import {
+  readWishlistSearchQuery,
+  WISHLIST_SEARCH_EVENT,
+  WISHLIST_SEARCH_STORAGE_KEY,
+  writeWishlistSearchQuery,
+} from "@/features/wishlist/lib/wishlist-search";
 
 /**
  * Mobile bottom navigation with category sheet and search overlay.
@@ -25,7 +31,14 @@ export default function MobileBottomNav() {
   const router = useRouter();
   const pathname = usePathname();
   const session = useAuthSessionState();
-  const { clearFilters, clearCategories, setCategory, setSubCategory, searchQuery, setSearchQuery } =
+  const {
+    clearFilters,
+    clearCategories,
+    setCategory,
+    setSubCategory,
+    searchQuery: feedSearchQuery,
+    setSearchQuery: setFeedSearchQuery,
+  } =
     useCategoryFilter();
   const availableCategories = getAvailableCategories(
     getProductCatalog(),
@@ -34,12 +47,17 @@ export default function MobileBottomNav() {
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
   const [openCategory, setOpenCategory] = useState<string | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [wishlistSearchQuery, setWishlistSearchQuery] = useState(() =>
+    readWishlistSearchQuery(),
+  );
 
   const normalizedPath = pathname.replace(/\/+$/, "") || "/"; // Normalize trailing slashes from static hosting.
   const isHomeActive =
     (normalizedPath === "/" || normalizedPath.startsWith("/c")) && !isCategoriesOpen; // Treat category pages as part of the feed.
   const isWishlistActive = normalizedPath === "/wishlist";
+  const isWishlistRoute = normalizedPath === "/wishlist";
   const isProfileActive = normalizedPath === "/login" || normalizedPath === "/signup";
+  const activeSearchQuery = isWishlistRoute ? wishlistSearchQuery : feedSearchQuery;
   const searchInputRef = useRef<HTMLInputElement | null>(null);
   const currentPath = useMemo(() => pathname, [pathname]); // Capture route for post-auth return.
   const profileHref = useMemo(() => {
@@ -59,6 +77,29 @@ export default function MobileBottomNav() {
     setIsSearchOpen,
     setOpenCategory,
   }); // Keep overlay side effects out of the render component.
+
+  /**
+   * Keep mobile wishlist search text synced with shared storage/events.
+   */
+  useEffect(() => {
+    const syncWishlistSearch = () => {
+      setWishlistSearchQuery(readWishlistSearchQuery()); // Refresh query from shared wishlist search storage.
+    };
+
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key === WISHLIST_SEARCH_STORAGE_KEY) {
+        syncWishlistSearch(); // Sync cross-tab updates.
+      }
+    };
+
+    window.addEventListener(WISHLIST_SEARCH_EVENT, syncWishlistSearch);
+    window.addEventListener("storage", handleStorage);
+
+    return () => {
+      window.removeEventListener(WISHLIST_SEARCH_EVENT, syncWishlistSearch);
+      window.removeEventListener("storage", handleStorage);
+    };
+  }, []);
 
   /**
    * Navigate to the main feed and reset filters when needed.
@@ -100,7 +141,12 @@ export default function MobileBottomNav() {
    */
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const nextValue = event.target.value; // Capture the latest search input.
-    setSearchQuery(nextValue); // Update the shared search query.
+    if (isWishlistRoute) {
+      writeWishlistSearchQuery(nextValue); // Route mobile search input to wishlist filtering.
+      return;
+    }
+
+    setFeedSearchQuery(nextValue); // Update the shared feed search query.
     if (nextValue.trim()) {
       if (normalizedPath === "/") {
         clearCategories(); // Reset categories only on the root feed (category pages keep their scope).
@@ -112,15 +158,15 @@ export default function MobileBottomNav() {
    * Submit the search and return to the feed if needed.
    */
   const handleSearchSubmit = () => {
-    if (searchQuery.trim()) {
+    if (activeSearchQuery.trim()) {
       trackSearch({
-        query: searchQuery,
+        query: activeSearchQuery,
         pathname: normalizedPath,
         source: "mobile",
       }); // Record search intent for analytics.
     }
 
-    if (searchQuery.trim() && normalizedPath !== "/") {
+    if (!isWishlistRoute && activeSearchQuery.trim() && normalizedPath !== "/") {
       router.push("/"); // Return to the feed when search is submitted.
     }
 
@@ -171,8 +217,10 @@ export default function MobileBottomNav() {
 
       <MobileSearchOverlay
         isOpen={isSearchOpen}
-        searchQuery={searchQuery}
+        searchQuery={activeSearchQuery}
         inputRef={searchInputRef}
+        placeholder={isWishlistRoute ? "Search wishlist" : "Search window finds"}
+        ariaLabel={isWishlistRoute ? "Search wishlist products" : "Search products"}
         onChange={handleSearchChange} // Update the shared search query.
         onSubmit={handleSearchSubmit} // Submit search and optionally navigate home.
         onClose={handleSearchClose} // Close search when tapping away.
@@ -190,7 +238,9 @@ export default function MobileBottomNav() {
           <span className={`${styles.mobileNav__icon} ${styles["mobileNav__icon--small"]}`}>
             <SearchIcon className={styles.mobileNav__iconGraphic} />
           </span>
-          <span className={styles.mobileNav__label}>Search</span>
+          <span className={styles.mobileNav__label}>
+            {isWishlistRoute ? "Search Wishlist" : "Search"}
+          </span>
         </button>
 
         {/* Home shortcut. */}

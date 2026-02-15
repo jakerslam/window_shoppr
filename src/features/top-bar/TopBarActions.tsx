@@ -59,7 +59,7 @@ export default function TopBarActions() {
     return session.displayName?.trim() || "Account";
   }, [session]);
   const pointsLabel = useMemo(
-    () => (pointsTotal > 9999 ? "9,999+" : pointsTotal.toLocaleString()),
+    () => `${pointsTotal > 9999 ? "9,999+" : pointsTotal.toLocaleString()} pts`,
     [pointsTotal],
   ); // Keep point-count text compact for the top bar badge.
 

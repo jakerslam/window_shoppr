@@ -123,27 +123,27 @@ export default function ProductCard({
             </span>
           ) : null}
         </div>
+      </div>
 
-        <div className={styles.productCard__actions}>
-          {/* Save button injected by the parent feature (wishlist/feed). */}
-          {renderSaveButton
-            ? renderSaveButton({
-                buttonClassName: styles.productCard__wishlist, // Base button styles.
-                savedClassName: styles["productCard__wishlist--saved"], // Saved-state styles.
-                wrapperClassName: styles.productCard__wishlistWrap, // Positioning wrapper styles.
-              })
-            : null}
+      <div className={styles.productCard__actions}>
+        {/* Save button injected by the parent feature (wishlist/feed). */}
+        {renderSaveButton
+          ? renderSaveButton({
+              buttonClassName: styles.productCard__wishlist, // Base button styles.
+              savedClassName: styles["productCard__wishlist--saved"], // Saved-state styles.
+              wrapperClassName: styles.productCard__wishlistWrap, // Positioning wrapper styles.
+            })
+          : null}
 
-          {showSaveCount ? (
-            <span className={styles.productCard__saveCount}>{saveCountLabel}</span>
-          ) : null}
+        {showSaveCount ? (
+          <span className={styles.productCard__saveCount}>{saveCountLabel}</span>
+        ) : null}
 
-          <ProductCardShareButton
-            productName={product.name}
-            productSlug={product.slug}
-            className={styles.productCard__share}
-          />
-        </div>
+        <ProductCardShareButton
+          productName={product.name}
+          productSlug={product.slug}
+          className={styles.productCard__share}
+        />
       </div>
     </article>
   );

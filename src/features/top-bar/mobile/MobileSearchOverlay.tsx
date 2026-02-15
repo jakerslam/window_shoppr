@@ -10,6 +10,8 @@ import { SearchIcon } from "@/features/top-bar/NavIcons";
 export default function MobileSearchOverlay({
   isOpen,
   searchQuery,
+  placeholder = "Search window finds",
+  ariaLabel = "Search products",
   onChange,
   onSubmit,
   onClose,
@@ -17,6 +19,8 @@ export default function MobileSearchOverlay({
 }: {
   isOpen: boolean;
   searchQuery: string;
+  placeholder?: string;
+  ariaLabel?: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onSubmit: () => void;
   onClose: () => void;
@@ -39,8 +43,8 @@ export default function MobileSearchOverlay({
           ref={inputRef}
           className={styles.mobileSearch__input}
           type="search"
-          placeholder="Search window finds"
-          aria-label="Search products"
+          placeholder={placeholder}
+          aria-label={ariaLabel}
           value={searchQuery}
           onChange={onChange} // Update search query.
           onKeyDown={(event) => {
@@ -61,4 +65,3 @@ export default function MobileSearchOverlay({
     </div>
   );
 }
-

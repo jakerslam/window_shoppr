@@ -1,11 +1,17 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Product } from "@/shared/lib/catalog/types";
 import { FALLBACK_PRODUCTS } from "@/shared/lib/catalog/products";
 import { ALL_LIST_LABEL, DEFAULT_WISHLIST_NAME } from "@/features/wishlist/wishlist-constants";
 import { useWishlist } from "@/features/wishlist/wishlist";
+import {
+  readWishlistSearchQuery,
+  WISHLIST_SEARCH_EVENT,
+  WISHLIST_SEARCH_STORAGE_KEY,
+  writeWishlistSearchQuery,
+} from "@/features/wishlist/lib/wishlist-search";
 import WishlistHeader from "@/features/wishlist/wishlist-page/WishlistHeader";
 import WishlistGrid from "@/features/wishlist/wishlist-page/WishlistGrid";
 import WishlistEmpty from "@/features/wishlist/wishlist-page/WishlistEmpty";
@@ -33,7 +39,7 @@ export default function WishlistPage() {
   const router = useRouter();
   const { listNames, isSaved, isSavedInList, saveToList } = useWishlist();
   const [activeList, setActiveList] = useState(ALL_LIST_LABEL);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(() => readWishlistSearchQuery());
   const [removedItems, setRemovedItems] = useState<RemovedItem[]>([]);
 
   const productLookup = useMemo(
@@ -114,6 +120,29 @@ export default function WishlistPage() {
 
   const hasItems = combinedItems.length > 0; // Determine whether to show empty state.
 
+  /**
+   * Keep wishlist search query synced across header + mobile overlay + tabs.
+   */
+  useEffect(() => {
+    const syncSearch = () => {
+      setSearchQuery(readWishlistSearchQuery()); // Pull latest persisted wishlist search query.
+    };
+
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key === WISHLIST_SEARCH_STORAGE_KEY) {
+        syncSearch(); // Sync cross-tab search query updates.
+      }
+    };
+
+    window.addEventListener(WISHLIST_SEARCH_EVENT, syncSearch);
+    window.addEventListener("storage", handleStorage);
+
+    return () => {
+      window.removeEventListener(WISHLIST_SEARCH_EVENT, syncSearch);
+      window.removeEventListener("storage", handleStorage);
+    };
+  }, []);
+
   const isAllList = activeList === ALL_LIST_LABEL; // Track if the all-list filter is active.
   const emptyTitle = isAllList
     ? "Your wishlist is empty."
@@ -183,7 +212,7 @@ export default function WishlistPage() {
         activeList={activeList}
         onListChange={setActiveList}
         searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
+        onSearchChange={writeWishlistSearchQuery}
       />
 
       {hasItems ? (

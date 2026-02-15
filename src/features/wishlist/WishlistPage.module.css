@@ -180,11 +180,13 @@
   outline-offset: 2px;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 820px) {
   .wishlistPage__searchInput {
-    min-width: 150px;
+    display: none;
   }
+}
 
+@media (max-width: 600px) {
   .wishlistPage__ghostCard {
     max-width: 160px;
     min-height: 218px;
