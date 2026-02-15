@@ -1,4 +1,8 @@
-export type WindowPointsAction = "product_view" | "wishlist_save" | "affiliate_click";
+export type WindowPointsAction =
+  | "product_view"
+  | "wishlist_save"
+  | "affiliate_click"
+  | "deal_submission";
 
 export type WindowPointsState = {
   totalPoints: number;
@@ -17,6 +21,7 @@ const ACTION_POINT_MAP: Record<WindowPointsAction, number> = {
   product_view: 1,
   wishlist_save: 6,
   affiliate_click: 10,
+  deal_submission: 20,
 }; // Point values per qualifying action.
 
 /**
@@ -45,6 +50,7 @@ const createDefaultWindowPointsState = (): WindowPointsState => ({
     product_view: 0,
     wishlist_save: 0,
     affiliate_click: 0,
+    deal_submission: 0,
   },
   awardedKeys: [],
   updatedAt: new Date(0).toISOString(),
@@ -96,6 +102,11 @@ const parseWindowPointsState = (raw: string): WindowPointsState => {
           typeof parsedActionCounts.affiliate_click === "number" &&
           parsedActionCounts.affiliate_click > 0
             ? Math.round(parsedActionCounts.affiliate_click)
+            : 0,
+        deal_submission:
+          typeof parsedActionCounts.deal_submission === "number" &&
+          parsedActionCounts.deal_submission > 0
+            ? Math.round(parsedActionCounts.deal_submission)
             : 0,
       },
       awardedKeys: awardedKeys.slice(-MAX_AWARDED_KEYS),

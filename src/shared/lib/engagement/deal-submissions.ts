@@ -8,6 +8,7 @@ import {
   getPendingDealSubmissionQueue,
   writeDealSubmissionRecord,
 } from "@/shared/lib/engagement/deal-submissions-storage";
+import { awardWindowPoints } from "@/shared/lib/engagement/window-points";
 
 /**
  * Normalize URL inputs and reject unsafe/non-http URLs.
@@ -129,6 +130,11 @@ export const submitDealSubmission = async (input: {
       new CustomEvent("moderation:queue:enqueue", { detail: queueItem }),
     ); // Reuse moderation enqueue signal for agent listeners.
   }
+
+  awardWindowPoints({
+    action: "deal_submission",
+    uniqueKey: `deal-submission:${queueItem.id}`,
+  }); // Reward users for contributing new deal submissions.
 
   if (!response || !response.ok) {
     return { ok: true, mode: "queued_local", id: queueItem.id } as const;

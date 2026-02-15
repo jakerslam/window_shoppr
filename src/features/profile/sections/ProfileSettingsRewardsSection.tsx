@@ -77,7 +77,8 @@ export default function ProfileSettingsRewardsSection() {
       </div>
 
       <p className={styles.profileSettings__hint}>
-        Earn points by browsing products, saving finds, and clicking live deals.
+        Earn points by browsing products, saving finds, clicking live deals, and
+        submitting deals.
       </p>
 
       <div className={styles.profileSettings__actions}>
