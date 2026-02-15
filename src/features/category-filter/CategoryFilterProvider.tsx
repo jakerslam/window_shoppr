@@ -1,6 +1,7 @@
 "use client";
 
-import { createContext, useCallback, useContext, useMemo, useState } from "react";
+import { usePathname } from "next/navigation";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 /**
  * Category filter state shared across the browsing experience.
@@ -27,6 +28,7 @@ export default function CategoryFilterProvider({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname(); // Read the active route for URL-driven category pages.
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedSubCategory, setSelectedSubCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -59,6 +61,78 @@ export default function CategoryFilterProvider({
   const clearSearch = useCallback(() => {
     setSearchQuery(""); // Clear the search query.
   }, []);
+
+  /**
+   * Keep filter state in sync with canonical category URLs (/c/:category/:sub?).
+   */
+  useEffect(() => {
+    const normalizedPath = pathname.replace(/\/+$/, "") || "/"; // Normalize trailing slashes from static hosting.
+
+    const shouldClearForRoot =
+      normalizedPath === "/" && (selectedCategory || selectedSubCategory); // Clear stale category state on root.
+
+    if (normalizedPath === "/") {
+      if (!shouldClearForRoot) {
+        return; // Skip scheduling when state already matches the root feed.
+      }
+    } else if (!normalizedPath.startsWith("/c")) {
+      return; // Only sync state for canonical category routes.
+    }
+
+    const segments = normalizedPath.split("/").filter(Boolean); // Example: ["c","tech","accessories"].
+    const nextCategory = segments[1] ?? null; // Read category slug from URL.
+    const nextSubCategory = segments[2] ?? null; // Read subcategory slug from URL.
+
+    const shouldClearForEmptyCategory =
+      normalizedPath.startsWith("/c") &&
+      !nextCategory &&
+      (selectedCategory || selectedSubCategory); // Reset when /c is visited without a category slug.
+
+    const shouldSyncSubCategory =
+      Boolean(nextCategory && nextSubCategory) &&
+      (selectedCategory !== nextCategory ||
+        selectedSubCategory !== nextSubCategory); // Sync when URL differs.
+
+    const shouldSyncCategory =
+      Boolean(nextCategory && !nextSubCategory) &&
+      (selectedCategory !== nextCategory || Boolean(selectedSubCategory)); // Sync when URL differs.
+
+    if (
+      !shouldClearForRoot &&
+      !shouldClearForEmptyCategory &&
+      !shouldSyncSubCategory &&
+      !shouldSyncCategory
+    ) {
+      return; // Skip scheduling when state already matches the URL.
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      if (shouldClearForRoot || shouldClearForEmptyCategory) {
+        clearCategories(); // Reset category state to match the URL.
+        return;
+      }
+
+      if (shouldSyncSubCategory && nextCategory && nextSubCategory) {
+        setSubCategory(nextCategory, nextSubCategory); // Sync state to the URL slugs.
+        return;
+      }
+
+      if (shouldSyncCategory && nextCategory) {
+        setCategory(nextCategory); // Sync state to the URL category slug.
+      }
+    }, 0); // Defer updates so lint rules and React effects stay predictable.
+
+    return () => {
+      window.clearTimeout(timeoutId); // Cancel pending sync when navigating quickly.
+    };
+  }, [
+    clearCategories,
+    pathname,
+    selectedCategory,
+    selectedSubCategory,
+    setCategory,
+    setSubCategory,
+  ]);
 
   const value = useMemo(
     () => ({

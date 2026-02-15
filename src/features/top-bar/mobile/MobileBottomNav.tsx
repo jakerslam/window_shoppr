@@ -30,7 +30,8 @@ export default function MobileBottomNav() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const normalizedPath = pathname.replace(/\/+$/, "") || "/"; // Normalize trailing slashes from static hosting.
-  const isHomeActive = normalizedPath === "/" && !isCategoriesOpen;
+  const isHomeActive =
+    (normalizedPath === "/" || normalizedPath.startsWith("/c")) && !isCategoriesOpen; // Treat category pages as part of the feed.
   const isWishlistActive = normalizedPath === "/wishlist";
   const isProfileActive = normalizedPath === "/login" || normalizedPath === "/signup";
   const searchInputRef = useRef<HTMLInputElement | null>(null);
@@ -49,12 +50,11 @@ export default function MobileBottomNav() {
    * Navigate to the main feed and reset filters when needed.
    */
   const handleHome = () => {
-    if (normalizedPath !== "/") {
-      router.push("/"); // Return to the feed.
-      return;
-    }
+    clearFilters(); // Reset filters whenever Home is pressed.
 
-    clearFilters(); // Reset filters when already on the feed.
+    if (normalizedPath !== "/") {
+      router.push("/"); // Return to the full feed.
+    }
   };
 
   /**
@@ -88,7 +88,9 @@ export default function MobileBottomNav() {
     const nextValue = event.target.value; // Capture the latest search input.
     setSearchQuery(nextValue); // Update the shared search query.
     if (nextValue.trim()) {
-      clearCategories(); // Reset categories when search is active.
+      if (normalizedPath === "/") {
+        clearCategories(); // Reset categories only on the root feed (category pages keep their scope).
+      }
     }
   };
 
@@ -122,10 +124,7 @@ export default function MobileBottomNav() {
 
     setCategory(categorySlug); // Filter by category.
     handleCategoriesClose(); // Close after selection.
-
-    if (normalizedPath !== "/") {
-      router.push("/"); // Return to feed for category filtering.
-    }
+    router.push(`/c/${categorySlug}/`); // Navigate to canonical category page.
   };
 
   /**
@@ -134,10 +133,7 @@ export default function MobileBottomNav() {
   const handleSubCategorySelect = (categorySlug: string, subCategorySlug: string) => {
     setSubCategory(categorySlug, subCategorySlug); // Filter by subcategory.
     handleCategoriesClose(); // Close after selection.
-
-    if (normalizedPath !== "/") {
-      router.push("/"); // Return to feed for subcategory filtering.
-    }
+    router.push(`/c/${categorySlug}/${subCategorySlug}/`); // Navigate to canonical subcategory page.
   };
 
   return (

@@ -36,10 +36,12 @@ export default function TopBar() {
       const nextValue = event.target.value; // Capture the latest query value.
       setSearchQuery(nextValue); // Update the shared search query.
       if (nextValue.trim()) {
-        clearCategories(); // Reset categories when search is active.
+        if (pathname === "/") {
+          clearCategories(); // Reset categories only on the root feed (category pages keep their scope).
+        }
       }
     },
-    [clearCategories, setSearchQuery],
+    [clearCategories, pathname, setSearchQuery],
   );
 
   /**

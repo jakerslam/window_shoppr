@@ -71,7 +71,7 @@ export default function TopBarMenu() {
     setIsMenuOpen(false); // Close menu after selection.
     handleSubMenuClose(); // Ensure submenu is closed after selection.
     if (pathname !== "/") {
-      router.push("/"); // Return to feed for category filtering.
+      router.push("/"); // Return to the full feed when leaving another route.
     }
   };
 
@@ -82,9 +82,7 @@ export default function TopBarMenu() {
     setCategory(categorySlug); // Filter by category.
     setIsMenuOpen(false); // Close menu after selection.
     handleSubMenuClose(); // Ensure submenu is closed after selection.
-    if (pathname !== "/") {
-      router.push("/"); // Return to feed for category filtering.
-    }
+    router.push(`/c/${categorySlug}/`); // Navigate to the canonical category page.
   };
 
   /**
@@ -94,9 +92,7 @@ export default function TopBarMenu() {
     setSubCategory(categorySlug, subSlug); // Filter by subcategory.
     setIsMenuOpen(false); // Close menu after selection.
     handleSubMenuClose(); // Ensure submenu is closed after selection.
-    if (pathname !== "/") {
-      router.push("/"); // Return to feed for subcategory filtering.
-    }
+    router.push(`/c/${categorySlug}/${subSlug}/`); // Navigate to the canonical subcategory page.
   };
 
   const handleTriggerKeyDown = (
