@@ -170,6 +170,56 @@ export const useWishlist = () => {
     [enqueueWishlistSyncOperation],
   );
 
+  /**
+   * Delete a custom wishlist list and remove its memberships.
+   */
+  const deleteList = useCallback(
+    (listName: string) => {
+      const targetList = normalizeListName(listName);
+
+      if (!targetList || targetList === DEFAULT_WISHLIST_NAME) {
+        return; // Never delete the default list.
+      }
+
+      setListState((prev) => {
+        const targetIds = prev.lists[targetList];
+        if (!targetIds) {
+          return prev; // Skip unknown lists.
+        }
+
+        const nextLists = Object.fromEntries(
+          Object.entries(prev.lists).filter(([name]) => name !== targetList),
+        );
+        const nextState = {
+          order: normalizeListOrder(prev.order.filter((name) => name !== targetList)),
+          lists: nextLists,
+        };
+
+        writeWishlistListsToStorage(nextState);
+        broadcastWishlistChange();
+        trackWishlistEvent({ action: "delete_list", listName: targetList });
+        enqueueWishlistSyncOperation({
+          nextState,
+          operation: { type: "delete_list", listName: targetList },
+        });
+
+        Array.from(new Set(targetIds)).forEach((productId) => {
+          const isStillSaved = Object.values(nextState.lists).some((list) =>
+            list.includes(productId),
+          );
+          applyProductSaveTransition({
+            productId,
+            wasSaved: true,
+            isSaved: isStillSaved,
+          }); // Keep social-proof counts aligned when list deletion unsaves products.
+        });
+
+        return nextState;
+      });
+    },
+    [enqueueWishlistSyncOperation],
+  );
+
   const toggleSaved = useCallback(
     (id: string) => {
       setListState((prev) => {
@@ -231,6 +281,7 @@ export const useWishlist = () => {
     addList,
     saveToList,
     removeFromList,
+    deleteList,
     toggleSaved,
   };
 };

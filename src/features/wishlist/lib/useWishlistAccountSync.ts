@@ -37,7 +37,7 @@ export default function useWishlistAccountSync() {
     }: {
       nextState: WishlistListsState;
       operation: {
-        type: "save" | "remove" | "create_list";
+        type: "save" | "remove" | "create_list" | "delete_list";
         productId?: string;
         listName?: string;
       };

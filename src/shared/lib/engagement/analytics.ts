@@ -14,7 +14,7 @@ type SearchEvent = {
 };
 
 type WishlistEvent = {
-  action: "save" | "remove" | "create_list";
+  action: "save" | "remove" | "create_list" | "delete_list";
   productId?: string;
   listName?: string;
   timestamp: string;
@@ -123,7 +123,7 @@ export const trackSearch = (payload: {
 };
 
 /**
- * Track wishlist actions (save/remove/create-list) for future analytics wiring.
+ * Track wishlist actions (save/remove/create/delete-list) for future analytics wiring.
  */
 export const trackWishlistEvent = (payload: Omit<WishlistEvent, "timestamp">) => {
   if (typeof window === "undefined") {

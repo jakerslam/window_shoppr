@@ -1,6 +1,10 @@
 import { WishlistListsState } from "@/features/wishlist/lib/wishlist-storage";
 
-export type WishlistSyncOperationType = "save" | "remove" | "create_list";
+export type WishlistSyncOperationType =
+  | "save"
+  | "remove"
+  | "create_list"
+  | "delete_list";
 
 export type WishlistSyncOperation = {
   id: string;

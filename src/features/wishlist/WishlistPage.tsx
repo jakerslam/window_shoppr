@@ -37,7 +37,8 @@ type RemovedItem = {
  */
 export default function WishlistPage() {
   const router = useRouter();
-  const { listNames, isSaved, isSavedInList, saveToList } = useWishlist();
+  const { listNames, isSaved, isSavedInList, saveToList, deleteList } =
+    useWishlist();
   const [activeList, setActiveList] = useState(ALL_LIST_LABEL);
   const [searchQuery, setSearchQuery] = useState(() => readWishlistSearchQuery());
   const [removedItems, setRemovedItems] = useState<RemovedItem[]>([]);
@@ -205,6 +206,31 @@ export default function WishlistPage() {
     [saveToList],
   );
 
+  /**
+   * Delete the currently selected custom list after confirmation.
+   */
+  const handleDeleteActiveList = useCallback(() => {
+    if (activeList === ALL_LIST_LABEL || activeList === DEFAULT_WISHLIST_NAME) {
+      return; // Allow deletion only for custom lists.
+    }
+
+    const shouldDelete = window.confirm(
+      `Delete "${activeList}"? Items will remain in other lists.`,
+    );
+    if (!shouldDelete) {
+      return; // Keep list when deletion is canceled.
+    }
+
+    deleteList(activeList); // Remove list and related memberships.
+    setRemovedItems((prev) =>
+      prev.filter((entry) => entry.listName !== activeList),
+    ); // Drop stale ghost items linked to deleted list.
+    setActiveList(ALL_LIST_LABEL); // Return to all-list filter after deletion.
+  }, [activeList, deleteList]);
+
+  const canDeleteActiveList =
+    activeList !== ALL_LIST_LABEL && activeList !== DEFAULT_WISHLIST_NAME; // Restrict deletion to custom lists only.
+
   return (
     <section className={styles.wishlistPage}>
       <WishlistHeader
@@ -213,6 +239,8 @@ export default function WishlistPage() {
         onListChange={setActiveList}
         searchQuery={searchQuery}
         onSearchChange={writeWishlistSearchQuery}
+        canDeleteActiveList={canDeleteActiveList}
+        onDeleteActiveList={handleDeleteActiveList}
       />
 
       {hasItems ? (

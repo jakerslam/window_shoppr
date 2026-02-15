@@ -1,8 +1,8 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 70/92 (76.1%)  ███████████████░░░░░
-Frontend: 51/64 (79.7%) ███████████████░░░░░
+Overall: 72/92 (78.3%)  ████████████████░░░░
+Frontend: 53/64 (82.8%) ████████████████░░░░
 Backend: 16/22 (72.7%)  ███████████████░░░░░
 Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░░░
 
@@ -151,9 +151,9 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [ ] O3: Add pagination/virtualization for large product sets
 - [x] O4: Refactor folder structure into features/ + shared/ for enterprise organization
 - [x] R26: Wishlist search input (filter saved items)
-- [NEXT] 🔵 R26.1: Wishlist search integration (mobile search targets wishlist on /wishlist; desktop wishlist search bar)
-- [ ] R27: Wishlist list deletion (delete list button + confirm)
-- [ ] R27.1: Manage/view lists entry in save menu (opens list manager modal)
+- [x] R26.1: Wishlist search integration (mobile search targets wishlist on /wishlist; desktop wishlist search bar)
+- [x] R27: Wishlist list deletion (delete list button + confirm)
+- [NEXT] 🔵 R27.1: Manage/view lists entry in save menu (opens list manager modal)
 
 
 

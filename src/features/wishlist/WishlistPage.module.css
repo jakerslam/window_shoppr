@@ -132,6 +132,22 @@
   cursor: pointer;
 }
 
+.wishlistPage__deleteList {
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--color-danger) 55%, var(--color-border));
+  background: color-mix(in oklab, var(--color-danger) 12%, var(--color-surface-muted));
+  color: color-mix(in oklab, var(--color-danger) 82%, var(--color-primary-strong));
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 150ms ease;
+}
+
+.wishlistPage__deleteList:hover {
+  opacity: 0.74;
+}
+
 .wishlistPage__ghostCard {
   border: 1px dashed var(--color-border);
   border-radius: 18px;
@@ -175,6 +191,7 @@
 .wishlistPage__emptyCta:focus-visible,
 .wishlistPage__searchInput:focus-visible,
 .wishlistPage__filterSelect:focus-visible,
+.wishlistPage__deleteList:focus-visible,
 .wishlistPage__ghostAction:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;

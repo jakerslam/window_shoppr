@@ -12,12 +12,16 @@ export default function WishlistHeader({
   onListChange,
   searchQuery,
   onSearchChange,
+  canDeleteActiveList,
+  onDeleteActiveList,
 }: {
   listNames: string[];
   activeList: string;
   onListChange: (nextList: string) => void;
   searchQuery: string;
   onSearchChange: (nextSearch: string) => void;
+  canDeleteActiveList: boolean;
+  onDeleteActiveList: () => void;
 }) {
   return (
     <header className={styles.wishlistPage__header}>
@@ -55,6 +59,16 @@ export default function WishlistHeader({
               </option>
             ))}
           </select>
+
+          {canDeleteActiveList ? (
+            <button
+              className={styles.wishlistPage__deleteList}
+              type="button"
+              onClick={onDeleteActiveList}
+            >
+              Delete list
+            </button>
+          ) : null}
         </div>
       </div>
     </header>
