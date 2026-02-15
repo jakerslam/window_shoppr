@@ -1,7 +1,7 @@
 import type { SVGProps } from "react";
 
 /**
- * Friendly rounded comment icon for social counters.
+ * Friendly, Instagram-style rounded comment icon for social counters.
  */
 export default function CommentIcon(props: SVGProps<SVGSVGElement>) {
   return (
@@ -9,15 +9,14 @@ export default function CommentIcon(props: SVGProps<SVGSVGElement>) {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.8"
+      strokeWidth="1.95"
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
       focusable="false"
       {...props}
     >
-      <path d="M7.4 6.7h9.2c2.4 0 4.4 2 4.4 4.4v4c0 2.4-2 4.4-4.4 4.4h-6.7l-3.6 2.8.9-2.8h-.2c-2.4 0-4.4-2-4.4-4.4v-4c0-2.4 2-4.4 4.4-4.4Z" />
-      <path d="M8.8 12.9h6.4" />
+      <path d="M12 5.3c-4.8 0-8.7 3-8.7 6.8 0 2.2 1.3 4.1 3.3 5.3l-.9 3.3 3.8-2c.8.2 1.6.3 2.5.3 4.8 0 8.7-3 8.7-6.8s-3.9-6.9-8.7-6.9Z" />
     </svg>
   );
 }
