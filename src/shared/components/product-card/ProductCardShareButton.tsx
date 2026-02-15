@@ -2,6 +2,7 @@
 
 import { toAssetPath } from "@/shared/lib/catalog/assets";
 import { SITE_URL } from "@/shared/lib/platform/seo";
+import ShareIcon from "@/shared/components/icons/ShareIcon";
 
 /**
  * Lightweight card-level share action with native-share and clipboard fallback.
@@ -66,22 +67,7 @@ export default function ProductCardShareButton({
       aria-label="Share product link"
       onClick={handleShare}
     >
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.9"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-        focusable="false"
-      >
-        <circle cx="18" cy="5" r="2.5" />
-        <circle cx="6" cy="12" r="2.5" />
-        <circle cx="18" cy="19" r="2.5" />
-        <path d="M8.2 10.9L15.8 6.1" />
-        <path d="M8.2 13.1L15.8 17.9" />
-      </svg>
+      <ShareIcon />
     </button>
   );
 }

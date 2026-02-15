@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { SITE_URL } from "@/shared/lib/platform/seo";
+import ShareIcon from "@/shared/components/icons/ShareIcon";
 import styles from "@/features/product-detail/ProductDetail.module.css";
 
 /**
@@ -14,7 +15,7 @@ export default function ProductDetailShareButton({
   productName: string;
   productSlug: string;
 }) {
-  const [statusLabel, setStatusLabel] = useState("Share"); // Keep button label contextual after actions.
+  const [statusLabel, setStatusLabel] = useState("Share product link"); // Keep accessibility label contextual after actions.
   const shareUrl = useMemo(
     () => `${SITE_URL}/product/${productSlug}`,
     [productSlug],
@@ -25,7 +26,7 @@ export default function ProductDetailShareButton({
    */
   const scheduleStatusReset = useCallback(() => {
     window.setTimeout(() => {
-      setStatusLabel("Share"); // Restore default label after feedback.
+      setStatusLabel("Share product link"); // Restore default label after feedback.
     }, 1800);
   }, []);
 
@@ -86,10 +87,10 @@ export default function ProductDetailShareButton({
       className={styles.productDetail__share}
       type="button"
       onClick={handleShare} // Trigger native share or clipboard fallback.
-      aria-label="Share product link"
+      aria-label={statusLabel}
+      title={statusLabel}
     >
-      {statusLabel}
+      <ShareIcon />
     </button>
   );
 }
-

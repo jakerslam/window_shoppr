@@ -12,6 +12,7 @@
   min-width: 0;
   overflow: visible;
   position: relative;
+  box-shadow: 0 6px 16px rgba(20, 14, 10, 0.08);
 }
 
 .productCard:focus-visible {
@@ -81,7 +82,9 @@
 }
 
 .productCard__priceSection {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
   min-width: 0;
 }
 
@@ -131,10 +134,10 @@
 }
 
 .productCard__actions {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 6px;
+  gap: 4px;
   min-width: 0;
   width: 100%;
 }
@@ -145,8 +148,8 @@
   background: transparent;
   color: var(--color-save-inactive);
   border-radius: 999px;
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -224,8 +227,8 @@
   background: transparent;
   color: var(--color-primary-strong);
   border-radius: 999px;
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -236,8 +239,8 @@
 }
 
 .productCard__share svg {
-  width: 17px;
-  height: 17px;
+  width: 15px;
+  height: 15px;
 }
 
 .productCard__share:hover {
@@ -257,11 +260,11 @@
   }
 
   .productCard__priceSection {
-    margin-bottom: 2px;
+    gap: 3px;
   }
 
   .productCard__actions {
-    gap: 4px;
+    gap: 3px;
   }
 
   .productCard--compact {
@@ -296,12 +299,12 @@
   }
 
   .productCard__share {
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
   }
 
   .productCard__share svg {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
   }
 }

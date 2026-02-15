@@ -108,9 +108,8 @@ export function BellIcon(props: NavIconProps) {
       focusable="false"
       {...props}
     >
-      <path d="M6.5 15.8H17.5L16.3 14.2V10.5C16.3 7.8 14.4 5.7 12 5.2V4.4" />
-      <path d="M7.7 10.5V14.2L6.5 15.8" />
-      <path d="M10.1 18.2C10.5 19.2 11.2 19.8 12 19.8C12.8 19.8 13.5 19.2 13.9 18.2" />
+      <path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+      <path d="M13.73 21a2 2 0 01-3.46 0" />
     </svg>
   );
 }
