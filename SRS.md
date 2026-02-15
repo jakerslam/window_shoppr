@@ -51,7 +51,7 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] R12.1: Wishlist save menu (hover/long-press list selection)
 - [x] R13: Animation system for mesmerizing scrolling columns (hover pause)
 - [x] R13.1: Manual scroll assist for the auto-scrolling feed (wheel/touch drag adjusts speed temporarily; easing back to baseline)
-- [NEXT] 🔵 R13.2: Mobile manual-scroll cooldown (after touch/wheel manipulation, wait 1000ms before that column resumes auto-scroll).
+- [x] R13.2: Mobile manual-scroll cooldown (after touch/wheel manipulation, wait 1000ms before that column resumes auto-scroll).
 - [x] R14: Navigation menu with hover unfurl (categories -> subcategories)
 
 ## SEO & Growth
@@ -150,8 +150,8 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [ ] O2: Add search weighting and relevance scoring
 - [ ] O3: Add pagination/virtualization for large product sets
 - [x] O4: Refactor folder structure into features/ + shared/ for enterprise organization
-- [ ] R26: Wishlist search input (filter saved items)
-- [ ] R26.1: Wishlist search integration (mobile search targets wishlist on /wishlist; desktop wishlist search bar)
+- [x] R26: Wishlist search input (filter saved items)
+- [NEXT] 🔵 R26.1: Wishlist search integration (mobile search targets wishlist on /wishlist; desktop wishlist search bar)
 - [ ] R27: Wishlist list deletion (delete list button + confirm)
 - [ ] R27.1: Manage/view lists entry in save menu (opens list manager modal)
 
@@ -175,7 +175,7 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] Q6: Refactor hardening pass (mobile overlay state cleanup + lint warnings removed)
 - [x] Q7: Account settings now control cozy/quick feed speed multipliers used by the home speed toggle
 - [x] Q8: Remove placeholder/fake notifications after notifications are gated behind login (no fake items; show empty state until backend is live)
-- [ ] Q9: Keep wishlist "Removed from {list} / click to undo" ghost card locked to standard wishlist card dimensions so row height/width never expands.
+- [x] Q9: Keep wishlist "Removed from {list} / click to undo" ghost card locked to standard wishlist card dimensions so row height/width never expands.
 - [x] Q10: Gate product comment posting behind auth session stub (logged-out users can still view comments).
 - [x] Q11: Product-detail desktop thumbnail rail uses arrow-only navigation (manual scroll disabled; mobile swipe preserved).
 - [x] Q12: Disable wishlist long-press menu opening on desktop (and keep it disabled on mobile); menu opens via supported click/double-click flows only.

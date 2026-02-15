@@ -12,6 +12,10 @@ import {
   AgentSignalSubmissionInput,
   AgentProductUpsertInput,
 } from "@/shared/lib/agent/ingestion-schema";
+import {
+  normalizeHttpUrl,
+  resolveMerchantUrlFromSignal,
+} from "@/shared/lib/agent/signal-utils";
 
 type AgentQueueRecord<TAction extends string, TPayload> = {
   id: string;
@@ -33,18 +37,6 @@ const AGENT_PUBLISH_QUEUE_KEY = "window_shoppr_agent_publish_queue"; // Local st
 const AGENT_MODERATION_QUEUE_KEY = "window_shoppr_agent_moderation_queue"; // Local stub queue for moderation resolve operations.
 const AGENT_SIGNAL_QUEUE_KEY = "window_shoppr_agent_signal_queue"; // Local stub queue for competitor/source signals.
 const MAX_QUEUE_SIZE = 500; // Prevent unbounded queue growth in local storage.
-const SIGNAL_REDIRECT_KEYS = [
-  "url",
-  "u",
-  "out",
-  "to",
-  "dest",
-  "destination",
-  "redirect",
-  "redirect_url",
-  "redirectUrl",
-  "r",
-] as const; // Common query keys that hold redirected merchant URLs.
 
 const readQueue = <T>(key: string): T[] => {
   if (typeof window === "undefined") {
@@ -74,61 +66,6 @@ const writeQueue = (key: string, queue: unknown[]) => {
   } catch {
     // Ignore storage failures to keep caller flows non-blocking.
   }
-};
-
-/**
- * Normalize URLs and reject non-http(s) values.
- */
-const normalizeHttpUrl = (value: string) => {
-  try {
-    const parsed = new URL(value.trim());
-    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
-      return null;
-    }
-
-    parsed.hash = "";
-    return parsed.toString();
-  } catch {
-    return null;
-  }
-};
-
-/**
- * Attempt to resolve a merchant URL from common signal redirect params.
- */
-const resolveMerchantUrlFromSignal = ({
-  signalUrl,
-  merchantUrl,
-}: {
-  signalUrl: string;
-  merchantUrl?: string;
-}) => {
-  const normalizedMerchant = merchantUrl ? normalizeHttpUrl(merchantUrl) : null;
-  if (normalizedMerchant) {
-    return normalizedMerchant; // Prefer explicit merchant URL when provided.
-  }
-
-  const parsedSignal = new URL(signalUrl);
-  for (const key of SIGNAL_REDIRECT_KEYS) {
-    const candidate = parsedSignal.searchParams.get(key);
-    if (!candidate) {
-      continue;
-    }
-
-    const decoded = (() => {
-      try {
-        return decodeURIComponent(candidate);
-      } catch {
-        return candidate;
-      }
-    })();
-    const normalized = normalizeHttpUrl(decoded);
-    if (normalized) {
-      return normalized;
-    }
-  }
-
-  return null;
 };
 
 export const validateAgentAuth = (input: AgentAuthInput) => {

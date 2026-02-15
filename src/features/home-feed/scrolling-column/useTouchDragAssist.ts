@@ -30,6 +30,7 @@ export default function useTouchDragAssist({
   isModalOpenRef,
   isWishlistMenuOpenRef,
   syncPauseState,
+  triggerInteractionCooldown,
 }: {
   columnRef: RefObject<HTMLDivElement | null>;
   trackRef: RefObject<HTMLDivElement | null>;
@@ -44,6 +45,7 @@ export default function useTouchDragAssist({
   isModalOpenRef: MutableRefObject<boolean>;
   isWishlistMenuOpenRef: MutableRefObject<boolean>;
   syncPauseState: () => void;
+  triggerInteractionCooldown: () => void;
 }) {
   const isPointerDownRef = useRef(false);
   const pointerIdRef = useRef<number | null>(null);
@@ -193,8 +195,7 @@ export default function useTouchDragAssist({
       ); // Apply a small inertial impulse after releasing the drag.
 
       isDraggingRef.current = false; // Exit dragging mode.
-      isInteractingRef.current = false; // Allow auto-scroll to resume.
-      syncPauseState(); // Recompute pause behavior after interaction ends.
+      triggerInteractionCooldown(); // Hold auto-scroll briefly before resuming.
 
       speedRef.current = targetSpeedRef.current + manualVelocityRef.current; // Seed speed to avoid a post-drag stall.
     },
@@ -202,11 +203,10 @@ export default function useTouchDragAssist({
       baseSpeedRef,
       columnRef,
       isDraggingRef,
-      isInteractingRef,
       manualVelocityRef,
       speedRef,
-      syncPauseState,
       targetSpeedRef,
+      triggerInteractionCooldown,
     ],
   );
 

@@ -33,6 +33,7 @@ export default function WishlistPage() {
   const router = useRouter();
   const { listNames, isSaved, isSavedInList, saveToList } = useWishlist();
   const [activeList, setActiveList] = useState(ALL_LIST_LABEL);
+  const [searchQuery, setSearchQuery] = useState("");
   const [removedItems, setRemovedItems] = useState<RemovedItem[]>([]);
 
   const productLookup = useMemo(
@@ -48,6 +49,7 @@ export default function WishlistPage() {
     [listNames],
   ); // Include the All filter at the top.
 
+  const normalizedSearchQuery = searchQuery.trim().toLowerCase();
   const filteredProducts = useMemo(() => {
     if (activeList === ALL_LIST_LABEL) {
       return ALL_PRODUCTS.filter((product) => isSaved(product.id));
@@ -57,8 +59,31 @@ export default function WishlistPage() {
       isSavedInList(product.id, activeList),
     );
   }, [activeList, isSaved, isSavedInList]);
+  const searchFilteredProducts = useMemo(() => {
+    if (!normalizedSearchQuery) {
+      return filteredProducts; // Keep default list filtering when search is empty.
+    }
+
+    return filteredProducts.filter((product) => {
+      const haystack = [
+        product.name,
+        product.category,
+        product.subCategory,
+        ...(product.tags ?? []),
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
+      return haystack.includes(normalizedSearchQuery); // Match products by basic keyword search.
+    });
+  }, [filteredProducts, normalizedSearchQuery]);
 
   const activeGhosts = useMemo(() => {
+    if (normalizedSearchQuery) {
+      return [] as RemovedItem[]; // Hide undo ghosts while search filtering is active.
+    }
+
     return removedItems.filter((entry) => {
       if (entry.listName !== activeList) {
         return false; // Only show ghosts for the current filter.
@@ -70,10 +95,10 @@ export default function WishlistPage() {
 
       return !isSavedInList(entry.productId, entry.listName); // Keep ghost until re-added.
     });
-  }, [activeList, isSaved, isSavedInList, removedItems]);
+  }, [activeList, isSaved, isSavedInList, normalizedSearchQuery, removedItems]);
 
   const combinedItems = useMemo(() => {
-    const productItems = filteredProducts.map((product) => ({
+    const productItems = searchFilteredProducts.map((product) => ({
       type: "product" as const,
       order: productLookup.get(product.id)?.order ?? 0,
       product,
@@ -85,7 +110,7 @@ export default function WishlistPage() {
     }));
 
     return [...productItems, ...ghostItems].sort((a, b) => a.order - b.order);
-  }, [activeGhosts, filteredProducts, productLookup]);
+  }, [activeGhosts, productLookup, searchFilteredProducts]);
 
   const hasItems = combinedItems.length > 0; // Determine whether to show empty state.
 
@@ -157,6 +182,8 @@ export default function WishlistPage() {
         listNames={displayLists}
         activeList={activeList}
         onListChange={setActiveList}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
       />
 
       {hasItems ? (

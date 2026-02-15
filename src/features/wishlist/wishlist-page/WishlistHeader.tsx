@@ -10,10 +10,14 @@ export default function WishlistHeader({
   listNames,
   activeList,
   onListChange,
+  searchQuery,
+  onSearchChange,
 }: {
   listNames: string[];
   activeList: string;
   onListChange: (nextList: string) => void;
+  searchQuery: string;
+  onSearchChange: (nextSearch: string) => void;
 }) {
   return (
     <header className={styles.wishlistPage__header}>
@@ -30,6 +34,15 @@ export default function WishlistHeader({
         </Link>
 
         <div className={styles.wishlistPage__filters}>
+          <input
+            className={styles.wishlistPage__searchInput}
+            type="search"
+            value={searchQuery}
+            onChange={(event) => onSearchChange(event.target.value)}
+            placeholder="Search wishlist"
+            aria-label="Search wishlist products"
+          />
+
           <select
             className={styles.wishlistPage__filterSelect}
             value={activeList}

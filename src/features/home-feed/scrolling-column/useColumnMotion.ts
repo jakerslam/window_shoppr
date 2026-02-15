@@ -42,6 +42,7 @@ export default function useColumnMotion({
   const isWishlistMenuOpenRef = useRef(false);
   const isInteractingRef = useRef(false);
   const isDraggingRef = useRef(false);
+  const interactionCooldownTimerRef = useRef<number | null>(null);
   const durationRef = useRef(duration);
   const animateRef = useRef<(time: number) => void>(() => undefined);
 
@@ -59,6 +60,23 @@ export default function useColumnMotion({
     isPausedRef.current = shouldPause; // Keep state coherent for resize/metric sync.
     targetSpeedRef.current = shouldPause ? 0 : baseSpeedRef.current; // Stop or resume toward base speed.
   }, []);
+
+  /**
+   * Hold column auto-scroll for a short cooldown after manual interaction.
+   */
+  const triggerInteractionCooldown = useCallback(() => {
+    if (interactionCooldownTimerRef.current !== null) {
+      window.clearTimeout(interactionCooldownTimerRef.current); // Reset cooldown when input continues.
+    }
+
+    isInteractingRef.current = true; // Mark manual interaction as active.
+    syncPauseState(); // Pause column auto-scroll during cooldown.
+    interactionCooldownTimerRef.current = window.setTimeout(() => {
+      isInteractingRef.current = false; // Release interaction hold after cooldown.
+      syncPauseState(); // Resume toward baseline speed when no other pause signals exist.
+      interactionCooldownTimerRef.current = null; // Clear timer handle after firing.
+    }, 1000);
+  }, [syncPauseState]);
 
   const { handleMouseEnter, handleMouseLeave } = useColumnHoverPause({
     isHoveringRef,
@@ -84,8 +102,10 @@ export default function useColumnMotion({
     positionRef,
     baseSpeedRef,
     manualVelocityRef,
+    isInteractingRef,
     isModalOpenRef,
     isWishlistMenuOpenRef,
+    triggerInteractionCooldown,
   }); // Enable wheel-based speed nudging.
 
   const { handlePointerDown, handlePointerMove, endPointerGesture, resetTouchState } =
@@ -103,6 +123,7 @@ export default function useColumnMotion({
       isModalOpenRef,
       isWishlistMenuOpenRef,
       syncPauseState,
+      triggerInteractionCooldown,
     }); // Enable touch drag-to-scroll assist.
 
   useColumnAutoScrollLoop({
@@ -138,6 +159,17 @@ export default function useColumnMotion({
       trackRef.current.style.transform = "translateY(0px)"; // Keep transform in sync with reset position.
     }
   }, [deckSignature, resetTouchState]);
+
+  /**
+   * Clean up pending cooldown timers when this column unmounts.
+   */
+  useEffect(() => {
+    return () => {
+      if (interactionCooldownTimerRef.current !== null) {
+        window.clearTimeout(interactionCooldownTimerRef.current); // Avoid timer leaks across remounts.
+      }
+    };
+  }, []);
 
   return {
     columnRef,

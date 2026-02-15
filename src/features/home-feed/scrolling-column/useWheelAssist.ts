@@ -19,8 +19,10 @@ export default function useWheelAssist({
   positionRef,
   baseSpeedRef,
   manualVelocityRef,
+  isInteractingRef,
   isModalOpenRef,
   isWishlistMenuOpenRef,
+  triggerInteractionCooldown,
 }: {
   columnRef: RefObject<HTMLDivElement | null>;
   trackRef: RefObject<HTMLDivElement | null>;
@@ -28,8 +30,10 @@ export default function useWheelAssist({
   positionRef: MutableRefObject<number>;
   baseSpeedRef: MutableRefObject<number>;
   manualVelocityRef: MutableRefObject<number>;
+  isInteractingRef: MutableRefObject<boolean>;
   isModalOpenRef: MutableRefObject<boolean>;
   isWishlistMenuOpenRef: MutableRefObject<boolean>;
+  triggerInteractionCooldown: () => void;
 }) {
   useEffect(() => {
     const column = columnRef.current;
@@ -51,6 +55,8 @@ export default function useWheelAssist({
       }
 
       event.preventDefault(); // Keep wheel input focused on the feed instead of the page.
+      isInteractingRef.current = true; // Mark manual wheel interaction as active for cooldown pause.
+      triggerInteractionCooldown(); // Delay auto-scroll resume until wheel input settles.
 
       const deltaPixels = toWheelPixels(event, loopHeight); // Convert the delta into pixel units.
 
@@ -79,11 +85,13 @@ export default function useWheelAssist({
   }, [
     baseSpeedRef,
     columnRef,
+    isInteractingRef,
     isModalOpenRef,
     isWishlistMenuOpenRef,
     loopHeightRef,
     manualVelocityRef,
     positionRef,
     trackRef,
+    triggerInteractionCooldown,
   ]);
 }
