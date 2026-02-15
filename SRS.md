@@ -1,8 +1,8 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 55/89 (61.8%)  ████████████░░░░░░░░
-Frontend: 45/64 (70.3%) ██████████████░░░░░░
+Overall: 56/89 (62.9%)  █████████████░░░░░░░
+Frontend: 46/64 (71.9%) ██████████████░░░░░░
 Backend: 9/22 (40.9%)   ████████░░░░░░░░░░░░
 Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░░░
 
@@ -89,12 +89,12 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] R43: Notifications UI (feed + badge + placeholder list)
 - [x] R44: Profile settings section (account + security preferences + theme toggle)
 - [x] R49: Settings toggle for feed speed preference (cozy/quick) with persisted user choice
-- [NEXT] 🔵 R50: Product media overflow navigation (when image/video thumbnails exceed viewport, show horizontal side-scroll with swipe support and arrow controls).
+- [x] R50: Product media overflow navigation (when image/video thumbnails exceed viewport, show horizontal side-scroll with swipe support and arrow controls).
 - [x] R45: Content preferences section (category taste + email frequency)
 - [x] R29.10: Preference capture (optional onboarding quiz + trickle questions; build a local-first taste profile with privacy controls)
 - [x] R29.10.1: Preference question bank config (drive onboarding + trickle prompts from a data file for easy edits)
 - [x] R29.11: List-based recommendations (use a selected list to bias feed)
-- [ ] R47: Product detail share button (copy link + native share fallback)
+- [NEXT] 🔵 R47: Product detail share button (copy link + native share fallback)
 - [ ] R48: Configurable product description collapse (x chars with Read more/Read less)
 - [ ] R29.7: Product view comments section (community notes + moderation hooks later)
 - [x] R17.1: Loading UI (global spinner/skeletons for route + modal transitions)

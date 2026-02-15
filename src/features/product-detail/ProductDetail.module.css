@@ -136,15 +136,79 @@
   display: block;
 }
 
+.productDetail__thumbRail {
+  min-width: 56px;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+}
+
+@media (max-width: 720px) {
+  .productDetail__thumbRail {
+    min-width: 0;
+    width: 100%;
+    grid-template-rows: none;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+}
+
+.productDetail__thumbNav {
+  width: 26px;
+  height: 26px;
+  margin: 0 auto;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-primary-strong);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity 150ms ease;
+}
+
+.productDetail__thumbNav:hover {
+  opacity: 0.8;
+}
+
+.productDetail__thumbNav:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.productDetail__thumbNav--hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
 .productDetail__thumbs {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  max-height: 280px;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+  scroll-snap-type: y proximity;
+  touch-action: pan-y;
 }
 
 @media (max-width: 720px) {
   .productDetail__thumbs {
     flex-direction: row;
+    max-height: none;
+    overflow-y: hidden;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    touch-action: pan-x;
   }
 }
 
@@ -162,6 +226,8 @@
   align-items: center;
   justify-content: center;
   transition: border-color 150ms ease, box-shadow 150ms ease;
+  flex: 0 0 auto;
+  scroll-snap-align: start;
 }
 
 .productDetail__thumb--active {
@@ -406,6 +472,7 @@
 .productDetail__cta:focus-visible,
 .productDetail__descriptionToggle:focus-visible,
 .productDetail__thumb:focus-visible,
+.productDetail__thumbNav:focus-visible,
 .productDetail__save:focus-visible,
 .productDetail__tasteButton:focus-visible,
 .productDetail__tag:focus-visible {

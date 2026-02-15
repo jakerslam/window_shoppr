@@ -4,6 +4,7 @@
 import { useMemo, useState } from "react";
 import WishlistSaveButton from "@/features/wishlist/WishlistSaveButton";
 import { toAssetPath } from "@/shared/lib/catalog/assets";
+import useThumbnailRail from "@/features/product-detail/media-gallery/useThumbnailRail";
 import styles from "@/features/product-detail/ProductDetail.module.css";
 
 /**
@@ -48,8 +49,8 @@ export default function ProductMediaGallery({
   name: string;
 }) {
   const galleryItems = useMemo(() => {
-    const trimmedImages = images.slice(0, 5); // Limit gallery to five sample images.
-    const baseImages = trimmedImages.length > 0 ? trimmedImages : ["/images/product-placeholder.svg"];
+    const baseImages =
+      images.length > 0 ? images : ["/images/product-placeholder.svg"]; // Keep all provided media items for overflow navigation.
     const items: GalleryItem[] = baseImages.map((src) => ({
       type: "image",
       src,
@@ -67,42 +68,86 @@ export default function ProductMediaGallery({
     selectedIndex,
     Math.max(galleryItems.length - 1, 0),
   ); // Keep selected index in bounds.
+  const {
+    thumbsRef,
+    scrollAxis,
+    canScrollBackward,
+    canScrollForward,
+    shouldShowThumbNav,
+    updateThumbScrollState,
+    handleThumbNav,
+    setThumbButtonRef,
+  } = useThumbnailRail({
+    itemCount: galleryItems.length,
+    selectedIndex: safeSelectedIndex,
+  }); // Manage overflow state + arrow/swipe nav for the thumbnail rail.
   const activeItem = galleryItems[safeSelectedIndex]; // Use the selected index for display.
   const embedUrl =
     activeItem?.type === "video" ? getVideoEmbedUrl(activeItem.src) : null; // Use embed if supported.
 
   return (
     <div className={styles.productDetail__gallery}>
-      {/* Thumbnail column for images and optional video. */}
-      <div className={styles.productDetail__thumbs}>
-        {galleryItems.map((item, index) => (
-          <button
-            key={`${item.type}-${item.src}-${index}`}
-            className={`${styles.productDetail__thumb} ${
-              index === safeSelectedIndex
-                ? styles["productDetail__thumb--active"]
-                : ""
-            }`}
-            type="button"
-            onClick={() => setSelectedIndex(index)} // Persist the selected media.
-            onMouseEnter={() => setSelectedIndex(index)} // Select on hover.
-            aria-label={`View ${item.type} ${index + 1}`}
-          >
-            {item.type === "video" ? (
-              <span className={styles.productDetail__thumbLabel}>Video</span>
-            ) : (
-              <img
-                className={styles.productDetail__thumbImage}
-                src={toAssetPath(item.src)}
-                alt={name}
-                loading="lazy"
-                onError={(event) => {
-                  event.currentTarget.src = PLACEHOLDER_IMAGE; // Fall back when remote images fail.
-                }}
-              />
-            )}
-          </button>
-        ))}
+      {/* Thumbnail rail with overflow arrows and touch-scroll support. */}
+      <div className={styles.productDetail__thumbRail}>
+        <button
+          className={`${styles.productDetail__thumbNav} ${
+            !shouldShowThumbNav ? styles["productDetail__thumbNav--hidden"] : ""
+          }`}
+          type="button"
+          onClick={() => handleThumbNav("backward")} // Scroll toward the start of the rail.
+          disabled={!canScrollBackward}
+          aria-label="Scroll thumbnails backward"
+        >
+          {scrollAxis === "x" ? "◀" : "▲"}
+        </button>
+
+        <div
+          ref={thumbsRef}
+          className={styles.productDetail__thumbs}
+          onScroll={updateThumbScrollState} // Sync arrow enabled states while users swipe/scroll.
+        >
+          {galleryItems.map((item, index) => (
+            <button
+              key={`${item.type}-${item.src}-${index}`}
+              ref={(node) => setThumbButtonRef(index, node)}
+              className={`${styles.productDetail__thumb} ${
+                index === safeSelectedIndex
+                  ? styles["productDetail__thumb--active"]
+                  : ""
+              }`}
+              type="button"
+              onClick={() => setSelectedIndex(index)} // Persist the selected media.
+              onMouseEnter={() => setSelectedIndex(index)} // Select on hover.
+              aria-label={`View ${item.type} ${index + 1}`}
+            >
+              {item.type === "video" ? (
+                <span className={styles.productDetail__thumbLabel}>Video</span>
+              ) : (
+                <img
+                  className={styles.productDetail__thumbImage}
+                  src={toAssetPath(item.src)}
+                  alt={name}
+                  loading="lazy"
+                  onError={(event) => {
+                    event.currentTarget.src = PLACEHOLDER_IMAGE; // Fall back when remote images fail.
+                  }}
+                />
+              )}
+            </button>
+          ))}
+        </div>
+
+        <button
+          className={`${styles.productDetail__thumbNav} ${
+            !shouldShowThumbNav ? styles["productDetail__thumbNav--hidden"] : ""
+          }`}
+          type="button"
+          onClick={() => handleThumbNav("forward")} // Scroll toward the end of the rail.
+          disabled={!canScrollForward}
+          aria-label="Scroll thumbnails forward"
+        >
+          {scrollAxis === "x" ? "▶" : "▼"}
+        </button>
       </div>
 
       {/* Main media frame for image or video. */}
