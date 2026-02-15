@@ -49,7 +49,18 @@
 }
 
 .productCard__badgeIcon {
+  width: 10px;
+  height: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   margin-right: 4px;
+  vertical-align: middle;
+}
+
+.productCard__badgeIcon svg {
+  width: 10px;
+  height: 10px;
 }
 
 .productCard__image {
@@ -99,7 +110,7 @@
 .productCard__priceColumn {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 0;
   flex: 1;
   min-width: 0;
 }
@@ -125,31 +136,22 @@
   white-space: nowrap;
 }
 
-.productCard__dealTime {
-  font-size: 10px;
-  color: var(--color-text-muted);
-  display: block;
-  min-height: 12px;
-  line-height: 1.2;
-  white-space: pre;
-}
-
 .productCard__actions {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 1px;
+  gap: 0;
   min-width: 0;
   width: 100%;
   border-top: 1px solid var(--color-border);
-  padding-top: 2px;
+  padding-top: 1px;
 }
 
 .productCard__socialGroup {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 1px;
+  gap: 0;
 }
 
 .productCard__socialCount {
@@ -165,13 +167,13 @@
   background: transparent;
   color: var(--color-save-inactive);
   border-radius: 999px;
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 0;
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1;
   font-weight: 600;
   cursor: pointer;
@@ -224,6 +226,11 @@
   font-size: 16px;
 }
 
+.productCard--compact .productCard__priceSection {
+  align-items: flex-start;
+  text-align: left;
+}
+
 .productCard__wishlistWrap {
   --wishlist-wrapper-z-index: 3;
   --wishlist-menu-right-offset: -16px;
@@ -240,8 +247,8 @@
   background: transparent;
   color: var(--color-primary-strong);
   border-radius: 999px;
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -252,13 +259,13 @@
 }
 
 .productCard__share svg {
-  width: 13px;
-  height: 13px;
+  width: 12px;
+  height: 12px;
 }
 
 .productCard__commentIcon {
-  width: 17px;
-  height: 17px;
+  width: 16px;
+  height: 16px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -266,8 +273,8 @@
 }
 
 .productCard__commentIcon svg {
-  width: 12px;
-  height: 12px;
+  width: 11px;
+  height: 11px;
 }
 
 .productCard__share:hover {
@@ -291,8 +298,8 @@
   }
 
   .productCard__actions {
-    gap: 2px;
-    padding-top: 2px;
+    gap: 1px;
+    padding-top: 1px;
   }
 
   .productCard--compact {
@@ -300,11 +307,6 @@
     padding: 10px;
     padding-bottom: 10px;
     gap: 8px;
-  }
-
-.productCard--compact .productCard__priceSection {
-    align-items: flex-start;
-    text-align: left;
   }
 
   .productCard--compact .productCard__wishlistWrap {
@@ -327,22 +329,22 @@
   }
 
   .productCard__share {
-    width: 22px;
-    height: 22px;
+    width: 21px;
+    height: 21px;
   }
 
   .productCard__share svg {
-    width: 12px;
-    height: 12px;
+    width: 11px;
+    height: 11px;
   }
 
   .productCard__commentIcon {
-    width: 15px;
-    height: 15px;
+    width: 14px;
+    height: 14px;
   }
 
   .productCard__commentIcon svg {
-    width: 11px;
-    height: 11px;
+    width: 10px;
+    height: 10px;
   }
 }

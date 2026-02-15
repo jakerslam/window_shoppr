@@ -12,6 +12,7 @@ type SubmitDealState = {
   subCategory: string;
   salePrice: string;
   listPrice: string;
+  couponCode: string;
   store: string;
   brand: string;
   notes: string;
@@ -27,6 +28,7 @@ const DEFAULT_STATE: SubmitDealState = {
   subCategory: "",
   salePrice: "",
   listPrice: "",
+  couponCode: "",
   store: "",
   brand: "",
   notes: "",
@@ -101,6 +103,7 @@ export default function SubmitDealForm() {
       subCategory: form.subCategory || undefined,
       salePrice: parseNumber(form.salePrice),
       listPrice: parseNumber(form.listPrice),
+      couponCode: form.couponCode || undefined,
       store: form.store || undefined,
       brand: form.brand || undefined,
       notes: form.notes || undefined,
@@ -230,6 +233,19 @@ export default function SubmitDealForm() {
               placeholder="Optional"
             />
           </label>
+
+          <label className={styles.submitDeal__field}>
+            Coupon code
+            <input
+              className={styles.submitDeal__input}
+              type="text"
+              value={form.couponCode}
+              onChange={(event) =>
+                setForm((prev) => ({ ...prev, couponCode: event.target.value }))
+              }
+              placeholder="Optional (e.g. SAVE10)"
+            />
+          </label>
         </div>
 
         <div className={styles.submitDeal__grid}>
@@ -326,6 +342,7 @@ export default function SubmitDealForm() {
           <p><strong>Category:</strong> {form.category || "—"}</p>
           <p><strong>Subcategory:</strong> {form.subCategory || "—"}</p>
           <p><strong>Price:</strong> {form.salePrice || "—"}</p>
+          <p><strong>Coupon:</strong> {form.couponCode || "—"}</p>
         </aside>
       ) : null}
     </section>

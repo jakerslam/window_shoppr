@@ -14,6 +14,7 @@ export type DealSubmissionPayload = {
   subCategory?: string;
   salePrice?: number;
   listPrice?: number;
+  couponCode?: string;
   store?: string;
   brand?: string;
   notes?: string;

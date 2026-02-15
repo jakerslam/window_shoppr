@@ -48,6 +48,7 @@ export const submitDealSubmission = async (input: {
   subCategory?: string;
   salePrice?: number;
   listPrice?: number;
+  couponCode?: string;
   store?: string;
   brand?: string;
   notes?: string;
@@ -94,6 +95,7 @@ export const submitDealSubmission = async (input: {
     subCategory: input.subCategory?.trim() || undefined,
     salePrice: input.salePrice,
     listPrice: input.listPrice,
+    couponCode: input.couponCode?.trim() || undefined,
     store: input.store?.trim() || undefined,
     brand: input.brand?.trim() || undefined,
     notes: input.notes?.trim() || undefined,

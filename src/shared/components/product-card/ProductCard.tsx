@@ -14,6 +14,7 @@ import {
 } from "@/shared/lib/engagement/social-proof";
 import { useProductCommentCount } from "@/shared/lib/engagement/comment-counts";
 import CommentIcon from "@/shared/components/icons/CommentIcon";
+import TimerIcon from "@/shared/components/icons/TimerIcon";
 import ProductCardShareButton from "@/shared/components/product-card/ProductCardShareButton";
 import styles from "@/shared/components/product-card/ProductCard.module.css";
 
@@ -86,7 +87,7 @@ export default function ProductCard({
         {showDealBadge ? (
           <span className={styles.productCard__badge}>
             <span className={styles.productCard__badgeIcon} aria-hidden="true">
-              ⏱
+              <TimerIcon />
             </span>
             <span>{compactDealLabel}</span>
           </span>
@@ -112,9 +113,9 @@ export default function ProductCard({
         ) : null}
       </div>
 
-      {/* Price section with optional strike-through and wishlist stub. */}
+      {/* Price section with optional strike-through and social actions. */}
       <div className={styles.productCard__priceSection}>
-        {/* Price column with optional deal timer. */}
+        {/* Price column with optional strike price. */}
         <div className={styles.productCard__priceColumn}>
           <div className={styles.productCard__priceRow}>
             <span className={styles.productCard__price}>
@@ -126,14 +127,6 @@ export default function ProductCard({
               </span>
             )}
           </div>
-          {!isCompact ? ( // Hide deal timer in compact mode.
-            <span
-              className={styles.productCard__dealTime}
-              aria-hidden={!compactDealLabel}
-            >
-              {compactDealLabel ? `⏱ ${compactDealLabel}` : " "} {/* Reserve space when timer is missing. */}
-            </span>
-          ) : null}
         </div>
 
         <div className={styles.productCard__actions}>
