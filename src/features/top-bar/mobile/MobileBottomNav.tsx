@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { getAvailableCategories } from "@/shared/lib/categories";
 import { getProductCatalog } from "@/shared/lib/products";
+import { trackSearch } from "@/shared/lib/analytics";
 import { useCategoryFilter } from "@/features/category-filter/CategoryFilterProvider";
 import styles from "@/features/top-bar/TopBar.module.css";
 import { HomeIcon, SearchIcon, StarIcon, UserIcon } from "@/features/top-bar/NavIcons";
@@ -95,6 +96,14 @@ export default function MobileBottomNav() {
    * Submit the search and return to the feed if needed.
    */
   const handleSearchSubmit = () => {
+    if (searchQuery.trim()) {
+      trackSearch({
+        query: searchQuery,
+        pathname: normalizedPath,
+        source: "mobile",
+      }); // Record search intent for analytics.
+    }
+
     if (searchQuery.trim() && normalizedPath !== "/") {
       router.push("/"); // Return to the feed when search is submitted.
     }

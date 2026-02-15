@@ -7,6 +7,7 @@ import {
   WISHLIST_LEGACY_STORAGE_KEY,
   WISHLIST_LISTS_STORAGE_KEY,
 } from "@/features/wishlist/wishlist-constants";
+import { trackWishlistEvent } from "@/shared/lib/analytics";
 
 
 /**
@@ -240,6 +241,7 @@ export const useWishlist = () => {
 
       writeWishlistListsToStorage(nextState); // Persist new list.
       broadcastWishlistChange(); // Notify listeners about new list.
+      trackWishlistEvent({ action: "create_list", listName: trimmed }); // Track list creation for analytics.
       return nextState;
     });
 
@@ -251,6 +253,11 @@ export const useWishlist = () => {
 
     setListState((prev) => {
       const currentList = prev.lists[targetList] ?? []; // Load existing ids for list.
+
+      if (currentList.includes(id)) {
+        return prev; // Skip storage writes when already saved in this list.
+      }
+
       const updatedList = normalizeWishlistIds([...currentList, id]); // Add id to list.
       const nextState = {
         order: normalizeListOrder(
@@ -266,6 +273,7 @@ export const useWishlist = () => {
 
       writeWishlistListsToStorage(nextState); // Persist updated lists.
       broadcastWishlistChange(); // Notify listeners about list updates.
+      trackWishlistEvent({ action: "save", productId: id, listName: targetList }); // Track wishlist saves for analytics.
       return nextState;
     });
   }, []);
@@ -275,6 +283,11 @@ export const useWishlist = () => {
 
     setListState((prev) => {
       const currentList = prev.lists[targetList] ?? []; // Load existing ids for list.
+
+      if (!currentList.includes(id)) {
+        return prev; // Skip when the item is not present in the target list.
+      }
+
       const updatedList = currentList.filter((entry) => entry !== id); // Remove id.
       const nextState = {
         order: normalizeListOrder(prev.order),
@@ -286,6 +299,7 @@ export const useWishlist = () => {
 
       writeWishlistListsToStorage(nextState); // Persist updated lists.
       broadcastWishlistChange(); // Notify listeners about list updates.
+      trackWishlistEvent({ action: "remove", productId: id, listName: targetList }); // Track wishlist removals for analytics.
       return nextState;
     });
   }, []);
@@ -317,6 +331,11 @@ export const useWishlist = () => {
 
       writeWishlistListsToStorage(nextState); // Persist updated lists.
       broadcastWishlistChange(); // Notify listeners about list updates.
+      trackWishlistEvent({
+        action: isAlreadySaved ? "remove" : "save",
+        productId: id,
+        listName: isAlreadySaved ? "All" : DEFAULT_WISHLIST_NAME,
+      }); // Track wishlist toggles for analytics.
       return nextState;
     });
   }, []);

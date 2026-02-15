@@ -3,6 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback } from "react";
 import { useCategoryFilter } from "@/features/category-filter/CategoryFilterProvider";
+import { trackSearch } from "@/shared/lib/analytics";
 import TopBarBrand from "@/features/top-bar/TopBarBrand";
 import TopBarMenu from "@/features/top-bar/TopBarMenu";
 import TopBarSearch from "@/features/top-bar/TopBarSearch";
@@ -52,8 +53,16 @@ export default function TopBar() {
    * Route back to the feed when submitting a search from another page.
    */
   const handleSearchSubmit = useCallback(() => {
-    if (pathname !== "/" && searchQuery.trim()) {
-      router.push("/"); // Jump back to the feed when search is submitted.
+    if (searchQuery.trim()) {
+      trackSearch({
+        query: searchQuery,
+        pathname,
+        source: "topbar",
+      }); // Record search intent for analytics.
+
+      if (pathname !== "/") {
+        router.push("/"); // Jump back to the feed when search is submitted.
+      }
     }
   }, [pathname, router, searchQuery]);
 
