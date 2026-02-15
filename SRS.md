@@ -122,6 +122,20 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [ ] R34: Add comprehensive error boundaries + loading states
 - [ ] R35: Add architecture/structure documentation (docs/ARCHITECTURE.md)
 
+## Production Hardening Backlog
+- [ ] R51: CI required checks (lint + typecheck + unit + integration + e2e + build must pass before merge)
+- [ ] R52: Coverage gate in CI (minimum line/branch thresholds with fail-fast enforcement)
+- [ ] R53: PR governance (CODEOWNERS, PR template, branch protection, required review policy)
+- [ ] R54: API contract discipline (OpenAPI spec + contract tests for ingestion/moderation endpoints)
+- [ ] R55: DB migration safety (versioned migrations, rollback scripts, deterministic seeds)
+- [ ] R56: Auth and authorization hardening (real sessions, role-based access, audit logging for privileged actions)
+- [ ] R57: Observability baseline (structured logs, request IDs, tracing, error tracking, uptime checks)
+- [ ] R58: Incident response readiness (SLOs, alert thresholds, runbooks, on-call escalation flow)
+- [ ] R59: Security scanning in CI (dependency vuln scan, secret scan, static security checks)
+- [ ] R60: Performance budget gate (Lighthouse/Web Vitals budgets enforced in CI, with mobile thresholds)
+- [ ] R61: Data governance controls (retention policy, deletion/export flows, consent-linked data handling)
+- [ ] R62: Release strategy hardening (staging environment, release checklist, rollback and smoke-test workflow)
+
 ## Optional Optimizations & Refactors
 - [ ] O1: Extract product sorting/filtering into reusable helpers
 - [ ] O2: Add search weighting and relevance scoring
