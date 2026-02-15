@@ -6,6 +6,7 @@ This skill defines the ingestion and moderation contract for autonomous agents.
 - Ingest products into the catalog with idempotent upserts.
 - Publish/unpublish listings safely.
 - Process user report moderation queue items.
+- Process link submissions (deals/new products) into moderation + draft product pipeline.
 - Keep operations compatible with the current local-first app mode.
 
 ## Runtime Mode (Current)
@@ -80,10 +81,55 @@ This skill defines the ingestion and moderation contract for autonomous agents.
 - `POST /api/agent/products/unpublish`
 - `GET /api/agent/moderation/pending`
 - `POST /api/agent/moderation/resolve`
+- `POST /api/agent/submissions/link`
+- `GET /api/agent/submissions/pending`
+- `POST /api/agent/submissions/resolve`
 
 ### Planned Auth
 - Header: `X-Agent-Key: <token>` (or bearer token once auth service is wired).
 - All writes must be authenticated.
+
+### Account/Auth Wiring Context
+- Frontend account actions now call auth endpoints (API-first, local fallback for static mode):
+  - `POST /auth/login`
+  - `POST /auth/signup`
+  - `POST /auth/social`
+  - `PATCH /auth/account`
+  - `POST /auth/logout`
+- Runtime config key: `NEXT_PUBLIC_AUTH_API_URL`.
+- Production target: remove local auth fallback and require backend auth (`SRS D7`).
+
+## Link Submission Contract (Deals / New Products)
+
+### Submission Input (draft contract)
+```json
+{
+  "url": "https://example.com/product/123",
+  "submitterId": "optional-user-id",
+  "titleHint": "Optional user title",
+  "priceHint": 39.99,
+  "categoryHint": "Tech",
+  "subCategoryHint": "Accessories",
+  "notes": "Optional context from submitter",
+  "source": "user_submission"
+}
+```
+
+### Submission Processing Rules
+- Validate URL format and reject non-http(s) links.
+- Deduplicate by normalized URL hash before creating queue item.
+- Enqueue as `pending` moderation item before product publish.
+- Agent enrichment step should:
+  - fetch/derive retailer, media, and canonical title,
+  - generate SEO description + tags,
+  - map category/subcategory,
+  - create a draft product payload for `products/upsert`.
+- Publish only after moderation outcome is `approved`.
+
+### Submission Status Lifecycle
+- `pending` -> `triaged` -> `approved` or `rejected`
+- Optional `needs_info` for incomplete submissions.
+- Resolution should include `reviewedBy`, `reviewNotes`, `reviewedAt`.
 
 ## Event Hooks
 - `report:submit` (new user report)
@@ -93,6 +139,8 @@ This skill defines the ingestion and moderation contract for autonomous agents.
 - `agent:product:upsert` (agent upsert queued)
 - `agent:product:publish` (publish-state mutation queued)
 - `agent:moderation:resolve` (moderation resolution queued)
+- `submission:link:created` (new link submission queued)
+- `submission:link:resolved` (submission moderation status updated)
 
 ## Local-First Operation Steps (Today)
 1. Read/modify `src/data/products.json` with schema-valid products.

@@ -1,7 +1,7 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 66/89 (74.2%)  ███████████████░░░░░
+Overall: 66/90 (73.3%)  ███████████████░░░░░
 Frontend: 51/64 (79.7%) ███████████████░░░░░
 Backend: 14/22 (63.6%)  █████████████░░░░░░░
 Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░░░
@@ -78,7 +78,7 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 ## Analytics & Revenue
 - [ ] R29.9: Post-click purchase confirmation prompt ("Did you buy this?" + review reminder hook)
 - [ ] R29.8: Social proof counts (display save count on product pages + cards)
-- [ ] R29.5: User-submitted deals (submit link + optional price/info; moderation queue for AI agent/gatekeeper; optional revenue share later)
+- [ ] R29.5: User-submitted deals (submit link + optional price/info; moderation queue for AI agent/gatekeeper; auto-enrich into draft products; optional revenue share later)
 - [ ] R29.4: Native ad cards (occasional sponsored cards in feed, non-disruptive)
 - [x] R23: Click tracking for affiliate links
 - [x] R24: Cookie consent + privacy/affiliate disclosure (accept all + essential only)
@@ -155,6 +155,7 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [ ] D4: Production data source (switch JSON → SQL/API)
 - [ ] D5: Monitoring + error reporting (Sentry or similar)
 - [ ] D6: Restore modal routing (intercepting routes) after moving off GitHub Pages
+- [ ] D7: Launch cleanup - remove local auth fallback account/session store and require backend auth endpoints in production.
 
 ## Quickfixes
 - [x] Q1: Mobile feed card save star pinned to bottom-left corner

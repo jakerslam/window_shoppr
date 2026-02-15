@@ -19,6 +19,15 @@ This guide defines where agent automation should read/write today and where it w
 5. Update `lastSeenAt` and `lastPriceCheckAt` on refresh jobs.
 6. Use stub queue helpers in `src/shared/lib/agent/ingestion.ts` (`queueAgentProductUpsert`, `queueAgentPublishMutation`, `readAgentStubQueues`) until backend endpoints are wired.
 
+## Link Submissions (Deals/New Products)
+- Product/link submission UX is tracked in `SRS R29.5`.
+- Submission flow target:
+  1. User submits link (+ optional price/category/notes).
+  2. Agent intake validates + deduplicates URL.
+  3. Queue item enters moderation (`pending` -> `approved`/`rejected`).
+  4. Approved submissions are enriched into draft product payloads and sent through product upsert.
+- Canonical contract: `docs/agent/SKILL.md` ("Link Submission Contract").
+
 ## Moderation (Today)
 - Queue helpers in `src/shared/lib/engagement/reports.ts`:
   - `buildModerationQueueSnapshot()`
@@ -42,6 +51,19 @@ This guide defines where agent automation should read/write today and where it w
 - `POST /api/agent/products/unpublish`
 - `GET /api/agent/moderation/pending`
 - `POST /api/agent/moderation/resolve`
+- `POST /api/agent/submissions/link`
+- `GET /api/agent/submissions/pending`
+- `POST /api/agent/submissions/resolve`
+
+## Auth Surface (Account Wiring)
+- Frontend account wiring now expects:
+  - `POST /auth/login`
+  - `POST /auth/signup`
+  - `POST /auth/social`
+  - `PATCH /auth/account`
+  - `POST /auth/logout`
+- Config key: `NEXT_PUBLIC_AUTH_API_URL`
+- Local fallback auth mode exists for static hosting and must be removed before production launch (`SRS D7`).
 
 ## Reference Files
 - Agent ingestion stubs: `src/shared/lib/agent/ingestion.ts`
