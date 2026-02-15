@@ -4,10 +4,12 @@ import {
   AGENT_AUTH_INPUT_SCHEMA,
   AGENT_MODERATION_RESOLVE_INPUT_SCHEMA,
   AGENT_PRODUCT_PUBLISH_INPUT_SCHEMA,
+  AGENT_SIGNAL_SUBMISSION_INPUT_SCHEMA,
   AGENT_PRODUCT_UPSERT_INPUT_SCHEMA,
   AgentAuthInput,
   AgentModerationResolveInput,
   AgentProductPublishInput,
+  AgentSignalSubmissionInput,
   AgentProductUpsertInput,
 } from "@/shared/lib/agent/ingestion-schema";
 
@@ -29,7 +31,20 @@ type AgentAcknowledgeResponse = {
 const AGENT_UPSERT_QUEUE_KEY = "window_shoppr_agent_upsert_queue"; // Local stub queue for upsert operations.
 const AGENT_PUBLISH_QUEUE_KEY = "window_shoppr_agent_publish_queue"; // Local stub queue for publish-state operations.
 const AGENT_MODERATION_QUEUE_KEY = "window_shoppr_agent_moderation_queue"; // Local stub queue for moderation resolve operations.
+const AGENT_SIGNAL_QUEUE_KEY = "window_shoppr_agent_signal_queue"; // Local stub queue for competitor/source signals.
 const MAX_QUEUE_SIZE = 500; // Prevent unbounded queue growth in local storage.
+const SIGNAL_REDIRECT_KEYS = [
+  "url",
+  "u",
+  "out",
+  "to",
+  "dest",
+  "destination",
+  "redirect",
+  "redirect_url",
+  "redirectUrl",
+  "r",
+] as const; // Common query keys that hold redirected merchant URLs.
 
 const readQueue = <T>(key: string): T[] => {
   if (typeof window === "undefined") {
@@ -59,6 +74,61 @@ const writeQueue = (key: string, queue: unknown[]) => {
   } catch {
     // Ignore storage failures to keep caller flows non-blocking.
   }
+};
+
+/**
+ * Normalize URLs and reject non-http(s) values.
+ */
+const normalizeHttpUrl = (value: string) => {
+  try {
+    const parsed = new URL(value.trim());
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+      return null;
+    }
+
+    parsed.hash = "";
+    return parsed.toString();
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * Attempt to resolve a merchant URL from common signal redirect params.
+ */
+const resolveMerchantUrlFromSignal = ({
+  signalUrl,
+  merchantUrl,
+}: {
+  signalUrl: string;
+  merchantUrl?: string;
+}) => {
+  const normalizedMerchant = merchantUrl ? normalizeHttpUrl(merchantUrl) : null;
+  if (normalizedMerchant) {
+    return normalizedMerchant; // Prefer explicit merchant URL when provided.
+  }
+
+  const parsedSignal = new URL(signalUrl);
+  for (const key of SIGNAL_REDIRECT_KEYS) {
+    const candidate = parsedSignal.searchParams.get(key);
+    if (!candidate) {
+      continue;
+    }
+
+    const decoded = (() => {
+      try {
+        return decodeURIComponent(candidate);
+      } catch {
+        return candidate;
+      }
+    })();
+    const normalized = normalizeHttpUrl(decoded);
+    if (normalized) {
+      return normalized;
+    }
+  }
+
+  return null;
 };
 
 export const validateAgentAuth = (input: AgentAuthInput) => {
@@ -195,6 +265,82 @@ export const queueAgentModerationResolution = ({
   };
 };
 
+/**
+ * Queue a competitor/source signal for merchant verification and no-copy enrichment.
+ */
+export const queueAgentSignalSubmission = ({
+  auth,
+  input,
+}: {
+  auth: AgentAuthInput;
+  input: AgentSignalSubmissionInput;
+}): AgentAcknowledgeResponse => {
+  validateAgentAuth(auth);
+  const parsed = AGENT_SIGNAL_SUBMISSION_INPUT_SCHEMA.parse(input);
+  const signalUrl = normalizeHttpUrl(parsed.signalUrl);
+
+  if (!signalUrl) {
+    throw new z.ZodError([
+      {
+        code: "custom",
+        message: "Signal URL must use http or https.",
+        path: ["signalUrl"],
+      },
+    ]);
+  }
+
+  const merchantUrl = resolveMerchantUrlFromSignal({
+    signalUrl,
+    merchantUrl: parsed.merchantUrl,
+  });
+
+  if (!merchantUrl) {
+    throw new z.ZodError([
+      {
+        code: "custom",
+        message: "Merchant URL is required or must be extractable from the signal URL.",
+        path: ["merchantUrl"],
+      },
+    ]);
+  }
+
+  const receivedAt = new Date().toISOString();
+  const id = `asg_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+  const idempotencyKey = `signal:${parsed.source}:${merchantUrl}`;
+  const record: AgentQueueRecord<
+    "signal_submission",
+    AgentSignalSubmissionInput & {
+      signalUrl: string;
+      merchantUrl: string;
+      complianceMode: "signal_only_no_copy";
+    }
+  > = {
+    id,
+    action: "signal_submission",
+    payload: {
+      ...parsed,
+      signalUrl,
+      merchantUrl,
+      complianceMode: "signal_only_no_copy",
+    },
+    idempotencyKey,
+    receivedAt,
+  };
+  const queue = readQueue<typeof record>(AGENT_SIGNAL_QUEUE_KEY);
+  writeQueue(AGENT_SIGNAL_QUEUE_KEY, [...queue, record]);
+
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent("agent:signal:enqueue", { detail: record }));
+  }
+
+  return {
+    ok: true,
+    id,
+    idempotencyKey,
+    acceptedAt: receivedAt,
+  };
+};
+
 export const readAgentStubQueues = () => ({
   upserts: readQueue<AgentQueueRecord<"product_upsert", AgentProductUpsertInput>>(
     AGENT_UPSERT_QUEUE_KEY,
@@ -205,4 +351,7 @@ export const readAgentStubQueues = () => ({
   moderationResolutions: readQueue<
     AgentQueueRecord<"moderation_resolve", AgentModerationResolveInput>
   >(AGENT_MODERATION_QUEUE_KEY),
+  signalSubmissions: readQueue<
+    AgentQueueRecord<"signal_submission", AgentSignalSubmissionInput>
+  >(AGENT_SIGNAL_QUEUE_KEY),
 });

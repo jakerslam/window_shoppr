@@ -1,6 +1,14 @@
 import { z } from "zod";
 import { ProductSchema } from "@/shared/lib/catalog/schema";
 
+const HTTP_URL_SCHEMA = z
+  .string()
+  .trim()
+  .url()
+  .refine((value) => value.startsWith("http://") || value.startsWith("https://"), {
+    message: "URL must use http or https.",
+  });
+
 /**
  * Shared publish state enum for agent ingestion operations.
  */
@@ -45,6 +53,20 @@ export const AGENT_MODERATION_RESOLVE_INPUT_SCHEMA = z.object({
   reviewNotes: z.string().trim().min(1).optional(),
 });
 
+/**
+ * Competitor/source signal payload contract for non-copy deal discovery.
+ */
+export const AGENT_SIGNAL_SUBMISSION_INPUT_SCHEMA = z.object({
+  source: z.enum(["slickdeals_rss", "manual_competitor_signal", "other_signal"]),
+  signalUrl: HTTP_URL_SCHEMA,
+  merchantUrl: HTTP_URL_SCHEMA.optional(),
+  titleHint: z.string().trim().min(1).optional(),
+  categoryHint: z.string().trim().min(1).optional(),
+  subCategoryHint: z.string().trim().min(1).optional(),
+  notes: z.string().trim().min(1).optional(),
+  discoveredAt: z.string().trim().min(1).optional(),
+});
+
 export type AgentAuthInput = z.infer<typeof AGENT_AUTH_INPUT_SCHEMA>;
 export type AgentProductUpsertInput = z.infer<
   typeof AGENT_PRODUCT_UPSERT_INPUT_SCHEMA
@@ -54,4 +76,7 @@ export type AgentProductPublishInput = z.infer<
 >;
 export type AgentModerationResolveInput = z.infer<
   typeof AGENT_MODERATION_RESOLVE_INPUT_SCHEMA
+>;
+export type AgentSignalSubmissionInput = z.infer<
+  typeof AGENT_SIGNAL_SUBMISSION_INPUT_SCHEMA
 >;

@@ -141,6 +141,11 @@ export default function TopBarActions() {
 
   return (
     <div className={styles.topBar__actions}>
+      {/* Desktop-only submit-deal shortcut. */}
+      <Link className={styles.topBar__actionButton} href="/submit-deal">
+        Submit Deal
+      </Link>
+
       {/* Desktop-only wishlist shortcut. */}
       <Link className={styles.topBar__actionButton} href="/wishlist">
         Wishlist

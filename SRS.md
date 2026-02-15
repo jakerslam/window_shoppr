@@ -40,6 +40,7 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] R6.1: In-feed expansion overlay (desktop) with mobile direct navigation
 - [x] R6: Product detail page template (back arrow, images, price, rating, description with "More")
 - [x] R7: Deal-specific UI (timer, deal badge, crossed-out price)
+- [NEXT] 🔵 R7.1: Expired-deal guard (automatically hide crossed-out/original price and countdown when `dealEndsAt` is in the past)
 - [x] R8: Category pages and routing
 - [x] R9: Email capture popup UI (delayed) with backend stubs
 - [x] R10: SEO baseline (metadata, Open Graph, schema.org, sitemap, robots)
@@ -68,6 +69,7 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 ## Backend & Data
 - [x] R29.12: User report inputs + moderation queue stub (agent-reviewed)
 - [x] R29.13: Agent API documentation (skill file for ingestion/moderation)
+- [x] R29.16: Competitor signal intake stub (RSS/manual signal -> merchant URL verification -> no-copy compliance queue for agent enrichment and downstream affiliate-link minting)
 - [x] R29.6: Guest wishlist persistence + future account sync (local-first saves; later sync across devices)
 - [x] R29.1: Product source metadata + idempotency (source, externalId, lastSeenAt, lastPriceCheckAt)
 - [x] R29: Agent ingestion API stub (authenticated upsert endpoint + schema validation + draft/publish state)
@@ -78,7 +80,7 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 ## Analytics & Revenue
 - [x] R29.9: Post-click purchase confirmation prompt ("Did you buy this?" + review reminder hook)
 - [x] R29.8: Social proof counts (display save count on product pages + cards)
-- [NEXT] 🔵 R29.5: User-submitted deals (submit link + optional price/info; moderation queue for AI agent/gatekeeper; auto-enrich into draft products; optional revenue share later)
+- [x] R29.5: User-submitted deals (submit link + optional price/info; moderation queue for AI agent/gatekeeper; auto-enrich into draft products; optional revenue share later)
 - [ ] R29.14: Affiliate-link minting pipeline for submitted products (extract/normalize product URL, attempt first-party affiliate link generation automatically or via agent queue, validate compliance, then auto-replace listing link with audit trail + rollback).
 - [ ] R29.15: Monetization-aware feed ranking boost (prefer products with verified first-party affiliate links, with capped weight so relevance/quality signals still dominate).
 - [ ] R29.4: Native ad cards (occasional sponsored cards in feed, non-disruptive)

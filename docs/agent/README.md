@@ -17,7 +17,13 @@ This guide defines where agent automation should read/write today and where it w
 3. Validate against `ProductSchema` in `src/shared/lib/catalog/schema.ts`.
 4. Keep `id`, `slug`, `source`, and `externalId` stable.
 5. Update `lastSeenAt` and `lastPriceCheckAt` on refresh jobs.
-6. Use stub queue helpers in `src/shared/lib/agent/ingestion.ts` (`queueAgentProductUpsert`, `queueAgentPublishMutation`, `readAgentStubQueues`) until backend endpoints are wired.
+6. Use stub queue helpers in `src/shared/lib/agent/ingestion.ts` (`queueAgentProductUpsert`, `queueAgentPublishMutation`, `queueAgentSignalSubmission`, `readAgentStubQueues`) until backend endpoints are wired.
+
+## Competitor Signal Intake (Today)
+- Use competitor/community feeds (for example RSS) as discovery signals only.
+- Do not copy third-party text/media into listings.
+- Resolve merchant URL from explicit value or signal redirect parameters, then queue signal via `queueAgentSignalSubmission`.
+- Event hook: `agent:signal:enqueue`.
 
 ## Link Submissions (Deals/New Products)
 - Product/link submission UX is tracked in `SRS R29.5`.

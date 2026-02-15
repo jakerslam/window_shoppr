@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback } from "react";
 import { useCategoryFilter } from "@/features/category-filter/CategoryFilterProvider";
+import { PlusIcon } from "@/features/top-bar/NavIcons";
 import { trackSearch } from "@/shared/lib/engagement/analytics";
 import TopBarBrand from "@/features/top-bar/TopBarBrand";
 import TopBarMenu from "@/features/top-bar/TopBarMenu";
@@ -70,6 +72,15 @@ export default function TopBar() {
 
   return (
     <header className={styles.topBar}>
+      {/* Mobile quick action for deal submissions. */}
+      <Link
+        className={`${styles.topBar__iconButton} ${styles.topBar__mobileSubmit}`}
+        href="/submit-deal"
+        aria-label="Submit a deal"
+      >
+        <PlusIcon className={styles.topBar__iconGraphic} />
+      </Link>
+
       {/* Brand + categories cluster. */}
       <div className={styles.topBar__left}>
         <TopBarBrand

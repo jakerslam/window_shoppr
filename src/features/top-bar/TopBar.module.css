@@ -24,6 +24,10 @@
   gap: 12px;
 }
 
+.topBar__mobileSubmit {
+  display: none;
+}
+
 .topBar__logo {
   font-size: 18px;
   font-weight: 700;
@@ -845,4 +849,18 @@
 :global(:root[data-theme="dark"]) .topBar__subMenu,
 :global(:root[data-theme="dark"]) .topBar__iconButton {
   border-color: rgba(202, 169, 107, 0.34);
+}
+
+.topBar__iconButton.topBar__mobileSubmit {
+  display: none;
+}
+
+@media (max-width: 820px) {
+  .topBar__iconButton.topBar__mobileSubmit {
+    display: inline-flex;
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: start;
+    align-self: center;
+  }
 }

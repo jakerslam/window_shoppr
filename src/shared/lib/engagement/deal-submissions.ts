@@ -1,0 +1,151 @@
+"use client";
+
+import { requestDataApi } from "@/shared/lib/platform/data-api";
+import {
+  DEAL_SUBMISSION_CREATED_EVENT,
+  DealSubmissionPayload,
+  DealSubmissionQueueItem,
+  getPendingDealSubmissionQueue,
+  writeDealSubmissionRecord,
+} from "@/shared/lib/engagement/deal-submissions-storage";
+
+/**
+ * Normalize URL inputs and reject unsafe/non-http URLs.
+ */
+const normalizeSubmissionUrl = (value: string) => {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  try {
+    const parsed = new URL(trimmed);
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+      return null;
+    }
+
+    parsed.hash = "";
+    return parsed.toString(); // Remove fragment noise for dedupe.
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * Build a stable queue id for local-first moderation.
+ */
+const createDealSubmissionId = () =>
+  `sub_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+
+/**
+ * Submit a new deal link to SQL API and local moderation queue.
+ */
+export const submitDealSubmission = async (input: {
+  url: string;
+  title: string;
+  category: string;
+  subCategory?: string;
+  salePrice?: number;
+  listPrice?: number;
+  store?: string;
+  brand?: string;
+  notes?: string;
+  submitterEmail?: string;
+  agreeIndependent: boolean;
+  agreeAccuracy: boolean;
+}) => {
+  const normalizedUrl = normalizeSubmissionUrl(input.url);
+  if (!normalizedUrl) {
+    return { ok: false, message: "Please enter a valid product URL." } as const;
+  }
+
+  if (!input.title.trim()) {
+    return { ok: false, message: "Please add a deal title." } as const;
+  }
+
+  if (!input.category.trim()) {
+    return { ok: false, message: "Please choose a category." } as const;
+  }
+
+  if (!input.agreeIndependent || !input.agreeAccuracy) {
+    return {
+      ok: false,
+      message: "Please confirm both submission checkboxes.",
+    } as const;
+  }
+
+  if (
+    typeof input.salePrice === "number" &&
+    typeof input.listPrice === "number" &&
+    input.listPrice < input.salePrice
+  ) {
+    return {
+      ok: false,
+      message: "List price must be greater than or equal to sale price.",
+    } as const;
+  }
+
+  const submittedAt = new Date().toISOString();
+  const submission: DealSubmissionPayload = {
+    url: normalizedUrl,
+    title: input.title.trim(),
+    category: input.category.trim(),
+    subCategory: input.subCategory?.trim() || undefined,
+    salePrice: input.salePrice,
+    listPrice: input.listPrice,
+    store: input.store?.trim() || undefined,
+    brand: input.brand?.trim() || undefined,
+    notes: input.notes?.trim() || undefined,
+    submitterEmail: input.submitterEmail?.trim().toLowerCase() || undefined,
+    agreeIndependent: true,
+    agreeAccuracy: true,
+    submittedAt,
+    source: "user_submission",
+  };
+  const queueItem: DealSubmissionQueueItem = {
+    id: createDealSubmissionId(),
+    status: "pending",
+    createdAt: submittedAt,
+    updatedAt: submittedAt,
+    source: "user_submission",
+    submission,
+  };
+
+  writeDealSubmissionRecord({ submission, queueItem }); // Persist local-first history and moderation queue.
+
+  const response = await requestDataApi<{ id?: string }>({
+    path: "/data/submissions/link",
+    method: "POST",
+    body: {
+      queueItem,
+    },
+  }); // Attempt SQL/API persistence for server-side moderation workflows.
+
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(
+      new CustomEvent(DEAL_SUBMISSION_CREATED_EVENT, { detail: queueItem }),
+    );
+    window.dispatchEvent(
+      new CustomEvent("moderation:queue:enqueue", { detail: queueItem }),
+    ); // Reuse moderation enqueue signal for agent listeners.
+  }
+
+  if (!response || !response.ok) {
+    return { ok: true, mode: "queued_local", id: queueItem.id } as const;
+  }
+
+  return {
+    ok: true,
+    mode: "sql",
+    id: response.data.id ?? queueItem.id,
+  } as const;
+};
+
+/**
+ * Build a pending submissions snapshot for future agent polling endpoints.
+ */
+export const buildDealSubmissionQueueSnapshot = () => ({
+  generatedAt: new Date().toISOString(),
+  pendingCount: getPendingDealSubmissionQueue().length,
+  items: getPendingDealSubmissionQueue(),
+});

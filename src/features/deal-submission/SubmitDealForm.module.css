@@ -1,0 +1,167 @@
+.submitDeal {
+  width: min(900px, 100%);
+  margin: 0 auto;
+  padding: 22px;
+  border: 1px solid var(--color-border);
+  border-radius: 22px;
+  background: var(--color-surface);
+  display: grid;
+  gap: 16px;
+}
+
+.submitDeal__header {
+  display: grid;
+  gap: 6px;
+}
+
+.submitDeal__title {
+  color: var(--color-primary-strong);
+  font-size: clamp(1.4rem, 2.2vw, 1.8rem);
+  line-height: 1.15;
+}
+
+.submitDeal__subtitle {
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.submitDeal__form {
+  display: grid;
+  gap: 12px;
+}
+
+.submitDeal__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.submitDeal__field {
+  display: grid;
+  gap: 6px;
+  color: var(--color-primary-strong);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.submitDeal__input,
+.submitDeal__textarea {
+  width: 100%;
+  min-height: 40px;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-muted);
+  color: var(--color-primary-strong);
+  padding: 10px 12px;
+  font: inherit;
+}
+
+.submitDeal__textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.submitDeal__input:focus-visible,
+.submitDeal__textarea:focus-visible,
+.submitDeal__checkRow input:focus-visible,
+.submitDeal__secondary:focus-visible,
+.submitDeal__primary:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.submitDeal__checkRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  line-height: 1.35;
+}
+
+.submitDeal__checkRow input {
+  margin-top: 3px;
+}
+
+.submitDeal__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.submitDeal__secondary,
+.submitDeal__primary {
+  min-height: 38px;
+  border-radius: 999px;
+  padding: 0 16px;
+  border: 1px solid var(--color-border);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: opacity 150ms ease;
+}
+
+.submitDeal__secondary {
+  background: var(--color-surface-muted);
+  color: var(--color-primary-strong);
+}
+
+.submitDeal__primary {
+  background: var(--color-primary-strong);
+  border-color: var(--color-primary-strong);
+  color: var(--color-text-inverse);
+}
+
+.submitDeal__primary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.submitDeal__secondary:hover,
+.submitDeal__primary:hover {
+  opacity: 0.78;
+}
+
+.submitDeal__status {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.submitDeal__preview {
+  display: grid;
+  gap: 6px;
+  border: 1px dashed var(--color-border);
+  border-radius: 16px;
+  padding: 14px;
+  color: var(--color-text-muted);
+  background: var(--color-surface-muted);
+}
+
+.submitDeal__previewTitle {
+  color: var(--color-primary-strong);
+  font-size: 1rem;
+  margin: 0;
+}
+
+@media (max-width: 820px) {
+  .submitDeal {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .submitDeal__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .submitDeal__actions {
+    justify-content: stretch;
+  }
+
+  .submitDeal__secondary,
+  .submitDeal__primary {
+    flex: 1;
+  }
+}

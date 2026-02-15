@@ -84,6 +84,7 @@ This skill defines the ingestion and moderation contract for autonomous agents.
 - `POST /api/agent/submissions/link`
 - `GET /api/agent/submissions/pending`
 - `POST /api/agent/submissions/resolve`
+- `POST /api/agent/signals/submit`
 
 ### Planned Auth
 - Header: `X-Agent-Key: <token>` (or bearer token once auth service is wired).
@@ -131,6 +132,31 @@ This skill defines the ingestion and moderation contract for autonomous agents.
 - Optional `needs_info` for incomplete submissions.
 - Resolution should include `reviewedBy`, `reviewNotes`, `reviewedAt`.
 
+## Competitor Signal Intake Contract (RSS / Discovery Only)
+
+Purpose: allow agentic piggyback discovery while staying compliant by avoiding direct content copying.
+
+### Signal Input (draft contract)
+```json
+{
+  "source": "slickdeals_rss",
+  "signalUrl": "https://slickdeals.net/f/...",
+  "merchantUrl": "https://merchant.com/product/123",
+  "titleHint": "Optional source hint",
+  "categoryHint": "Home & Kitchen",
+  "subCategoryHint": "Bedding",
+  "notes": "Optional analyst note",
+  "discoveredAt": "2026-02-15T12:30:00Z"
+}
+```
+
+### Signal Processing Rules
+- Treat source feed/forum content as a *signal only*; do not copy post text/media verbatim.
+- Resolve merchant URL from explicit `merchantUrl` or extract from `signalUrl` redirect params.
+- Require merchant URL before creating product/draft work.
+- Queue result with `complianceMode = signal_only_no_copy`.
+- Downstream enrichment must pull facts from merchant/source-of-truth pages and generate original copy.
+
 ## Event Hooks
 - `report:submit` (new user report)
 - `moderation:queue:enqueue` (new moderation item)
@@ -141,6 +167,7 @@ This skill defines the ingestion and moderation contract for autonomous agents.
 - `agent:product:upsert` (agent upsert queued)
 - `agent:product:publish` (publish-state mutation queued)
 - `agent:moderation:resolve` (moderation resolution queued)
+- `agent:signal:enqueue` (competitor/RSS signal queued for merchant verification)
 - `submission:link:created` (new link submission queued)
 - `submission:link:resolved` (submission moderation status updated)
 

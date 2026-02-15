@@ -114,3 +114,25 @@ export function BellIcon(props: NavIconProps) {
     </svg>
   );
 }
+
+/**
+ * Plus icon for quick actions like submit-deal.
+ */
+export function PlusIcon(props: NavIconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.9"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+      {...props}
+    >
+      <path d="M12 5.5V18.5" />
+      <path d="M5.5 12H18.5" />
+    </svg>
+  );
+}
