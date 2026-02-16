@@ -2,27 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Product } from "@/shared/lib/catalog/types";
-
-const DEFAULT_COLUMN_COUNT = 5; // Keep this aligned with the home feed desktop column count.
-
-/**
- * Resolve the visible column count from the current viewport width.
- */
-const getVisibleColumnCount = (viewportWidth: number) => {
-  if (viewportWidth <= 820) {
-    return 2; // Mobile layout shows two columns.
-  }
-
-  if (viewportWidth <= 1024) {
-    return 3; // Tablet layout shows three columns.
-  }
-
-  if (viewportWidth <= 1200) {
-    return 4; // Small desktop layout shows four columns.
-  }
-
-  return DEFAULT_COLUMN_COUNT; // Full desktop layout.
-};
+import { getFeedColumnCount } from "@/features/home-feed/column-layout";
 
 /**
  * Finite-feed state for end-of-deck messaging and replay flow.
@@ -52,7 +32,7 @@ export default function useFiniteFeedState({ columnDecks }: { columnDecks: Produ
     [columnDecks],
   ); // Reset completion tracking when deck content changes.
   const visibleColumnCount = useMemo(
-    () => getVisibleColumnCount(viewportWidth),
+    () => getFeedColumnCount(viewportWidth),
     [viewportWidth],
   );
   const activeColumnIndexes = useMemo(

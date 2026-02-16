@@ -10,6 +10,7 @@ import HomeFeedEndDeck from "@/features/home-feed/HomeFeedEndDeck";
 import HomeFeedHeader from "@/features/home-feed/HomeFeedHeader";
 import { SortOption } from "@/features/home-feed/SortDropdown";
 import ScrollingColumn from "@/features/home-feed/ScrollingColumn";
+import { getFeedColumnCount } from "@/features/home-feed/column-layout";
 import { buildCardDecks } from "@/features/home-feed/deck-utils";
 import useHomeFeedPreferences from "@/features/home-feed/useHomeFeedPreferences";
 import useFilteredSortedProducts from "@/features/home-feed/useFilteredSortedProducts";
@@ -39,6 +40,7 @@ export default function HomeFeed({
   subtitleLabel?: string;
 }) {
   const router = useRouter();
+  const [viewportWidth, setViewportWidth] = useState(1280); // Keep a stable SSR width and update after mount.
   const [sortOption, setSortOption] = useState<SortOption>("newest");
   const [speedMode, setSpeedMode] = useState<"cozy" | "quick">(() => {
     if (typeof window === "undefined") {
@@ -71,6 +73,26 @@ export default function HomeFeed({
 
     return () => {
       delete document.body.dataset.homeFeedLock; // Restore default scrolling on route change.
+    };
+  }, []);
+
+  /**
+   * Sync viewport width so feed columns match the active breakpoint on mobile and desktop.
+   */
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return undefined; // Skip browser listeners during SSR.
+    }
+
+    const syncViewportWidth = () => {
+      setViewportWidth(window.innerWidth); // Keep responsive column count in sync with current viewport.
+    };
+
+    syncViewportWidth(); // Capture current width once after mount.
+    window.addEventListener("resize", syncViewportWidth);
+
+    return () => {
+      window.removeEventListener("resize", syncViewportWidth);
     };
   }, []);
 
@@ -108,20 +130,19 @@ export default function HomeFeed({
 
   const resultsLabel = `Browse ${sortedProducts.length} ${subtitleLabel}`;
 
-  const columnCount = 5;
+  const columnCount = useMemo(
+    () => getFeedColumnCount(viewportWidth),
+    [viewportWidth],
+  );
   const durationScale =
     speedMode === "quick" ? speedPreferences.quickScale : speedPreferences.cozyScale;
   const columnDurations = useMemo(
     () => BASE_COLUMN_DURATIONS.map((value) => value * durationScale),
     [durationScale],
   );
-  const minimumPerColumn = useMemo(
-    () => Math.min(7, Math.max(4, Math.ceil(rankedProducts.length / columnCount))),
-    [rankedProducts.length, columnCount],
-  );
   const columnDecks = useMemo(
-    () => buildCardDecks(rankedProducts, columnCount, minimumPerColumn),
-    [rankedProducts, minimumPerColumn],
+    () => buildCardDecks(rankedProducts, columnCount),
+    [rankedProducts, columnCount],
   );
   const {
     isDeckEnded,

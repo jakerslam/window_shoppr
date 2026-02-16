@@ -6,7 +6,6 @@ import { Product } from "@/shared/lib/catalog/types";
 export const buildCardDecks = (
   products: Product[],
   columnCount: number,
-  minimumPerColumn: number,
 ) => {
   const decks: Product[][] = Array.from({ length: columnCount }, () => []);
 
@@ -14,11 +13,8 @@ export const buildCardDecks = (
     return decks; // Keep empty decks when no results are available.
   }
 
-  const targetSize = Math.max(minimumPerColumn * columnCount, products.length); // Keep compatibility with caller sizing while preventing duplicate injection.
-  const boundedPool = products.slice(0, targetSize); // Use only real products so finite feeds actually end.
-
-  boundedPool.forEach((product, index) => {
-    decks[index % columnCount].push(product); // Distribute unique cards across columns for balanced finite lists.
+  products.forEach((product, index) => {
+    decks[index % columnCount].push(product); // Distribute all cards across active columns; first columns receive any 1-card remainder.
   });
 
   return decks;
