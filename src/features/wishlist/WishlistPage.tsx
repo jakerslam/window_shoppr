@@ -37,11 +37,18 @@ type RemovedItem = {
  */
 export default function WishlistPage() {
   const router = useRouter();
-  const { listNames, isSaved, isSavedInList, saveToList, deleteList } =
-    useWishlist();
+  const {
+    listNames,
+    listSummaries,
+    isSaved,
+    isSavedInList,
+    saveToList,
+    deleteList,
+  } = useWishlist();
   const [activeList, setActiveList] = useState(ALL_LIST_LABEL);
   const [searchQuery, setSearchQuery] = useState(() => readWishlistSearchQuery());
   const [removedItems, setRemovedItems] = useState<RemovedItem[]>([]);
+  const [isListManagerOpen, setIsListManagerOpen] = useState(false);
 
   const productLookup = useMemo(
     () =>
@@ -207,29 +214,31 @@ export default function WishlistPage() {
   );
 
   /**
-   * Delete the currently selected custom list after confirmation.
+   * Delete a selected custom list from the manager modal.
    */
-  const handleDeleteActiveList = useCallback(() => {
-    if (activeList === ALL_LIST_LABEL || activeList === DEFAULT_WISHLIST_NAME) {
-      return; // Allow deletion only for custom lists.
-    }
+  const handleDeleteListFromManager = useCallback(
+    (listName: string) => {
+      if (listName === DEFAULT_WISHLIST_NAME) {
+        return; // Protect default list from deletion.
+      }
 
-    const shouldDelete = window.confirm(
-      `Delete "${activeList}"? Items will remain in other lists.`,
-    );
-    if (!shouldDelete) {
-      return; // Keep list when deletion is canceled.
-    }
+      const shouldDelete = window.confirm(
+        `Delete "${listName}"? Items only in this list will be unsaved.`,
+      );
+      if (!shouldDelete) {
+        return; // Keep list when deletion is canceled.
+      }
 
-    deleteList(activeList); // Remove list and related memberships.
-    setRemovedItems((prev) =>
-      prev.filter((entry) => entry.listName !== activeList),
-    ); // Drop stale ghost items linked to deleted list.
-    setActiveList(ALL_LIST_LABEL); // Return to all-list filter after deletion.
-  }, [activeList, deleteList]);
-
-  const canDeleteActiveList =
-    activeList !== ALL_LIST_LABEL && activeList !== DEFAULT_WISHLIST_NAME; // Restrict deletion to custom lists only.
+      deleteList(listName); // Remove list and related memberships.
+      setRemovedItems((prev) =>
+        prev.filter((entry) => entry.listName !== listName),
+      ); // Drop stale ghost entries linked to deleted list.
+      if (activeList === listName) {
+        setActiveList(ALL_LIST_LABEL); // Return to all-list view if active list was deleted.
+      }
+    },
+    [activeList, deleteList],
+  );
 
   return (
     <section className={styles.wishlistPage}>
@@ -239,8 +248,7 @@ export default function WishlistPage() {
         onListChange={setActiveList}
         searchQuery={searchQuery}
         onSearchChange={writeWishlistSearchQuery}
-        canDeleteActiveList={canDeleteActiveList}
-        onDeleteActiveList={handleDeleteActiveList}
+        onManageLists={() => setIsListManagerOpen(true)}
       />
 
       {hasItems ? (
@@ -260,6 +268,73 @@ export default function WishlistPage() {
           onCtaClick={isAllList ? undefined : () => setActiveList(ALL_LIST_LABEL)}
         />
       )}
+
+      {/* Wishlist list manager modal for view/delete actions from page context. */}
+      {isListManagerOpen ? (
+        <div
+          className={styles.wishlistPage__managerBackdrop}
+          role="presentation"
+          onClick={() => setIsListManagerOpen(false)} // Close on backdrop click.
+        >
+          <section
+            className={styles.wishlistPage__manager}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="wishlist-page-manager-title"
+            onClick={(event) => event.stopPropagation()} // Keep clicks inside modal.
+          >
+            <header className={styles.wishlistPage__managerHeader}>
+              <h2
+                id="wishlist-page-manager-title"
+                className={styles.wishlistPage__managerTitle}
+              >
+                Manage lists
+              </h2>
+              <button
+                className={styles.wishlistPage__managerClose}
+                type="button"
+                onClick={() => setIsListManagerOpen(false)} // Close manager modal.
+                aria-label="Close list manager"
+              >
+                ✕
+              </button>
+            </header>
+
+            <div className={styles.wishlistPage__managerList}>
+              {listSummaries.map((list) => (
+                <div key={list.name} className={styles.wishlistPage__managerItem}>
+                  <div className={styles.wishlistPage__managerMeta}>
+                    <span className={styles.wishlistPage__managerName}>{list.name}</span>
+                    <span className={styles.wishlistPage__managerCount}>
+                      {list.count} item{list.count === 1 ? "" : "s"}
+                    </span>
+                  </div>
+
+                  {list.isDefault ? (
+                    <span className={styles.wishlistPage__managerTag}>Default</span>
+                  ) : (
+                    <button
+                      className={styles.wishlistPage__managerDelete}
+                      type="button"
+                      onClick={() => handleDeleteListFromManager(list.name)} // Delete selected custom list.
+                    >
+                      Delete
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <button
+              className={styles.wishlistPage__managerDone}
+              type="button"
+              onClick={() => setIsListManagerOpen(false)} // Close manager modal.
+            >
+              Done
+            </button>
+          </section>
+        </div>
+      ) : null}
     </section>
   );
 }

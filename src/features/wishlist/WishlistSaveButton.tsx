@@ -15,6 +15,7 @@ export default function WishlistSaveButton({
   onListRemoval,
   wrapperClassName,
   openMenuOnMobileTap = false,
+  openMenuOnDesktopHold = false,
   enableListMenu = true,
 }: {
   productId: string;
@@ -24,6 +25,7 @@ export default function WishlistSaveButton({
   onListRemoval?: (productId: string, listName: string) => void;
   wrapperClassName?: string;
   openMenuOnMobileTap?: boolean;
+  openMenuOnDesktopHold?: boolean;
   enableListMenu?: boolean;
 }) {
   const {
@@ -41,6 +43,8 @@ export default function WishlistSaveButton({
     closeMenu,
     handleClick,
     handleDoubleClick,
+    handlePointerDown,
+    cancelPointerHold,
     handleSelectList,
     handleCreateList,
   } = useWishlistMenu({
@@ -48,6 +52,7 @@ export default function WishlistSaveButton({
     activeListName,
     onListRemoval,
     openMenuOnMobileTap,
+    openMenuOnDesktopHold,
     enableListMenu,
   });
   const [isManagerOpen, setIsManagerOpen] = useState(false);
@@ -131,6 +136,10 @@ export default function WishlistSaveButton({
           aria-controls={enableListMenu ? menuId : undefined}
           onClick={handleClick} // Toggle wishlist on click.
           onDoubleClick={enableListMenu ? handleDoubleClick : undefined} // Open list menu on double click when enabled.
+          onPointerDown={enableListMenu ? handlePointerDown : undefined} // Start hold-to-open timer where enabled.
+          onPointerUp={enableListMenu ? cancelPointerHold : undefined} // Cancel hold timer on pointer release.
+          onPointerLeave={enableListMenu ? cancelPointerHold : undefined} // Cancel hold timer when pointer leaves button.
+          onPointerCancel={enableListMenu ? cancelPointerHold : undefined} // Cancel hold timer on interrupted pointer.
         >
           <span className={styles.wishlistSave__icon}>{isItemSaved ? "★" : "☆"}</span>
         </button>

@@ -132,20 +132,146 @@
   cursor: pointer;
 }
 
-.wishlistPage__deleteList {
+.wishlistPage__manageList {
   height: 36px;
   padding: 0 14px;
   border-radius: 999px;
-  border: 1px solid color-mix(in oklab, var(--color-danger) 55%, var(--color-border));
-  background: color-mix(in oklab, var(--color-danger) 12%, var(--color-surface-muted));
-  color: color-mix(in oklab, var(--color-danger) 82%, var(--color-primary-strong));
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-muted);
+  color: var(--color-primary-strong);
   font-weight: 600;
   cursor: pointer;
   transition: opacity 150ms ease;
 }
 
-.wishlistPage__deleteList:hover {
+.wishlistPage__manageList:hover {
   opacity: 0.74;
+}
+
+.wishlistPage__managerBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 12, 8, 0.24);
+  z-index: 130;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.wishlistPage__manager {
+  width: min(420px, 100%);
+  max-height: min(80vh, 620px);
+  border-radius: 16px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  box-shadow: 0 24px 48px rgba(17, 12, 8, 0.2);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: auto;
+}
+
+.wishlistPage__managerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.wishlistPage__managerTitle {
+  margin: 0;
+  font-size: 16px;
+  color: var(--color-primary-strong);
+}
+
+.wishlistPage__managerClose {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-muted);
+  color: var(--color-primary-strong);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wishlistPage__managerList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.wishlistPage__managerItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface-muted);
+  padding: 9px 10px;
+}
+
+.wishlistPage__managerMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.wishlistPage__managerName {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-primary-strong);
+}
+
+.wishlistPage__managerCount {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.wishlistPage__managerTag {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-primary-strong);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 3px 8px;
+  white-space: nowrap;
+}
+
+.wishlistPage__managerDelete {
+  min-height: 28px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--color-danger) 58%, var(--color-border));
+  background: color-mix(in oklab, var(--color-danger) 10%, var(--color-surface-muted));
+  color: color-mix(in oklab, var(--color-danger) 82%, var(--color-primary-strong));
+  font-size: 12px;
+  font-weight: 700;
+  padding: 0 10px;
+  cursor: pointer;
+}
+
+.wishlistPage__managerDelete:hover,
+.wishlistPage__managerClose:hover,
+.wishlistPage__managerDone:hover {
+  opacity: 0.76;
+}
+
+.wishlistPage__managerDone {
+  align-self: flex-end;
+  min-height: 32px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-muted);
+  color: var(--color-primary-strong);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 0 14px;
+  cursor: pointer;
 }
 
 .wishlistPage__ghostCard {
@@ -191,7 +317,10 @@
 .wishlistPage__emptyCta:focus-visible,
 .wishlistPage__searchInput:focus-visible,
 .wishlistPage__filterSelect:focus-visible,
-.wishlistPage__deleteList:focus-visible,
+.wishlistPage__manageList:focus-visible,
+.wishlistPage__managerClose:focus-visible,
+.wishlistPage__managerDelete:focus-visible,
+.wishlistPage__managerDone:focus-visible,
 .wishlistPage__ghostAction:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;

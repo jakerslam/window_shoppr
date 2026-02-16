@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef } from "react";
 
 const CLICK_DELAY = 220; // Delay to distinguish single click from double click.
+const LONG_PRESS_DELAY = 260; // Slightly above average click duration for discoverable hold actions.
 
 /**
  * Gesture handlers for wishlist save interactions (click + double click).
@@ -11,6 +12,7 @@ export default function useWishlistMenuGestures({
   productId,
   activeListName,
   openMenuOnMobileTap,
+  openMenuOnDesktopHold,
   enableListMenu,
   isSaved,
   isSavedInList,
@@ -24,6 +26,7 @@ export default function useWishlistMenuGestures({
   productId: string;
   activeListName?: string;
   openMenuOnMobileTap?: boolean;
+  openMenuOnDesktopHold?: boolean;
   enableListMenu?: boolean;
   isSaved: (id: string) => boolean;
   isSavedInList: (id: string, listName: string) => boolean;
@@ -35,6 +38,7 @@ export default function useWishlistMenuGestures({
   setNewListName: (value: string) => void;
 }) {
   const clickTimeoutRef = useRef<number | null>(null);
+  const longPressTimeoutRef = useRef<number | null>(null);
   const suppressClickRef = useRef(false);
 
   /**
@@ -51,6 +55,21 @@ export default function useWishlistMenuGestures({
 
     return window.matchMedia("(max-width: 820px)").matches; // Match mobile layout breakpoint.
   }, [enableListMenu, openMenuOnMobileTap]);
+
+  /**
+   * Detect whether desktop hold should open the list menu.
+   */
+  const shouldOpenOnDesktopHold = useCallback(() => {
+    if (!enableListMenu || !openMenuOnDesktopHold) {
+      return false; // Skip hold-to-open behavior when disabled.
+    }
+
+    if (typeof window === "undefined") {
+      return false; // Skip viewport checks during SSR.
+    }
+
+    return window.matchMedia("(min-width: 821px)").matches; // Restrict hold-open menu to desktop widths.
+  }, [enableListMenu, openMenuOnDesktopHold]);
 
   /**
    * Open the list menu and suppress single-click toggles.
@@ -150,10 +169,44 @@ export default function useWishlistMenuGestures({
     openMenu(); // Open list selection on double click.
   }, [enableListMenu, openMenu]);
 
+  /**
+   * Start hold detection for desktop feed save buttons.
+   */
+  const handlePointerDown = useCallback(() => {
+    if (!shouldOpenOnDesktopHold()) {
+      return; // Keep default click behavior outside desktop hold contexts.
+    }
+
+    if (longPressTimeoutRef.current) {
+      window.clearTimeout(longPressTimeoutRef.current); // Reset any existing hold timer.
+    }
+
+    longPressTimeoutRef.current = window.setTimeout(() => {
+      openMenu(); // Open menu when hold threshold is reached.
+      longPressTimeoutRef.current = null;
+    }, LONG_PRESS_DELAY);
+  }, [openMenu, shouldOpenOnDesktopHold]);
+
+  /**
+   * Cancel hold detection when pointer interaction ends.
+   */
+  const cancelPointerHold = useCallback(() => {
+    if (!longPressTimeoutRef.current) {
+      return; // Skip when no hold timer is active.
+    }
+
+    window.clearTimeout(longPressTimeoutRef.current);
+    longPressTimeoutRef.current = null;
+  }, []);
+
   useEffect(() => {
     return () => {
       if (clickTimeoutRef.current) {
         window.clearTimeout(clickTimeoutRef.current); // Clean up click timer.
+      }
+
+      if (longPressTimeoutRef.current) {
+        window.clearTimeout(longPressTimeoutRef.current); // Clean up long-press timer.
       }
     };
   }, []);
@@ -163,5 +216,7 @@ export default function useWishlistMenuGestures({
     closeMenu,
     handleClick,
     handleDoubleClick,
+    handlePointerDown,
+    cancelPointerHold,
   };
 }

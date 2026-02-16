@@ -16,12 +16,14 @@ export default function useWishlistMenu({
   activeListName,
   onListRemoval,
   openMenuOnMobileTap,
+  openMenuOnDesktopHold,
   enableListMenu,
 }: {
   productId: string;
   activeListName?: string;
   onListRemoval?: (productId: string, listName: string) => void;
   openMenuOnMobileTap?: boolean;
+  openMenuOnDesktopHold?: boolean;
   enableListMenu?: boolean;
 }) {
   const {
@@ -62,10 +64,13 @@ export default function useWishlistMenu({
     closeMenu,
     handleClick,
     handleDoubleClick,
+    handlePointerDown,
+    cancelPointerHold,
   } = useWishlistMenuGestures({
     productId,
     activeListName,
     openMenuOnMobileTap,
+    openMenuOnDesktopHold,
     enableListMenu,
     isSaved,
     isSavedInList,
@@ -112,6 +117,8 @@ export default function useWishlistMenu({
     closeMenu,
     handleClick,
     handleDoubleClick,
+    handlePointerDown,
+    cancelPointerHold,
     handleSelectList,
     handleCreateList,
   };

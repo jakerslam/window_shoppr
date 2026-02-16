@@ -158,6 +158,7 @@ export default function ProductMediaGallery({
           buttonClassName={styles.productDetail__save}
           savedClassName={styles["productDetail__save--saved"]}
           wrapperClassName={styles.productDetail__saveWrap}
+          openMenuOnMobileTap // Mobile product view opens list menu on first tap.
         />
 
         {activeItem?.type === "video" ? (

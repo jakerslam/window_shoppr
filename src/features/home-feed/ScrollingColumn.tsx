@@ -31,7 +31,8 @@ const createSaveRenderer = (productId: string) =>
         buttonClassName={buttonClassName} // Match card button styling.
         savedClassName={savedClassName} // Apply saved-state styling.
         wrapperClassName={wrapperClassName} // Preserve card layout spacing.
-        enableListMenu={false} // Keep feed interactions simple: click-to-save only.
+        enableListMenu // Allow list-menu access from feed saves.
+        openMenuOnDesktopHold // Desktop hold opens the list menu.
       />
     );
   };
