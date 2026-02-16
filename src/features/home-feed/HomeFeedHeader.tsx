@@ -14,6 +14,7 @@ export default function HomeFeedHeader({
   title,
   speedMode,
   sortOption,
+  isFeedEnded,
   onOpenCategories,
   onToggleSpeedMode,
   onSortChange,
@@ -21,6 +22,7 @@ export default function HomeFeedHeader({
   title: string;
   speedMode: "cozy" | "quick";
   sortOption: SortOption;
+  isFeedEnded: boolean;
   onOpenCategories: () => void;
   onToggleSpeedMode: () => void;
   onSortChange: (nextValue: SortOption) => void;
@@ -33,7 +35,11 @@ export default function HomeFeedHeader({
       </div>
 
       {/* Browse controls (categories, speed, sort). */}
-      <div className={styles.homeFeed__controls}>
+      <div
+        className={`${styles.homeFeed__controls} ${
+          isFeedEnded ? styles["homeFeed__controls--ended"] : ""
+        }`}
+      >
         {/* Category shortcut for mobile browsing. */}
         <button
           className={styles.homeFeed__categoryTrigger}
@@ -41,7 +47,10 @@ export default function HomeFeedHeader({
           onClick={onOpenCategories} // Open mobile categories sheet.
           aria-label="Browse categories"
         >
-          ☰ Categories
+          <span className={styles.homeFeed__categoryTriggerIcon} aria-hidden="true">
+            ☰
+          </span>
+          <span className={styles.homeFeed__categoryTriggerText}>Categories</span>
         </button>
 
         <button

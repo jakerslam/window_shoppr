@@ -30,8 +30,12 @@ export default function HomeFeedEndDeck({
             className={styles.homeFeed__endDeckButton}
             type="button"
             onClick={onReplayDeck}
+            aria-label="Start over"
           >
-            Start Over
+            <span className={styles.homeFeed__endDeckButtonText}>Start Over</span>
+            <span className={styles.homeFeed__endDeckButtonIcon} aria-hidden="true">
+              ↻
+            </span>
           </button>
           <button
             className={styles.homeFeed__endDeckButton}

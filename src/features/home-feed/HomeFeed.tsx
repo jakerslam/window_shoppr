@@ -156,6 +156,7 @@ export default function HomeFeed({
         title={effectiveTitle}
         speedMode={speedMode}
         sortOption={sortOption}
+        isFeedEnded={isDeckEnded}
         onOpenCategories={() =>
           window.dispatchEvent(new CustomEvent("mobile:categories", { detail: { open: true } }))
         } // Open the mobile category sheet from the feed header.
