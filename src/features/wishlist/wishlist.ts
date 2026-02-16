@@ -37,6 +37,15 @@ export const useWishlist = () => {
     () => normalizeListOrder(listState.order),
     [listState.order],
   );
+  const listSummaries = useMemo(
+    () =>
+      listNames.map((name) => ({
+        name,
+        count: listState.lists[name]?.length ?? 0,
+        isDefault: name === DEFAULT_WISHLIST_NAME,
+      })),
+    [listNames, listState.lists],
+  ); // Build list metadata for manager views.
   const defaultIds = useMemo(
     () => listState.lists[DEFAULT_WISHLIST_NAME] ?? [],
     [listState.lists],
@@ -276,6 +285,7 @@ export const useWishlist = () => {
   return {
     savedIds,
     listNames,
+    listSummaries,
     isSaved,
     isSavedInList,
     addList,
