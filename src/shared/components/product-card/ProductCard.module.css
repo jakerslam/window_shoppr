@@ -238,6 +238,15 @@
   --wishlist-menu-min-width: 176px;
 }
 
+/* Desktop feed guardrail: keep the list dropdown fixed to the card's left edge. */
+.productCard:not(.productCard--compact) .productCard__wishlistWrap {
+  --wishlist-menu-left-offset: 0;
+  --wishlist-menu-right-offset: auto;
+  --wishlist-menu-min-width: 176px;
+  --wishlist-menu-width: 176px;
+  --wishlist-menu-max-width: 176px;
+}
+
 .productCard__wishlist:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
