@@ -14,17 +14,12 @@ export const buildCardDecks = (
     return decks; // Keep empty decks when no results are available.
   }
 
-  const targetSize = columnCount * minimumPerColumn; // Ensure enough cards to loop smoothly.
-  const deckPool: Product[] = []; // Working list that supplies the decks.
+  const targetSize = Math.max(minimumPerColumn * columnCount, products.length); // Keep compatibility with caller sizing while preventing duplicate injection.
+  const boundedPool = products.slice(0, targetSize); // Use only real products so finite feeds actually end.
 
-  while (deckPool.length < targetSize) {
-    deckPool.push(...products); // Repeat products until we fill the deck pool.
-  }
-
-  deckPool.slice(0, targetSize).forEach((product, index) => {
-    decks[index % columnCount].push(product); // Distribute cards across columns.
+  boundedPool.forEach((product, index) => {
+    decks[index % columnCount].push(product); // Distribute unique cards across columns for balanced finite lists.
   });
 
   return decks;
 };
-

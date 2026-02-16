@@ -26,7 +26,7 @@ export default function TopBarActions() {
   const [notifications, setNotifications] = useState<NotificationItem[]>(
     INITIAL_NOTIFICATIONS,
   );
-  const [pointsTotal, setPointsTotal] = useState(() => readWindowPointsState().totalPoints);
+  const [pointsTotal, setPointsTotal] = useState(0); // Keep SSR/client hydration stable before reading browser storage.
   const notificationsRef = useRef<HTMLDivElement | null>(null);
   const menuId = useId();
 
@@ -161,6 +161,7 @@ export default function TopBarActions() {
 
     window.addEventListener("window-points:update", syncPoints);
     window.addEventListener("storage", handleStorage);
+    syncPoints(); // Hydrate current points from local storage after mount.
 
     return () => {
       window.removeEventListener("window-points:update", syncPoints);

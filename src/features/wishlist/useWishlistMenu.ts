@@ -6,7 +6,6 @@ import { useWishlist } from "@/features/wishlist/wishlist";
 import useWishlistMenuDismiss from "@/features/wishlist/menu/useWishlistMenuDismiss";
 import useWishlistMenuGestures from "@/features/wishlist/menu/useWishlistMenuGestures";
 import useWishlistMenuListActions from "@/features/wishlist/menu/useWishlistMenuListActions";
-import useWishlistMenuOpenBroadcast from "@/features/wishlist/menu/useWishlistMenuOpenBroadcast";
 
 /**
  * Wishlist menu state and handlers for the save button UI.
@@ -96,8 +95,6 @@ export default function useWishlistMenu({
     wrapperRef,
     closeMenu,
   }); // Close menu on outside clicks + escape.
-
-  useWishlistMenuOpenBroadcast(isMenuOpen); // Broadcast global open-state for feed pause.
 
   return {
     DEFAULT_WISHLIST_NAME,

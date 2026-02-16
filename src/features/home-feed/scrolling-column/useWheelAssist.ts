@@ -3,9 +3,9 @@
 import { useEffect } from "react";
 import type { MutableRefObject, RefObject } from "react";
 import {
+  clampFinitePosition,
   MAX_MANUAL_SPEED_MULTIPLIER,
   WHEEL_VELOCITY_SCALE,
-  normalizeLoopPosition,
   toWheelPixels,
 } from "@/features/home-feed/scrolling-column/scroll-utils";
 
@@ -21,7 +21,6 @@ export default function useWheelAssist({
   manualVelocityRef,
   isInteractingRef,
   isModalOpenRef,
-  isWishlistMenuOpenRef,
   triggerInteractionCooldown,
 }: {
   columnRef: RefObject<HTMLDivElement | null>;
@@ -32,7 +31,6 @@ export default function useWheelAssist({
   manualVelocityRef: MutableRefObject<number>;
   isInteractingRef: MutableRefObject<boolean>;
   isModalOpenRef: MutableRefObject<boolean>;
-  isWishlistMenuOpenRef: MutableRefObject<boolean>;
   triggerInteractionCooldown: () => void;
 }) {
   useEffect(() => {
@@ -43,14 +41,14 @@ export default function useWheelAssist({
     }
 
     const handleWheel = (event: WheelEvent) => {
-      if (isModalOpenRef.current || isWishlistMenuOpenRef.current) {
-        return; // Keep the feed fully paused while modals/menus are open.
+      if (isModalOpenRef.current) {
+        return; // Keep the feed paused while modals are open.
       }
 
       const track = trackRef.current;
-      const loopHeight = loopHeightRef.current;
+      const maxPosition = loopHeightRef.current;
 
-      if (!track || loopHeight <= 0) {
+      if (!track || maxPosition <= 0) {
         return; // Skip until we have measurable layout.
       }
 
@@ -58,11 +56,11 @@ export default function useWheelAssist({
       isInteractingRef.current = true; // Mark manual wheel interaction as active for cooldown pause.
       triggerInteractionCooldown(); // Delay auto-scroll resume until wheel input settles.
 
-      const deltaPixels = toWheelPixels(event, loopHeight); // Convert the delta into pixel units.
+      const deltaPixels = toWheelPixels(event, maxPosition); // Convert the delta into pixel units.
 
-      const nextPosition = normalizeLoopPosition(
+      const nextPosition = clampFinitePosition(
         positionRef.current + deltaPixels,
-        loopHeight,
+        maxPosition,
       ); // Move the track immediately for responsiveness.
       positionRef.current = nextPosition; // Persist the updated position.
       track.style.transform = `translateY(-${nextPosition}px)`; // Apply the transform now.
@@ -87,7 +85,6 @@ export default function useWheelAssist({
     columnRef,
     isInteractingRef,
     isModalOpenRef,
-    isWishlistMenuOpenRef,
     loopHeightRef,
     manualVelocityRef,
     positionRef,

@@ -238,13 +238,19 @@
   --wishlist-menu-min-width: 176px;
 }
 
-/* Desktop feed guardrail: keep the list dropdown fixed to the card's left edge. */
+/* Desktop feed guardrail: anchor the list dropdown to the save button so it stays inside the card column. */
+.productCard:not(.productCard--compact) .productCard__actions {
+  position: relative;
+}
+
 .productCard:not(.productCard--compact) .productCard__wishlistWrap {
-  --wishlist-menu-left-offset: 0;
-  --wishlist-menu-right-offset: auto;
-  --wishlist-menu-min-width: 176px;
-  --wishlist-menu-width: 176px;
-  --wishlist-menu-max-width: 176px;
+  --wishlist-wrapper-position: static;
+  --wishlist-wrapper-z-index: auto;
+  --wishlist-menu-left-offset: auto;
+  --wishlist-menu-right-offset: 0;
+  --wishlist-menu-min-width: 0;
+  --wishlist-menu-width: min(188px, calc(100vw - 24px));
+  --wishlist-menu-max-width: min(188px, calc(100vw - 24px));
 }
 
 .productCard__wishlist:focus-visible {

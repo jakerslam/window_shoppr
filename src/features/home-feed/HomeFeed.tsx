@@ -18,6 +18,7 @@ import styles from "@/features/home-feed/HomeFeed.module.css";
 
 const BASE_COLUMN_DURATIONS = [38, 46, 54, 62, 70]; // Base scroll speeds per column.
 const SPEED_MODE_STORAGE_KEY = "window_shoppr_feed_speed_mode"; // Persist user-selected speed toggle mode.
+const END_DECK_BAR_HEIGHT = 126; // Full-width end-of-feed bar height used as the stop boundary offset.
 
 /**
  * Validate storage values before applying them to speed mode state.
@@ -124,7 +125,9 @@ export default function HomeFeed({
   );
   const {
     isDeckEnded,
+    hasAnyColumnEnteredEndZone,
     cycleToken,
+    handleColumnEnterEndZone,
     handleColumnComplete,
     handleReplayDeck,
   } = useFiniteFeedState({ columnDecks });
@@ -170,19 +173,26 @@ export default function HomeFeed({
             onOpen={handleCardOpen}
             isModalOpen={isModalOpen}
             isFeedEnded={isDeckEnded}
+            endDeckHeight={END_DECK_BAR_HEIGHT}
             cycleToken={cycleToken}
+            onColumnEnterEndZone={handleColumnEnterEndZone}
             onColumnComplete={handleColumnComplete}
           />
         ))}
-      </div>
 
-      {isDeckEnded && sortedProducts.length > 0 ? (
-        <HomeFeedEndDeck
-          categoryLabel={displayCategory || "all categories"}
-          onReplayDeck={handleReplayDeck}
-          onBrowseAllCategories={handleBrowseAllCategories}
-        />
-      ) : null}
+        {hasAnyColumnEnteredEndZone && sortedProducts.length > 0 ? (
+          <div
+            className={`${styles.homeFeed__endDeckOverlay} ${styles["homeFeed__endDeckOverlay--active"]}`}
+          >
+            <HomeFeedEndDeck
+              categoryLabel={displayCategory || "all categories"}
+              showActions
+              onReplayDeck={handleReplayDeck}
+              onBrowseAllCategories={handleBrowseAllCategories}
+            />
+          </div>
+        ) : null}
+      </div>
 
       {sortedProducts.length === 0 && (
         <HomeFeedEmptyState

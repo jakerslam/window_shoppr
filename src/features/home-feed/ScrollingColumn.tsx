@@ -47,7 +47,9 @@ export default function ScrollingColumn({
   onOpen,
   isModalOpen,
   isFeedEnded,
+  endDeckHeight,
   cycleToken,
+  onColumnEnterEndZone,
   onColumnComplete,
 }: {
   columnIndex: number;
@@ -56,22 +58,37 @@ export default function ScrollingColumn({
   onOpen: (product: Product) => () => void;
   isModalOpen: boolean;
   isFeedEnded: boolean;
+  endDeckHeight: number;
   cycleToken: string;
+  onColumnEnterEndZone: (columnIndex: number) => void;
   onColumnComplete: (columnIndex: number) => void;
 }) {
-  const loopedDeck = useMemo(() => [...deck, ...deck], [deck]);
   const deckSignature = useMemo(
     () => deck.map((product) => product.id).join("|"),
     [deck],
   ); // Track meaningful deck changes, not array identity churn.
   const hasReportedCompletion = useRef(false);
+  const hasReportedEndZone = useRef(false);
 
   /**
    * Reset one-loop completion reporting whenever the cycle token changes.
    */
   useEffect(() => {
     hasReportedCompletion.current = false; // Allow one completion callback for each deck cycle.
+    hasReportedEndZone.current = false; // Allow one enter-end-zone callback for each deck cycle.
   }, [cycleToken, deckSignature]);
+
+  /**
+   * Notify the feed when this visible column first enters the end-bar zone.
+   */
+  const handleReachEndZone = useCallback(() => {
+    if (hasReportedEndZone.current) {
+      return; // Report one enter-end-zone event per cycle to avoid duplicate state updates.
+    }
+
+    hasReportedEndZone.current = true;
+    onColumnEnterEndZone(columnIndex);
+  }, [columnIndex, onColumnEnterEndZone]);
 
   /**
    * Notify the feed when this visible column completes one full loop.
@@ -87,14 +104,14 @@ export default function ScrollingColumn({
 
   // Memoize open handlers so cards do not receive new callbacks on every render.
   const openHandlers = useMemo(
-    () => loopedDeck.map((product) => onOpen(product)),
-    [loopedDeck, onOpen],
+    () => deck.map((product) => onOpen(product)),
+    [deck, onOpen],
   );
 
   // Memoize save button renderers to avoid recreating per-card callbacks.
   const saveButtonRenderers = useMemo(
-    () => loopedDeck.map((product) => createSaveRenderer(product.id)),
-    [loopedDeck],
+    () => deck.map((product) => createSaveRenderer(product.id)),
+    [deck],
   );
 
   const {
@@ -108,9 +125,12 @@ export default function ScrollingColumn({
   } = useColumnMotion({
     duration,
     deckSignature,
+    cycleToken,
     deckLength: deck.length,
     isModalOpen,
     isFeedEnded,
+    endDeckHeight,
+    onReachEndZone: handleReachEndZone,
     onForwardLoop: handleForwardLoop,
   });
 
@@ -130,7 +150,7 @@ export default function ScrollingColumn({
       onPointerCancel={endPointerGesture} // End touch gesture on cancellation.
     >
       <div ref={trackRef} className={styles.homeFeed__columnTrack}>
-        {loopedDeck.map((product, index) => (
+        {deck.map((product, index) => (
           <ProductCard
             key={`${product.id}-${index}`}
             product={product}

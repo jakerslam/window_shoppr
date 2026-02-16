@@ -3,18 +3,21 @@
 import { useCallback, useEffect } from "react";
 import type { MutableRefObject, RefObject } from "react";
 import {
+  clampFinitePosition,
   MANUAL_VELOCITY_DECAY,
   MIN_MANUAL_VELOCITY,
-  normalizeLoopPosition,
 } from "@/features/home-feed/scrolling-column/scroll-utils";
 
 /**
- * Auto-scroll animation loop + metric syncing (track height -> speed).
+ * Auto-scroll animation loop + metric syncing for finite decks.
  */
 export default function useColumnAutoScrollLoop({
   deckLength,
   duration,
+  endDeckHeight,
+  onReachEndZone,
   onForwardLoop,
+  columnRef,
   trackRef,
   loopHeightRef,
   baseSpeedRef,
@@ -31,7 +34,10 @@ export default function useColumnAutoScrollLoop({
 }: {
   deckLength: number;
   duration: number;
+  endDeckHeight: number;
+  onReachEndZone?: () => void;
   onForwardLoop?: () => void;
+  columnRef: RefObject<HTMLDivElement | null>;
   trackRef: RefObject<HTMLDivElement | null>;
   loopHeightRef: MutableRefObject<number>;
   baseSpeedRef: MutableRefObject<number>;
@@ -50,37 +56,64 @@ export default function useColumnAutoScrollLoop({
    * Measure the track height and recompute the scroll speed.
    */
   const syncMetrics = useCallback(() => {
+    const column = columnRef.current;
     const track = trackRef.current;
 
-    if (!track) {
+    if (!column || !track) {
       return; // Skip when the track is not mounted yet.
     }
 
-    const totalHeight = track.getBoundingClientRect().height; // Full height of the looped deck.
-    const loopHeight = totalHeight / 2; // One full deck height.
+    const totalHeight = track.getBoundingClientRect().height; // Full height of the visible deck.
+    const columnHeight = column.getBoundingClientRect().height;
+    const parentHeight = column.parentElement?.getBoundingClientRect().height ?? 0;
+    const viewportHeight =
+      parentHeight > 0 && columnHeight >= totalHeight - 1
+        ? parentHeight // When the column auto-sizes to content, use the feed viewport height instead.
+        : columnHeight; // Otherwise use the measured column viewport height directly.
+    const revealThreshold = Math.max(totalHeight - viewportHeight, 0); // Start showing the bar when the last card reaches the bar's bottom edge.
+    const visibleCardsHeight = Math.max(viewportHeight - endDeckHeight, 0); // Reserve the bar space while columns continue scrolling.
+    const maxScroll = Math.max(totalHeight - visibleCardsHeight, 0); // Stop when the last card reaches the bar's top edge.
 
-    if (!loopHeight) {
-      return; // Skip when layout has no measurable height.
+    if (totalHeight <= 0) {
+      return; // Skip when layout has no measurable card height.
     }
 
-    const previousLoopHeight = loopHeightRef.current; // Read previous loop height before updating.
+    const previousMaxScroll = loopHeightRef.current; // Read previous range before updating.
     const wasPaused = isPausedRef.current; // Preserve paused state.
 
-    if (previousLoopHeight > 0 && previousLoopHeight !== loopHeight) {
-      const normalizedPosition =
-        (positionRef.current % previousLoopHeight) / previousLoopHeight; // Preserve visual progress across height changes.
-      positionRef.current = normalizedPosition * loopHeight; // Re-scale position for the new loop height.
+    if (previousMaxScroll > 0 && previousMaxScroll !== maxScroll) {
+      const normalizedPosition = positionRef.current / previousMaxScroll; // Preserve visual progress across size changes.
+      positionRef.current = clampFinitePosition(
+        normalizedPosition * maxScroll,
+        maxScroll,
+      ); // Re-scale position for the new measured track height.
       track.style.transform = `translateY(-${positionRef.current}px)`; // Apply updated position immediately.
+    } else {
+      positionRef.current = clampFinitePosition(positionRef.current, maxScroll); // Clamp stale position after resize/deck changes.
+      track.style.transform = `translateY(-${positionRef.current}px)`; // Keep transform coherent with clamped position.
     }
 
-    loopHeightRef.current = loopHeight; // Cache the loop height for animation.
-    baseSpeedRef.current = loopHeight / durationRef.current; // Compute pixels per second.
-    targetSpeedRef.current = wasPaused ? 0 : baseSpeedRef.current; // Keep pause state intact.
+    loopHeightRef.current = maxScroll; // Cache finite max scroll distance.
+    baseSpeedRef.current =
+      maxScroll > 0 ? totalHeight / durationRef.current : 0; // Keep speed based on deck height, but stop when no room to scroll.
+    targetSpeedRef.current = wasPaused || maxScroll <= 0 ? 0 : baseSpeedRef.current; // Keep pause state intact and stop when cards already fill the viewport.
 
-    if (wasPaused) {
+    if (wasPaused || maxScroll <= 0) {
       speedRef.current = 0; // Ensure the track stays stopped when paused.
     }
+
+    if (maxScroll <= 0) {
+      onReachEndZone?.(); // Immediately reveal the bar when this deck has no scroll room.
+      onForwardLoop?.(); // Treat non-scrollable decks as completed so the finite feed can still close.
+      return;
+    }
+
+    if (positionRef.current >= revealThreshold) {
+      onReachEndZone?.(); // Keep reveal state in sync after resizes/manual position updates.
+    }
   }, [
+    columnRef,
+    endDeckHeight,
     baseSpeedRef,
     durationRef,
     isPausedRef,
@@ -89,6 +122,8 @@ export default function useColumnAutoScrollLoop({
     speedRef,
     targetSpeedRef,
     trackRef,
+    onReachEndZone,
+    onForwardLoop,
   ]);
 
   /**
@@ -103,7 +138,7 @@ export default function useColumnAutoScrollLoop({
       const deltaSeconds = (time - lastTimeRef.current) / 1000; // Convert to seconds.
       lastTimeRef.current = time; // Store the current frame time.
 
-      const loopHeight = loopHeightRef.current; // Height of a full deck loop.
+      const maxScroll = loopHeightRef.current; // Finite max scroll distance for this column.
       const track = trackRef.current; // DOM node to move.
 
       const manualDecay = Math.exp(-MANUAL_VELOCITY_DECAY * deltaSeconds);
@@ -112,24 +147,40 @@ export default function useColumnAutoScrollLoop({
         manualVelocityRef.current = 0; // Snap tiny values to 0 to avoid jitter.
       }
 
-      if (track && loopHeight > 0 && !isDraggingRef.current) {
+      if (track && maxScroll > 0 && !isDraggingRef.current) {
+        const revealThreshold = Math.max(maxScroll - endDeckHeight, 0); // Position where the bar should begin showing.
         const baseTarget = targetSpeedRef.current; // Base speed respects pause state.
         const combinedTarget = baseTarget + manualVelocityRef.current; // Add manual velocity assist.
         const speedDelta = (combinedTarget - speedRef.current) * 0.08; // Ease toward combined target.
-        const nextSpeed = speedRef.current + speedDelta; // Apply speed easing.
+        let nextSpeed = speedRef.current + speedDelta; // Apply speed easing.
         const previousPosition = positionRef.current; // Compare positions to detect forward loop completion.
-        const nextPosition = normalizeLoopPosition(
-          previousPosition + nextSpeed * deltaSeconds,
-          loopHeight,
-        ); // Wrap position safely (supports negative speed).
-        const wrappedForward = nextSpeed > 0 && nextPosition < previousPosition;
+        const requestedPosition = previousPosition + nextSpeed * deltaSeconds; // Proposed next position before clamping.
+        const nextPosition = clampFinitePosition(
+          requestedPosition,
+          maxScroll,
+        ); // Clamp to finite track bounds so no cards repeat.
+        const reachedEndZone =
+          previousPosition < revealThreshold && nextPosition >= revealThreshold;
+        const reachedEnd = previousPosition < maxScroll && nextPosition >= maxScroll;
+        const hitBoundary =
+          (nextPosition >= maxScroll && nextSpeed > 0) ||
+          (nextPosition <= 0 && nextSpeed < 0);
+
+        if (hitBoundary) {
+          nextSpeed = 0; // Stop inertial drift once we hit the finite bounds.
+          manualVelocityRef.current = 0; // Prevent boundary jitter from residual velocity.
+        }
 
         speedRef.current = nextSpeed; // Update the current speed.
         positionRef.current = nextPosition; // Cache the current position.
         track.style.transform = `translateY(-${nextPosition}px)`; // Move the track.
 
-        if (wrappedForward) {
-          onForwardLoop?.(); // Notify finite-feed state when this column consumes one loop.
+        if (reachedEndZone) {
+          onReachEndZone?.(); // Reveal end-of-feed bar when the first column enters the bottom zone.
+        }
+
+        if (reachedEnd) {
+          onForwardLoop?.(); // Notify finite-feed state when this column consumes its full deck.
         }
       }
 
@@ -148,6 +199,8 @@ export default function useColumnAutoScrollLoop({
       speedRef,
       targetSpeedRef,
       trackRef,
+      endDeckHeight,
+      onReachEndZone,
       onForwardLoop,
     ],
   );

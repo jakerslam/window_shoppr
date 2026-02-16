@@ -13,16 +13,22 @@ import useWheelAssist from "@/features/home-feed/scrolling-column/useWheelAssist
 export default function useColumnMotion({
   duration,
   deckSignature,
+  cycleToken,
   deckLength,
   isModalOpen,
   isFeedEnded,
+  endDeckHeight,
+  onReachEndZone,
   onForwardLoop,
 }: {
   duration: number;
   deckSignature: string;
+  cycleToken: string;
   deckLength: number;
   isModalOpen: boolean;
   isFeedEnded: boolean;
+  endDeckHeight: number;
+  onReachEndZone?: () => void;
   onForwardLoop?: () => void;
 }) {
   const columnRef = useRef<HTMLDivElement | null>(null);
@@ -39,7 +45,6 @@ export default function useColumnMotion({
   const isHoveringRef = useRef(false);
   const isModalOpenRef = useRef(false);
   const isFeedEndedRef = useRef(false);
-  const isWishlistMenuOpenRef = useRef(false);
   const isInteractingRef = useRef(false);
   const isDraggingRef = useRef(false);
   const interactionCooldownTimerRef = useRef<number | null>(null);
@@ -54,7 +59,6 @@ export default function useColumnMotion({
       isHoveringRef.current ||
       isModalOpenRef.current ||
       isFeedEndedRef.current ||
-      isWishlistMenuOpenRef.current ||
       isInteractingRef.current;
 
     isPausedRef.current = shouldPause; // Keep state coherent for resize/metric sync.
@@ -86,7 +90,6 @@ export default function useColumnMotion({
   useColumnPauseSignals({
     isModalOpen,
     isModalOpenRef,
-    isWishlistMenuOpenRef,
     syncPauseState,
   }); // Pause feed when overlays are active.
 
@@ -104,7 +107,6 @@ export default function useColumnMotion({
     manualVelocityRef,
     isInteractingRef,
     isModalOpenRef,
-    isWishlistMenuOpenRef,
     triggerInteractionCooldown,
   }); // Enable wheel-based speed nudging.
 
@@ -121,7 +123,6 @@ export default function useColumnMotion({
       isDraggingRef,
       isInteractingRef,
       isModalOpenRef,
-      isWishlistMenuOpenRef,
       syncPauseState,
       triggerInteractionCooldown,
     }); // Enable touch drag-to-scroll assist.
@@ -129,7 +130,10 @@ export default function useColumnMotion({
   useColumnAutoScrollLoop({
     deckLength,
     duration,
+    endDeckHeight,
+    onReachEndZone,
     onForwardLoop,
+    columnRef,
     trackRef,
     loopHeightRef,
     baseSpeedRef,
@@ -158,7 +162,7 @@ export default function useColumnMotion({
     if (trackRef.current) {
       trackRef.current.style.transform = "translateY(0px)"; // Keep transform in sync with reset position.
     }
-  }, [deckSignature, resetTouchState]);
+  }, [cycleToken, deckSignature, resetTouchState]);
 
   /**
    * Clean up pending cooldown timers when this column unmounts.

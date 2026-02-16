@@ -39,6 +39,13 @@ export default function useFiniteFeedState({ columnDecks }: { columnDecks: Produ
     deckSignature: "",
     indexes: [],
   });
+  const [endZoneState, setEndZoneState] = useState<{
+    deckSignature: string;
+    indexes: number[];
+  }>({
+    deckSignature: "",
+    indexes: [],
+  });
 
   const deckSignature = useMemo(
     () => columnDecks.map((deck) => deck.map((product) => product.id).join(",")).join("|"),
@@ -60,10 +67,13 @@ export default function useFiniteFeedState({ columnDecks }: { columnDecks: Produ
     completionState.deckSignature === deckSignature
       ? completionState.indexes
       : [];
+  const endZoneColumnIndexes =
+    endZoneState.deckSignature === deckSignature ? endZoneState.indexes : [];
   const cycleToken = `${deckSignature}:${replayCount}`;
   const isComplete =
     activeColumnIndexes.length > 0 &&
     activeColumnIndexes.every((index) => completedColumnIndexes.includes(index)); // Detect when the visible deck has been consumed.
+  const hasAnyColumnEnteredEndZone = endZoneColumnIndexes.length > 0; // Show the end-of-feed bar when the first visible column enters the bottom bar zone.
   const isDeckEnded = isComplete;
 
   /**
@@ -88,6 +98,28 @@ export default function useFiniteFeedState({ columnDecks }: { columnDecks: Produ
   /**
    * Track a visible column reaching the end of its deck.
    */
+  /**
+   * Track a visible column entering the end-of-feed bar zone.
+   */
+  const handleColumnEnterEndZone = useCallback((columnIndex: number) => {
+    setEndZoneState((previous) => {
+      const currentIndexes =
+        previous.deckSignature === deckSignature ? previous.indexes : [];
+
+      if (currentIndexes.includes(columnIndex)) {
+        return previous; // Avoid duplicate enter-end-zone entries.
+      }
+
+      return {
+        deckSignature,
+        indexes: [...currentIndexes, columnIndex],
+      };
+    });
+  }, [deckSignature]);
+
+  /**
+   * Track a visible column reaching the end of its deck.
+   */
   const handleColumnComplete = useCallback((columnIndex: number) => {
     setCompletionState((previous) => {
       const currentIndexes =
@@ -108,6 +140,10 @@ export default function useFiniteFeedState({ columnDecks }: { columnDecks: Produ
    * Replay the same deck from the beginning.
    */
   const handleReplayDeck = useCallback(() => {
+    setEndZoneState({
+      deckSignature,
+      indexes: [],
+    }); // Clear end-zone state.
     setCompletionState({
       deckSignature,
       indexes: [],
@@ -117,7 +153,9 @@ export default function useFiniteFeedState({ columnDecks }: { columnDecks: Produ
 
   return {
     isDeckEnded,
+    hasAnyColumnEnteredEndZone,
     cycleToken,
+    handleColumnEnterEndZone,
     handleColumnComplete,
     handleReplayDeck,
   };

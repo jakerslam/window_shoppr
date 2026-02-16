@@ -15,6 +15,12 @@ export const normalizeLoopPosition = (position: number, loopHeight: number) => {
 };
 
 /**
+ * Clamp a scroll position into a finite 0..max range.
+ */
+export const clampFinitePosition = (position: number, maxPosition: number) =>
+  Math.min(Math.max(position, 0), maxPosition);
+
+/**
  * Convert a wheel event delta into pixels.
  */
 export const toWheelPixels = (event: WheelEvent, pageHeightPx: number) => {
@@ -28,4 +34,3 @@ export const toWheelPixels = (event: WheelEvent, pageHeightPx: number) => {
 
   return event.deltaY; // Pixels already.
 };
-

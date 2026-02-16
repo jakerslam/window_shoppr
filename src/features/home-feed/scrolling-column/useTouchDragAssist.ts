@@ -7,10 +7,10 @@ import type {
   RefObject,
 } from "react";
 import {
+  clampFinitePosition,
   DRAG_START_THRESHOLD_PX,
   MAX_MANUAL_SPEED_MULTIPLIER,
   TOUCH_VELOCITY_SCALE,
-  normalizeLoopPosition,
 } from "@/features/home-feed/scrolling-column/scroll-utils";
 
 /**
@@ -28,7 +28,6 @@ export default function useTouchDragAssist({
   isDraggingRef,
   isInteractingRef,
   isModalOpenRef,
-  isWishlistMenuOpenRef,
   syncPauseState,
   triggerInteractionCooldown,
 }: {
@@ -43,7 +42,6 @@ export default function useTouchDragAssist({
   isDraggingRef: MutableRefObject<boolean>;
   isInteractingRef: MutableRefObject<boolean>;
   isModalOpenRef: MutableRefObject<boolean>;
-  isWishlistMenuOpenRef: MutableRefObject<boolean>;
   syncPauseState: () => void;
   triggerInteractionCooldown: () => void;
 }) {
@@ -75,8 +73,8 @@ export default function useTouchDragAssist({
         return; // Only enable drag-to-scroll assist for touch pointers.
       }
 
-      if (isModalOpenRef.current || isWishlistMenuOpenRef.current) {
-        return; // Ignore touches while modals/menus are open.
+      if (isModalOpenRef.current) {
+        return; // Ignore touches while a modal is open.
       }
 
       isPointerDownRef.current = true; // Track a possible drag start.
@@ -89,7 +87,7 @@ export default function useTouchDragAssist({
 
       columnRef.current?.setPointerCapture(event.pointerId); // Keep receiving move/up events.
     },
-    [columnRef, isModalOpenRef, isWishlistMenuOpenRef, positionRef],
+    [columnRef, isModalOpenRef, positionRef],
   );
 
   /**
@@ -109,10 +107,10 @@ export default function useTouchDragAssist({
         return; // Ignore non-touch pointer moves.
       }
 
-      const loopHeight = loopHeightRef.current;
+      const maxPosition = loopHeightRef.current;
       const track = trackRef.current;
 
-      if (!track || loopHeight <= 0) {
+      if (!track || maxPosition <= 0) {
         return; // Skip until layout is measured.
       }
 
@@ -132,9 +130,9 @@ export default function useTouchDragAssist({
 
       event.preventDefault(); // Keep drag gestures focused on the feed.
 
-      const nextPosition = normalizeLoopPosition(
+      const nextPosition = clampFinitePosition(
         dragStartPositionRef.current - deltaY,
-        loopHeight,
+        maxPosition,
       ); // Follow finger movement (drag down = scroll up).
       positionRef.current = nextPosition; // Persist the updated position.
       track.style.transform = `translateY(-${nextPosition}px)`; // Apply transform immediately.

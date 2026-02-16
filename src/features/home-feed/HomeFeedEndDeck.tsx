@@ -7,37 +7,41 @@ import styles from "@/features/home-feed/HomeFeed.module.css";
  */
 export default function HomeFeedEndDeck({
   categoryLabel,
+  showActions,
   onReplayDeck,
   onBrowseAllCategories,
 }: {
   categoryLabel: string;
+  showActions: boolean;
   onReplayDeck: () => void;
   onBrowseAllCategories: () => void;
 }) {
   return (
     <div className={styles.homeFeed__endDeck} role="status" aria-live="polite">
       <p className={styles.homeFeed__endDeckTitle}>
-        You&apos;ve reached the end of our picks for {categoryLabel}.
+        End of feed for {categoryLabel}.
       </p>
       <p className={styles.homeFeed__endDeckText}>
-        Check back soon for fresh finds.
+        Choose what you want to browse next.
       </p>
-      <div className={styles.homeFeed__endDeckActions}>
-        <button
-          className={styles.homeFeed__endDeckButton}
-          type="button"
-          onClick={onReplayDeck}
-        >
-          Start Over
-        </button>
-        <button
-          className={styles.homeFeed__endDeckButton}
-          type="button"
-          onClick={onBrowseAllCategories}
-        >
-          Browse All Categories
-        </button>
-      </div>
+      {showActions ? (
+        <div className={styles.homeFeed__endDeckActions}>
+          <button
+            className={styles.homeFeed__endDeckButton}
+            type="button"
+            onClick={onReplayDeck}
+          >
+            Start Over
+          </button>
+          <button
+            className={styles.homeFeed__endDeckButton}
+            type="button"
+            onClick={onBrowseAllCategories}
+          >
+            Browse All Categories
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 }
