@@ -439,7 +439,7 @@
   }
 
   .homeFeed__controls--ended {
-    justify-content: center;
+    justify-content: flex-start;
   }
 
   .homeFeed__controls--ended .homeFeed__speedToggle,
@@ -455,7 +455,17 @@
   }
 
   .homeFeed__controls--ended .homeFeed__categoryTrigger {
-    padding-inline: 12px;
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: 50%;
+    justify-content: center;
+    gap: 0;
+  }
+
+  .homeFeed__controls--ended .homeFeed__categoryTriggerIcon {
+    min-width: auto;
   }
 
   .homeFeed__controls--ended .homeFeed__categoryTriggerText {
@@ -482,7 +492,7 @@
   }
 
   .homeFeed__endDeckOverlay {
-    bottom: calc(var(--mobile-nav-height) + var(--mobile-nav-offset) + 8px);
+    bottom: calc(var(--mobile-nav-height) + var(--mobile-nav-offset));
   }
 
   .homeFeed__endDeck {
@@ -537,7 +547,7 @@
   }
 
   .homeFeed__controls--ended {
-    justify-content: center;
+    justify-content: flex-start;
   }
 
   .homeFeed__controls--ended .homeFeed__speedToggle,
@@ -553,7 +563,17 @@
   }
 
   .homeFeed__controls--ended .homeFeed__categoryTrigger {
-    padding-inline: 12px;
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: 50%;
+    justify-content: center;
+    gap: 0;
+  }
+
+  .homeFeed__controls--ended .homeFeed__categoryTriggerIcon {
+    min-width: auto;
   }
 
   .homeFeed__controls--ended .homeFeed__categoryTriggerText {
@@ -581,7 +601,7 @@
   }
 
   .homeFeed__endDeckOverlay {
-    bottom: calc(var(--mobile-nav-height) + var(--mobile-nav-offset) + 8px);
+    bottom: calc(var(--mobile-nav-height) + var(--mobile-nav-offset));
   }
 
   .homeFeed__column:nth-child(3),
