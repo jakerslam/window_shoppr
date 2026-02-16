@@ -492,7 +492,7 @@
   }
 
   .homeFeed__endDeckOverlay {
-    bottom: calc(var(--mobile-nav-height) + var(--mobile-nav-offset));
+    bottom: 0;
   }
 
   .homeFeed__endDeck {
@@ -601,7 +601,7 @@
   }
 
   .homeFeed__endDeckOverlay {
-    bottom: calc(var(--mobile-nav-height) + var(--mobile-nav-offset));
+    bottom: 0;
   }
 
   .homeFeed__column:nth-child(3),
