@@ -233,7 +233,8 @@
 
 .productCard__wishlistWrap {
   --wishlist-wrapper-z-index: 3;
-  --wishlist-menu-right-offset: -16px;
+  --wishlist-menu-left-offset: 0;
+  --wishlist-menu-right-offset: auto;
   --wishlist-menu-min-width: 176px;
 }
 
@@ -317,8 +318,8 @@
     --wishlist-wrapper-left: auto;
     --wishlist-wrapper-width: auto;
     --wishlist-wrapper-z-index: 3;
-    --wishlist-menu-right-offset: 0;
-    --wishlist-menu-left-offset: auto;
+    --wishlist-menu-right-offset: auto;
+    --wishlist-menu-left-offset: 0;
     --wishlist-menu-min-width: 170px;
     --wishlist-menu-width: auto;
     --wishlist-menu-max-width: min(220px, calc(100vw - 20px));

@@ -30,11 +30,9 @@ export default function useWishlistMenu({
     isSaved,
     isSavedInList,
     listNames,
-    listSummaries,
     addList,
     saveToList,
     removeFromList,
-    deleteList,
     toggleSaved,
   } = useWishlist();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -106,8 +104,6 @@ export default function useWishlistMenu({
     isItemSaved,
     isMenuOpen,
     listNames,
-    listSummaries,
-    deleteList,
     isSavedInList,
     newListName,
     setNewListName,

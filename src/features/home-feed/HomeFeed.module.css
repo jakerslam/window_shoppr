@@ -221,7 +221,12 @@
 
 .homeFeed__column {
   position: relative;
-  overflow: hidden;
+  overflow-y: hidden;
+  overflow-x: visible;
+}
+
+.homeFeed__column:hover {
+  z-index: 12;
 }
 
 .homeFeed__columnTrack {
