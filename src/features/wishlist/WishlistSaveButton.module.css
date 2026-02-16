@@ -84,9 +84,10 @@
 
 .wishlistSave__createRow {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 8px;
   align-items: center;
+  min-width: 0;
 }
 
 .wishlistSave__createInput {
@@ -96,6 +97,10 @@
   font-size: 12px;
   background: var(--color-surface-muted);
   color: var(--color-primary-strong);
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .wishlistSave__createInput::placeholder {
@@ -114,6 +119,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
+  justify-self: end;
 }
 
 .wishlistSave__createButton:hover {
