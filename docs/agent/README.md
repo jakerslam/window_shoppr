@@ -34,6 +34,30 @@ This guide defines where agent automation should read/write today and where it w
   4. Approved submissions are enriched into draft product payloads and sent through product upsert.
 - Canonical contract: `docs/agent/SKILL.md` ("Link Submission Contract").
 
+## Affiliate-Link Minting Pipeline (R29.14)
+- Trigger: every link submission queues affiliate minting work automatically.
+- Auto mode (today): Amazon URLs are auto-minted when `NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG` is configured.
+- Agent mode (fallback): unresolved or compliance-failed jobs remain in pending queue for agent action.
+- Compliance gate:
+  - candidate URL must be http(s),
+  - candidate host must be merchant-equivalent or an affiliate-safe host hint,
+  - blocked signal hosts (for example `slickdeals.net`) are rejected.
+- Replacement + rollback:
+  - successful mint auto-applies listing URL override for that submission id,
+  - rollback clears override and restores merchant URL,
+  - full audit trail is written per queue item.
+- Helpers:
+  - `queueAffiliateMintForSubmission(...)`
+  - `applyAgentMintedAffiliateLink(...)`
+  - `rollbackAffiliateReplacement(...)`
+  - `buildAffiliateMintQueueSnapshot()`
+- Storage keys:
+  - queue: `window_shoppr_affiliate_mint_queue`
+  - overrides: `window_shoppr_affiliate_link_overrides`
+- Event hooks:
+  - `affiliate:mint:queued`
+  - `affiliate:mint:updated`
+
 ## Moderation (Today)
 - Queue helpers in `src/shared/lib/engagement/reports.ts`:
   - `buildModerationQueueSnapshot()`

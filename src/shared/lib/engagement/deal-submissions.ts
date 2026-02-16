@@ -1,6 +1,7 @@
 "use client";
 
 import { requestDataApi } from "@/shared/lib/platform/data-api";
+import { queueAffiliateMintForSubmission } from "@/shared/lib/engagement/affiliate-minting";
 import {
   DEAL_SUBMISSION_CREATED_EVENT,
   DealSubmissionPayload,
@@ -115,6 +116,10 @@ export const submitDealSubmission = async (input: {
   };
 
   writeDealSubmissionRecord({ submission, queueItem }); // Persist local-first history and moderation queue.
+  const affiliateMintResult = await queueAffiliateMintForSubmission({
+    submissionQueueId: queueItem.id,
+    merchantUrl: normalizedUrl,
+  }); // Auto-attempt affiliate minting and queue unresolved jobs for agent action.
 
   const response = await requestDataApi<{ id?: string }>({
     path: "/data/submissions/link",
@@ -139,13 +144,19 @@ export const submitDealSubmission = async (input: {
   }); // Reward users for contributing new deal submissions.
 
   if (!response || !response.ok) {
-    return { ok: true, mode: "queued_local", id: queueItem.id } as const;
+    return {
+      ok: true,
+      mode: "queued_local",
+      id: queueItem.id,
+      affiliateMintMode: affiliateMintResult.ok ? affiliateMintResult.mode : "failed",
+    } as const;
   }
 
   return {
     ok: true,
     mode: "sql",
     id: response.data.id ?? queueItem.id,
+    affiliateMintMode: affiliateMintResult.ok ? affiliateMintResult.mode : "failed",
   } as const;
 };
 

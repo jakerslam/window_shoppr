@@ -44,12 +44,14 @@ See: `docs/agent/README.md`, `docs/agent/SKILL.md`, and `docs/agent/AGENT_SKILL.
 
 ### Backend Wiring (SQL/API)
 - `NEXT_PUBLIC_DATA_API_URL` (optional): enables SQL-backed data API wiring for:
-- `GET /data/products`
-- `GET /data/products/:slug`
-- `POST /data/wishlist/sync`
-- `POST /data/email-captures`
-- `POST /data/purchase-intents`
-- `POST /data/social-proof/saves`
+  - `GET /data/products`
+  - `GET /data/products/:slug`
+  - `POST /data/wishlist/sync`
+  - `POST /data/email-captures`
+  - `POST /data/purchase-intents`
+  - `POST /data/social-proof/saves`
+  - `POST /data/submissions/affiliate-mint`
+- `NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG` (optional): enables automatic Amazon affiliate-link minting for submitted deal URLs.
 - `NEXT_PUBLIC_AUTH_API_URL` (optional): enables auth backend wiring (`/auth/*` routes).
 
 ## Scripts

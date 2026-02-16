@@ -16,6 +16,7 @@ import {
   normalizeHttpUrl,
   resolveMerchantUrlFromSignal,
 } from "@/shared/lib/agent/signal-utils";
+import { buildAffiliateMintQueueSnapshot } from "@/shared/lib/engagement/affiliate-minting";
 
 type AgentQueueRecord<TAction extends string, TPayload> = {
   id: string;
@@ -291,4 +292,5 @@ export const readAgentStubQueues = () => ({
   signalSubmissions: readQueue<
     AgentQueueRecord<"signal_submission", AgentSignalSubmissionInput>
   >(AGENT_SIGNAL_QUEUE_KEY),
+  affiliateMinting: buildAffiliateMintQueueSnapshot(), // Include pending affiliate mint jobs for agent processing.
 });

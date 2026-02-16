@@ -120,12 +120,47 @@ This skill defines the ingestion and moderation contract for autonomous agents.
 - Validate URL format and reject non-http(s) links.
 - Deduplicate by normalized URL hash before creating queue item.
 - Enqueue as `pending` moderation item before product publish.
+- Automatically queue affiliate-link minting work for each accepted submission.
 - Agent enrichment step should:
   - fetch/derive retailer, media, and canonical title,
   - generate SEO description + tags,
   - map category/subcategory,
   - create a draft product payload for `products/upsert`.
 - Publish only after moderation outcome is `approved`.
+
+## Affiliate-Link Minting Contract (R29.14)
+
+### Goal
+- Convert submitted merchant links into first-party affiliate links.
+- Apply replacement only when compliance checks pass.
+- Keep an auditable trail and allow rollback.
+
+### Pipeline
+1. On submission, call `queueAffiliateMintForSubmission({ submissionQueueId, merchantUrl })`.
+2. Auto-attempt mint:
+   - currently Amazon-only when `NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG` is configured.
+3. Compliance validation:
+   - candidate must be `http(s)`,
+   - candidate host must be merchant-equivalent or recognized affiliate-safe host,
+   - blocked signal hosts fail validation.
+4. If valid: mark `minted`, apply URL replacement override, append audit entries.
+5. If invalid/unavailable: keep `pending_agent` and wait for agent resolution.
+6. Agent may resolve with:
+   - `applyAgentMintedAffiliateLink({ queueId, mintedAffiliateUrl, actor, note })`
+   - `rollbackAffiliateReplacement({ queueId, reason })`
+
+### Queue + Overrides
+- Queue storage key: `window_shoppr_affiliate_mint_queue`
+- Override storage key: `window_shoppr_affiliate_link_overrides`
+- Queue snapshot helper: `buildAffiliateMintQueueSnapshot()`
+
+### Status Lifecycle
+- `pending_agent` -> `minted` -> `rolled_back`
+- `pending_agent` -> `failed` (compliance failure)
+
+### Audit
+- Required per job: `queued`, mint attempts, compliance failures, replacement applied, rollback applied.
+- All entries include timestamp + actor.
 
 ### Submission Status Lifecycle
 - `pending` -> `triaged` -> `approved` or `rejected`
@@ -170,6 +205,8 @@ Purpose: allow agentic piggyback discovery while staying compliant by avoiding d
 - `agent:signal:enqueue` (competitor/RSS signal queued for merchant verification)
 - `submission:link:created` (new link submission queued)
 - `submission:link:resolved` (submission moderation status updated)
+- `affiliate:mint:queued` (new affiliate mint job queued)
+- `affiliate:mint:updated` (affiliate mint state changed)
 
 ## Local-First Operation Steps (Today)
 1. Read/modify `src/data/products.json` with schema-valid products.

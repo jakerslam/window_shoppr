@@ -1,9 +1,9 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 73/92 (79.3%)  ████████████████░░░░
+Overall: 74/92 (80.4%)  ████████████████░░░░
 Frontend: 54/64 (84.4%) █████████████████░░░
-Backend: 16/22 (72.7%)  ███████████████░░░░░
+Backend: 17/22 (77.3%)  ███████████████░░░░░
 Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░░░
 
 
@@ -82,8 +82,8 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] R29.9: Post-click purchase confirmation prompt ("Did you buy this?" + review reminder hook)
 - [x] R29.8: Social proof counts (display save count on product pages + cards)
 - [x] R29.5: User-submitted deals (submit link + optional price/info; moderation queue for AI agent/gatekeeper; auto-enrich into draft products; optional revenue share later)
-- [NEXT] 🔵 R29.14: Affiliate-link minting pipeline for submitted products (extract/normalize product URL, attempt first-party affiliate link generation automatically or via agent queue, validate compliance, then auto-replace listing link with audit trail + rollback).
-- [ ] R29.15: Monetization-aware feed ranking boost (prefer products with verified first-party affiliate links, with capped weight so relevance/quality signals still dominate).
+- [x] R29.14: Affiliate-link minting pipeline for submitted products (extract/normalize product URL, attempt first-party affiliate link generation automatically or via agent queue, validate compliance, then auto-replace listing link with audit trail + rollback).
+- [NEXT] 🔵 R29.15: Monetization-aware feed ranking boost (prefer products with verified first-party affiliate links, with capped weight so relevance/quality signals still dominate).
 - [ ] R29.4: Native ad cards (occasional sponsored cards in feed, non-disruptive)
 - [x] R23: Click tracking for affiliate links
 - [x] R24: Cookie consent + privacy/affiliate disclosure (accept all + essential only)
