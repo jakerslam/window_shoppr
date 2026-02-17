@@ -161,6 +161,12 @@
     "videoUrl": "https://www.youtube.com/watch?v=V-_O7nl0Ii0",
     "retailer": "Ulta",
     "isSponsored": true,
+    "adCreative": {
+      "headline": "Clean lighting, easy glow",
+      "body": "A gentle ring light and crisp mirror for effortless routines.",
+      "cta": "View more",
+      "image": "https://images.unsplash.com/photo-1514996937319-344454492b37?auto=format&fit=crop&w=400&q=80"
+    },
     "tags": [
       "vanity",
       "mirror",
@@ -280,6 +286,12 @@
     "dealEndsAt": "2026-03-15T23:59:59Z",
     "retailer": "Best Buy",
     "isSponsored": true,
+    "adCreative": {
+      "headline": "Stay powered all day",
+      "body": "The fastest stand charger for a focused, clutter-free desk.",
+      "cta": "Get the look",
+      "image": "https://images.unsplash.com/photo-1523475472560-d2df97ec485c?auto=format&fit=crop&w=400&q=80"
+    },
     "tags": [
       "wireless charger",
       "phone",
@@ -363,6 +375,13 @@
     "description": "SoundNest Wireless Earbuds deliver a clean, balanced sound with a compact case that slips into pockets and desk organizers. The fit is snug for walks and commutes, while touch controls keep calls and playlists easy to manage. The charging case offers quick top-ups, and the glossy finish keeps them looking polished on a work desk. If you want a simple, reliable set that feels tidy and modern, these are an easy grab-and-go choice.",
     "affiliateUrl": "https://example.com/affiliate/earbuds",
     "retailer": "Best Buy",
+    "isSponsored": true,
+    "adCreative": {
+      "headline": "Sound curated for focus",
+      "body": "Noise-canceling comfort with a whisper-quiet fit.",
+      "cta": "Preview the vibe",
+      "image": "https://images.unsplash.com/photo-1510081884152-9294d0df1041?auto=format&fit=crop&w=400&q=80"
+    },
     "tags": [
       "earbuds",
       "wireless",

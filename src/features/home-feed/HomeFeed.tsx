@@ -276,13 +276,6 @@ export default function HomeFeed({
     [isDeckEnded],
   );
 
-  const handleDeckApproachingEnd = useCallback(
-    (columnIndex: number) => {
-      dealNextCard(columnIndex); // Deal the next card preemptively.
-    },
-    [dealNextCard],
-  );
-
   /**
    * Rebalance cards by lending 1-2 tail cards from the longest active stack to an exhausted stack.
    */
@@ -293,7 +286,7 @@ export default function HomeFeed({
       }
 
       if (dealNextCard(columnIndex)) {
-        return true; // A new card was dealt, so keep scrolling.
+        return true; // A new card was dealt, so keep scrolling after the column completes.
       }
 
       const currentDecks = columnDecksRef.current;
@@ -339,17 +332,17 @@ export default function HomeFeed({
       }
 
       const nextDecks = currentDecks.map((deck) => [...deck]);
-      const movedCards = nextDecks[donorIndex].splice(-transferCount, transferCount); // Move unseen tail cards from donor.
+      const movedCards = nextDecks[donorIndex].splice(-transferCount, transferCount);
 
       if (movedCards.length === 0) {
         return false;
       }
 
-      nextDecks[columnIndex].push(...movedCards); // Extend the faster stack so stacks end closer together.
+      nextDecks[columnIndex].push(...movedCards);
       setDeckState((previous) => ({
         ...previous,
         decks: nextDecks,
-      })); // Re-render columns with new stack lengths.
+      }));
       return true;
     },
     [isDeckEnded, dealNextCard],
@@ -405,7 +398,6 @@ export default function HomeFeed({
             isFeedEnded={isDeckEnded}
             endDeckHeight={END_DECK_BAR_HEIGHT}
             cycleToken={cycleToken}
-            onDeckApproachingEnd={handleDeckApproachingEnd}
             onDeckExhausted={handleDeckExhausted}
             onColumnEnterEndZone={handleColumnEnterEndZone}
             onColumnComplete={handleColumnCompleteWithTracking}

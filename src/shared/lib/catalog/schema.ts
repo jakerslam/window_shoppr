@@ -37,6 +37,14 @@ export const ProductSchema: z.ZodType<Product> = z
         network: z.string().min(1).optional(),
       })
       .optional(),
+    adCreative: z
+      .object({
+        headline: z.string().min(1),
+        body: z.string().min(1),
+        cta: z.string().min(1),
+        image: z.string().min(1).optional(),
+      })
+      .optional(),
     retailer: z.string().min(1).optional(), // Retailer label for CTA text.
     videoUrl: z.string().url().optional(), // Optional review/demo video.
     dealEndsAt: ISO_DATE_TIME_SCHEMA.optional(), // Optional deal expiration timestamp.

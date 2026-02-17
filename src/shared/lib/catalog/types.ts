@@ -13,6 +13,13 @@ export type AffiliateVerification = {
   network?: string;
 };
 
+export type AdCreative = {
+  headline: string;
+  body: string;
+  cta: string;
+  image?: string;
+};
+
 export type Product = {
   id: string;
   source?: string;
@@ -33,6 +40,7 @@ export type Product = {
   description: string;
   affiliateUrl: string;
   affiliateVerification?: AffiliateVerification;
+  adCreative?: AdCreative;
   retailer?: string;
   videoUrl?: string;
   dealEndsAt?: string;
