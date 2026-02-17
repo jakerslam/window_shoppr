@@ -25,6 +25,7 @@ const PUBLIC_ENV_SCHEMA = z.object({
   NEXT_PUBLIC_SITE_URL: z.string().url().optional(), // Canonical site URL for metadata/canonicals.
   NEXT_PUBLIC_BASE_PATH: BASE_PATH_SCHEMA.optional(), // Static hosting base path (e.g. /window_shoppr).
   NEXT_PUBLIC_DEPLOY_TARGET: z.enum(["static-export", "runtime"]).optional(), // Select static-export (GitHub Pages) or runtime mode (ISR/edge deployments).
+  NEXT_PUBLIC_FEATURE_FLAGS: z.string().trim().optional(), // Optional comma-delimited feature flag overrides for safe experiments.
   NEXT_PUBLIC_AUTH_API_URL: z.string().url().optional(), // Optional external auth API base URL.
   NEXT_PUBLIC_DATA_API_URL: z.string().url().optional(), // Optional external data API base URL.
   NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG: z.string().trim().min(1).optional(), // Optional Associates tag for auto-minting Amazon links.
@@ -39,6 +40,7 @@ const parsePublicEnv = () => {
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
     NEXT_PUBLIC_BASE_PATH: process.env.NEXT_PUBLIC_BASE_PATH,
     NEXT_PUBLIC_DEPLOY_TARGET: process.env.NEXT_PUBLIC_DEPLOY_TARGET,
+    NEXT_PUBLIC_FEATURE_FLAGS: process.env.NEXT_PUBLIC_FEATURE_FLAGS,
     NEXT_PUBLIC_AUTH_API_URL: process.env.NEXT_PUBLIC_AUTH_API_URL,
     NEXT_PUBLIC_DATA_API_URL: process.env.NEXT_PUBLIC_DATA_API_URL,
     NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG: process.env.NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG,

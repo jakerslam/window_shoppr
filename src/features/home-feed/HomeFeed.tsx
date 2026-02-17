@@ -17,6 +17,7 @@ import { getFeedColumnCount } from "@/features/home-feed/column-layout";
 import useHomeFeedPreferences from "@/features/home-feed/useHomeFeedPreferences";
 import useFilteredSortedProducts from "@/features/home-feed/useFilteredSortedProducts";
 import useFiniteFeedState from "@/features/home-feed/useFiniteFeedState";
+import { useFeatureFlag } from "@/shared/lib/platform/useFeatureFlag";
 import styles from "@/features/home-feed/HomeFeed.module.css";
 
 const BASE_COLUMN_DURATIONS = [38, 46, 54, 62, 70]; // Base scroll speeds per column.
@@ -89,6 +90,7 @@ export default function HomeFeed({
   } = useHomeFeedPreferences();
   const { selectedCategory, selectedSubCategory, searchQuery, clearFilters } =
     useCategoryFilter();
+  const sponsoredCardsEnabled = useFeatureFlag("feedSponsoredCards");
 
   /**
    * Lock the middle content scroller on mobile while the home feed auto-scrolls.
@@ -158,8 +160,11 @@ export default function HomeFeed({
   });
 
   const feedProducts = useMemo(
-    () => interleaveSponsoredProducts(rankedProducts),
-    [rankedProducts],
+    () =>
+      sponsoredCardsEnabled
+        ? interleaveSponsoredProducts(rankedProducts)
+        : rankedProducts.filter((product) => !product.isSponsored),
+    [rankedProducts, sponsoredCardsEnabled],
   );
 
   const resultsLabel = `Browse ${feedProducts.length} ${subtitleLabel}`;

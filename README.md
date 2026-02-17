@@ -55,11 +55,23 @@ See: `docs/agent/README.md`, `docs/agent/SKILL.md`, and `docs/agent/AGENT_SKILL.
 - `NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG` (optional): enables automatic Amazon affiliate-link minting for submitted deal URLs.
 - `NEXT_PUBLIC_AUTH_API_URL` (optional): enables auth backend wiring (`/auth/*` routes).
 - `NEXT_PUBLIC_MONITORING_API_URL` (optional): receives client error + performance envelopes (`kind: "error" | "trace"`). When not set, monitoring remains local-only (stored in localStorage).
+- `NEXT_PUBLIC_FEATURE_FLAGS` (optional): comma-delimited overrides for safe UI experiments.
+  - Example: `NEXT_PUBLIC_FEATURE_FLAGS=feed_sponsored_cards=off,native_share_fallback=on`
 
 ### Runtime Cache Strategy (R40)
 - Product list requests (`/data/products`) use `revalidate: 300` with cache tag `catalog:products` in `runtime` mode.
 - Product detail requests (`/data/products/:slug`) use `revalidate: 900` with tags `catalog:products` + `catalog:product:{slug}` in `runtime` mode.
 - In `static-export` mode, cache hints are disabled so GitHub Pages behavior remains unchanged.
+
+### Feature Flags (R41)
+- Flag source order: defaults -> env (`NEXT_PUBLIC_FEATURE_FLAGS`) -> localStorage overrides (`window_shoppr_feature_flags`).
+- Current flags:
+  - `feedSponsoredCards`
+  - `nativeShareFallback`
+  - `wishlistManageLists`
+- Local testing helper (browser console):
+  - `window.localStorage.setItem("window_shoppr_feature_flags", JSON.stringify({ feedSponsoredCards: false }))`
+  - `window.dispatchEvent(new CustomEvent("window_shoppr_feature_flags:update"))`
 
 ## Scripts
 - `npm run dev` — local dev server
