@@ -14,7 +14,7 @@ import {
 } from "@/features/home-feed/scrolling-column/scroll-utils";
 
 /**
- * Touch drag-to-scroll assist (mobile): users can drag a column and release with a small inertial impulse.
+ * Touch drag-to-scroll assist (mobile): drag a column and release with inertial impulse.
  */
 export default function useTouchDragAssist({
   columnRef,
@@ -54,97 +54,86 @@ export default function useTouchDragAssist({
   const dragVelocityRef = useRef(0);
 
   /**
-   * Reset any in-progress gesture state (used when decks swap underneath the column).
+   * Reset in-progress gesture state when decks swap under the column.
    */
   const resetTouchState = useCallback(() => {
-    isPointerDownRef.current = false; // Clear pointer-down tracking.
-    pointerIdRef.current = null; // Clear captured pointer id.
-    dragVelocityRef.current = 0; // Clear velocity history.
-    isDraggingRef.current = false; // Ensure dragging mode is cleared.
-    isInteractingRef.current = false; // Ensure interaction pause is cleared.
+    isPointerDownRef.current = false;
+    pointerIdRef.current = null;
+    dragVelocityRef.current = 0;
+    isDraggingRef.current = false;
+    isInteractingRef.current = false;
   }, [isDraggingRef, isInteractingRef]);
 
   /**
-   * Begin tracking a touch pointer for drag-to-scroll assist.
+   * Start tracking a touch pointer for drag-to-scroll.
    */
   const handlePointerDown = useCallback(
     (event: ReactPointerEvent<HTMLDivElement>) => {
-      if (event.pointerType !== "touch") {
-        return; // Only enable drag-to-scroll assist for touch pointers.
+      if (event.pointerType !== "touch" || isModalOpenRef.current) {
+        return;
       }
 
-      if (isModalOpenRef.current) {
-        return; // Ignore touches while a modal is open.
-      }
+      isPointerDownRef.current = true;
+      pointerIdRef.current = event.pointerId;
+      dragStartYRef.current = event.clientY;
+      dragStartPositionRef.current = positionRef.current;
+      lastDragYRef.current = event.clientY;
+      lastDragTimeRef.current = event.timeStamp;
+      dragVelocityRef.current = 0;
 
-      isPointerDownRef.current = true; // Track a possible drag start.
-      pointerIdRef.current = event.pointerId; // Capture the pointer id for move/up filtering.
-      dragStartYRef.current = event.clientY; // Seed drag measurements.
-      dragStartPositionRef.current = positionRef.current; // Preserve starting position.
-      lastDragYRef.current = event.clientY; // Seed velocity measurement.
-      lastDragTimeRef.current = event.timeStamp; // Seed velocity measurement.
-      dragVelocityRef.current = 0; // Reset velocity history per gesture.
-
-      columnRef.current?.setPointerCapture(event.pointerId); // Keep receiving move/up events.
+      columnRef.current?.setPointerCapture(event.pointerId);
     },
     [columnRef, isModalOpenRef, positionRef],
   );
 
   /**
-   * Track touch drag movement and update the column position.
+   * Track touch drag movement and update column position.
    */
   const handlePointerMove = useCallback(
     (event: ReactPointerEvent<HTMLDivElement>) => {
-      if (!isPointerDownRef.current) {
-        return; // Ignore when there is no active pointer down.
+      if (!isPointerDownRef.current || event.pointerId !== pointerIdRef.current) {
+        return;
       }
-
-      if (event.pointerId !== pointerIdRef.current) {
-        return; // Ignore moves from other pointers.
-      }
-
       if (event.pointerType !== "touch") {
-        return; // Ignore non-touch pointer moves.
+        return;
       }
 
       const maxPosition = loopHeightRef.current;
       const track = trackRef.current;
-
       if (!track || maxPosition <= 0) {
-        return; // Skip until layout is measured.
+        return;
       }
 
-      const deltaY = event.clientY - dragStartYRef.current; // Positive when finger moves down.
-
+      const deltaY = event.clientY - dragStartYRef.current;
       if (!isDraggingRef.current && Math.abs(deltaY) < DRAG_START_THRESHOLD_PX) {
-        return; // Wait for a small movement threshold to avoid breaking taps.
+        return;
       }
 
       if (!isDraggingRef.current) {
-        isDraggingRef.current = true; // Flip into dragging mode once threshold is passed.
-        isInteractingRef.current = true; // Pause auto-scroll while dragging.
-        manualVelocityRef.current = 0; // Clear manual velocity so dragging is deterministic.
-        speedRef.current = 0; // Stop track momentum while touch is controlling position.
-        syncPauseState(); // Recompute pause behavior with interaction enabled.
+        isDraggingRef.current = true;
+        isInteractingRef.current = true;
+        manualVelocityRef.current = 0;
+        speedRef.current = 0;
+        syncPauseState();
       }
 
-      event.preventDefault(); // Keep drag gestures focused on the feed.
+      event.preventDefault();
 
       const nextPosition = clampFinitePosition(
         dragStartPositionRef.current - deltaY,
         maxPosition,
-      ); // Follow finger movement (drag down = scroll up).
-      positionRef.current = nextPosition; // Persist the updated position.
-      track.style.transform = `translateY(-${nextPosition}px)`; // Apply transform immediately.
+      );
+      positionRef.current = nextPosition;
+      track.style.transform = `translateY(-${nextPosition}px)`;
 
-      const deltaSinceLast = event.clientY - lastDragYRef.current; // Positive when moving down.
-      const timeSinceLast = (event.timeStamp - lastDragTimeRef.current) / 1000; // Convert to seconds.
+      const deltaSinceLast = event.clientY - lastDragYRef.current;
+      const timeSinceLast = (event.timeStamp - lastDragTimeRef.current) / 1000;
       if (timeSinceLast > 0) {
-        dragVelocityRef.current = -(deltaSinceLast / timeSinceLast); // Convert finger delta into scroll velocity.
+        dragVelocityRef.current = -(deltaSinceLast / timeSinceLast);
       }
 
-      lastDragYRef.current = event.clientY; // Update velocity sample cursor.
-      lastDragTimeRef.current = event.timeStamp; // Update velocity sample cursor.
+      lastDragYRef.current = event.clientY;
+      lastDragTimeRef.current = event.timeStamp;
     },
     [
       isDraggingRef,
@@ -159,43 +148,36 @@ export default function useTouchDragAssist({
   );
 
   /**
-   * Finish a drag gesture and let the column ease back to baseline scrolling.
+   * End drag gesture and apply inertial velocity.
    */
   const endPointerGesture = useCallback(
     (event: ReactPointerEvent<HTMLDivElement>) => {
-      if (!isPointerDownRef.current) {
-        return; // Skip when no gesture is active.
+      if (!isPointerDownRef.current || event.pointerId !== pointerIdRef.current) {
+        return;
       }
-
-      if (event.pointerId !== pointerIdRef.current) {
-        return; // Ignore unrelated pointer ids.
-      }
-
       if (event.pointerType !== "touch") {
-        return; // Only handle touch gestures.
+        return;
       }
 
-      columnRef.current?.releasePointerCapture(event.pointerId); // Release capture now that the gesture ended.
-
-      isPointerDownRef.current = false; // Clear pointer-down tracking.
-      pointerIdRef.current = null; // Clear captured pointer id.
+      columnRef.current?.releasePointerCapture(event.pointerId);
+      isPointerDownRef.current = false;
+      pointerIdRef.current = null;
 
       if (!isDraggingRef.current) {
-        return; // Keep taps behaving normally.
+        return;
       }
 
-      const baseSpeed = baseSpeedRef.current; // Baseline speed for clamping.
+      const baseSpeed = baseSpeedRef.current;
       const maxManualSpeed = Math.max(120, baseSpeed * MAX_MANUAL_SPEED_MULTIPLIER);
       const nextManualVelocity = dragVelocityRef.current * TOUCH_VELOCITY_SCALE;
       manualVelocityRef.current = Math.min(
         maxManualSpeed,
         Math.max(-maxManualSpeed, nextManualVelocity),
-      ); // Apply a small inertial impulse after releasing the drag.
+      );
 
-      isDraggingRef.current = false; // Exit dragging mode.
-      triggerInteractionCooldown(); // Hold auto-scroll briefly before resuming.
-
-      speedRef.current = targetSpeedRef.current + manualVelocityRef.current; // Seed speed to avoid a post-drag stall.
+      isDraggingRef.current = false;
+      triggerInteractionCooldown();
+      speedRef.current = targetSpeedRef.current + manualVelocityRef.current;
     },
     [
       baseSpeedRef,
@@ -215,3 +197,4 @@ export default function useTouchDragAssist({
     resetTouchState,
   };
 }
+

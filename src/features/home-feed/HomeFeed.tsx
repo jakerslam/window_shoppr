@@ -20,11 +20,11 @@ import useFiniteFeedState from "@/features/home-feed/useFiniteFeedState";
 import { useFeatureFlag } from "@/shared/lib/platform/useFeatureFlag";
 import styles from "@/features/home-feed/HomeFeed.module.css";
 
-const BASE_COLUMN_DURATIONS = [38, 46, 54, 62, 70]; // Base scroll speeds per column.
-const SPEED_MODE_STORAGE_KEY = "window_shoppr_feed_speed_mode"; // Persist user-selected speed toggle mode.
-const END_DECK_BAR_HEIGHT = 126; // Full-width end-of-feed bar height used as the stop boundary offset.
-const INITIAL_COLUMN_BATCH_SIZE = 3; // Cards dealt initially to each column when a new feed loads.
-const REFILL_BATCH_SIZE = 2; // Cards dealt per refill request to better support fast manual scrolling.
+const BASE_COLUMN_DURATIONS = [38, 46, 54, 62, 70];
+const SPEED_MODE_STORAGE_KEY = "window_shoppr_feed_speed_mode";
+const END_DECK_BAR_HEIGHT = 126;
+const INITIAL_COLUMN_BATCH_SIZE = 3;
+const REFILL_BATCH_SIZE = 2;
 
 /**
  * Validate storage values before applying them to speed mode state.
@@ -55,9 +55,6 @@ const buildInitialDeckState = (
 };
 
 /**
- * Build initial column stacks and the next undealt index from a single ranked deck.
- */
-/**
  * Client-side feed renderer with sorting and search.
  */
 export default function HomeFeed({
@@ -70,15 +67,15 @@ export default function HomeFeed({
   subtitleLabel?: string;
 }) {
   const router = useRouter();
-  const [viewportWidth, setViewportWidth] = useState(1280); // Keep a stable SSR width and update after mount.
+  const [viewportWidth, setViewportWidth] = useState(1280);
   const [sortOption, setSortOption] = useState<SortOption>("newest");
   const [speedMode, setSpeedMode] = useState<"cozy" | "quick">(() => {
     if (typeof window === "undefined") {
-      return "cozy"; // Use a stable default during SSR.
+      return "cozy";
     }
 
     const savedMode = window.localStorage.getItem(SPEED_MODE_STORAGE_KEY);
-    return savedMode && isValidSpeedMode(savedMode) ? savedMode : "cozy"; // Restore saved mode when available.
+    return savedMode && isValidSpeedMode(savedMode) ? savedMode : "cozy";
   });
   const {
     speedPreferences,
@@ -97,13 +94,13 @@ export default function HomeFeed({
    */
   useEffect(() => {
     if (typeof document === "undefined") {
-      return undefined; // Skip DOM mutations during SSR.
+      return undefined;
     }
 
-    document.body.dataset.homeFeedLock = "true"; // Mark home feed lock state for global CSS.
+    document.body.dataset.homeFeedLock = "true";
 
     return () => {
-      delete document.body.dataset.homeFeedLock; // Restore default scrolling on route change.
+      delete document.body.dataset.homeFeedLock;
     };
   }, []);
 
@@ -112,14 +109,14 @@ export default function HomeFeed({
    */
   useEffect(() => {
     if (typeof window === "undefined") {
-      return undefined; // Skip browser listeners during SSR.
+      return undefined;
     }
 
     const syncViewportWidth = () => {
-      setViewportWidth(window.innerWidth); // Keep responsive column count in sync with current viewport.
+      setViewportWidth(window.innerWidth);
     };
 
-    syncViewportWidth(); // Capture current width once after mount.
+    syncViewportWidth();
     window.addEventListener("resize", syncViewportWidth);
 
     return () => {
@@ -132,10 +129,10 @@ export default function HomeFeed({
    */
   useEffect(() => {
     if (typeof window === "undefined") {
-      return; // Skip storage writes during SSR.
+      return;
     }
 
-    window.localStorage.setItem(SPEED_MODE_STORAGE_KEY, speedMode); // Save mode after each toggle.
+    window.localStorage.setItem(SPEED_MODE_STORAGE_KEY, speedMode);
   }, [speedMode]);
 
   const categorySource = selectedSubCategory || selectedCategory || "";
@@ -177,7 +174,7 @@ export default function HomeFeed({
   const [cardsPerColumn, setCardsPerColumn] = useState(5);
   const speedFactor =
     speedMode === "quick" ? speedPreferences.quickScale : speedPreferences.cozyScale;
-  const durationScale = 1 / Math.max(speedFactor, 0.01); // Convert user-facing speed factor (higher=faster) into duration scale.
+  const durationScale = 1 / Math.max(speedFactor, 0.01);
   const columnDurations = useMemo(
     () => BASE_COLUMN_DURATIONS.map((value) => value * durationScale),
     [durationScale],
@@ -228,7 +225,7 @@ export default function HomeFeed({
       }
 
       const visibleCards = Math.max(1, Math.floor(columnHeight / cardHeight));
-      const targetCards = visibleCards + 1; // Leave one extra card offscreen for smooth reveal.
+      const targetCards = visibleCards + 1;
       setCardsPerColumn((prev) => (prev === targetCards ? prev : targetCards));
     };
 
@@ -244,8 +241,8 @@ export default function HomeFeed({
    * Keep the runtime deck + column refs in sync with rendered decks.
    */
   useEffect(() => {
-    columnDecksRef.current = columnDecks; // Keep current deck snapshot available to callbacks.
-    deckStateRef.current = deckState; // Keep a mutable pointer for dynamic dealings.
+    columnDecksRef.current = columnDecks;
+    deckStateRef.current = deckState;
   }, [columnDecks, deckState]);
 
   /**
@@ -278,8 +275,8 @@ export default function HomeFeed({
    * Reset filters and return to the all-categories feed.
    */
   const handleBrowseAllCategories = useCallback(() => {
-    clearFilters(); // Reset category and search filters.
-    router.push("/"); // Navigate back to the root feed.
+    clearFilters();
+    router.push("/");
   }, [clearFilters, router]);
 
   /**
@@ -287,7 +284,7 @@ export default function HomeFeed({
    */
   const handleCardOpen = useCallback(
     (product: Product) => () => {
-      router.push(`/product/${product.slug}/`); // Navigate to the product detail page (static export friendly).
+      router.push(`/product/${product.slug}/`);
     },
     [router],
   );
@@ -298,18 +295,18 @@ export default function HomeFeed({
   const dealNextCards = useCallback(
     (columnIndex: number, count: number) => {
       if (isDeckEnded) {
-        return 0; // Do not add cards once the feed is finished.
+        return 0;
       }
 
       const current = deckStateRef.current;
 
       if (columnIndex >= current.decks.length) {
-        return 0; // Guard against missing columns.
+        return 0;
       }
 
       const dealCount = Math.max(0, Math.min(count, current.remaining.length));
       if (dealCount === 0) {
-        return 0; // No cards left in the stack.
+        return 0;
       }
 
       const nextCards = current.remaining.slice(0, dealCount);
@@ -323,8 +320,8 @@ export default function HomeFeed({
         remaining: rest,
       };
 
-      deckStateRef.current = nextState; // Keep ref-based reads current for rapid successive refill calls.
-      setDeckState(nextState); // Apply refills to rendered deck state.
+      deckStateRef.current = nextState;
+      setDeckState(nextState);
 
       return dealCount;
     },
@@ -348,11 +345,11 @@ export default function HomeFeed({
   const handleDeckExhausted = useCallback(
     (columnIndex: number) => {
       if (isDeckEnded) {
-        return false; // Do not refill once the feed is already in its final ended state.
+        return false;
       }
 
       if (dealNextCards(columnIndex, REFILL_BATCH_SIZE) > 0) {
-        return true; // A new card was dealt, so keep scrolling after the column completes.
+        return true;
       }
       return false;
     },
@@ -368,7 +365,7 @@ export default function HomeFeed({
       ...initialDeckState,
     };
     setDeckState(resetState);
-    handleReplayDeck(); // Reset finite-feed progress tracking.
+    handleReplayDeck();
   }, [feedResetKey, handleReplayDeck, initialDeckState]);
 
   return (
@@ -380,9 +377,9 @@ export default function HomeFeed({
         isFeedEnded={isDeckEnded}
         onOpenCategories={() =>
           window.dispatchEvent(new CustomEvent("mobile:categories", { detail: { open: true } }))
-        } // Open the mobile category sheet from the feed header.
-        onToggleSpeedMode={() => setSpeedMode((prev) => (prev === "cozy" ? "quick" : "cozy"))} // Toggle between cozy and quick speeds.
-        onSortChange={setSortOption} // Update the selected sort option.
+        }
+        onToggleSpeedMode={() => setSpeedMode((prev) => (prev === "cozy" ? "quick" : "cozy"))}
+        onSortChange={setSortOption}
       />
 
       <div className={styles.homeFeed__columns} ref={columnsRef}>
@@ -420,7 +417,7 @@ export default function HomeFeed({
 
       {sortedProducts.length === 0 && (
         <HomeFeedEmptyState
-          onClearFilters={() => clearFilters()} // Reset filters + search when empty.
+          onClearFilters={() => clearFilters()}
         />
       )}
     </section>

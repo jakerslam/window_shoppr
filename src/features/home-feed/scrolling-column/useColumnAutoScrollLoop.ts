@@ -55,53 +55,49 @@ export default function useColumnAutoScrollLoop({
   animateRef: MutableRefObject<(time: number) => void>;
 }) {
   /**
-   * Measure the track height and recompute the scroll speed.
+   * Measure the track height and recompute movement limits + speed.
    */
   const syncMetrics = useCallback(() => {
     const column = columnRef.current;
     const track = trackRef.current;
-
     if (!column || !track) {
-      return; // Skip when the track is not mounted yet.
+      return;
     }
 
-    const totalHeight = track.getBoundingClientRect().height; // Full height of the visible deck.
+    const totalHeight = track.getBoundingClientRect().height;
     const columnHeight = column.getBoundingClientRect().height;
     const parentHeight = column.parentElement?.getBoundingClientRect().height ?? 0;
     const viewportHeight =
       parentHeight > 0 && columnHeight >= totalHeight - 1
-        ? parentHeight // When the column auto-sizes to content, use the feed viewport height instead.
-        : columnHeight; // Otherwise use the measured column viewport height directly.
-    const revealThreshold = Math.max(totalHeight - viewportHeight, 0); // Start showing the bar when the last card reaches the bar's bottom edge.
-    const visibleCardsHeight = Math.max(viewportHeight - endDeckHeight, 0); // Reserve the bar space while columns continue scrolling.
-    const maxScroll = Math.max(totalHeight - visibleCardsHeight, 0); // Stop when the last card reaches the bar's top edge.
+        ? parentHeight
+        : columnHeight;
+    const revealThreshold = Math.max(totalHeight - viewportHeight, 0);
+    const visibleCardsHeight = Math.max(viewportHeight - endDeckHeight, 0);
+    const maxScroll = Math.max(totalHeight - visibleCardsHeight, 0);
 
     if (totalHeight <= 0) {
-      return; // Skip when layout has no measurable card height.
+      return;
     }
 
-    const wasPaused = isPausedRef.current; // Preserve paused state.
+    const wasPaused = isPausedRef.current;
+    positionRef.current = clampFinitePosition(positionRef.current, maxScroll);
+    track.style.transform = `translateY(-${positionRef.current}px)`;
 
-    positionRef.current = clampFinitePosition(positionRef.current, maxScroll); // Keep absolute position stable and only clamp when needed.
-    track.style.transform = `translateY(-${positionRef.current}px)`; // Keep transform coherent with clamped position.
-
-    loopHeightRef.current = maxScroll; // Cache finite max scroll distance.
-    baseSpeedRef.current =
-      maxScroll > 0 ? totalHeight / durationRef.current : 0; // Keep speed based on deck height, but stop when no room to scroll.
-    targetSpeedRef.current = wasPaused || maxScroll <= 0 ? 0 : baseSpeedRef.current; // Keep pause state intact and stop when cards already fill the viewport.
-
+    loopHeightRef.current = maxScroll;
+    baseSpeedRef.current = maxScroll > 0 ? totalHeight / durationRef.current : 0;
+    targetSpeedRef.current = wasPaused || maxScroll <= 0 ? 0 : baseSpeedRef.current;
     if (wasPaused || maxScroll <= 0) {
-      speedRef.current = 0; // Ensure the track stays stopped when paused.
+      speedRef.current = 0;
     }
 
     if (maxScroll <= 0) {
-      onReachEndZone?.(); // Immediately reveal the bar when this deck has no scroll room.
-      onForwardLoop?.(); // Treat non-scrollable decks as completed so the finite feed can still close.
+      onReachEndZone?.();
+      onForwardLoop?.();
       return;
     }
 
     if (positionRef.current >= revealThreshold) {
-      onReachEndZone?.(); // Keep reveal state in sync after resizes/manual position updates.
+      onReachEndZone?.();
     }
   }, [
     columnRef,
@@ -124,42 +120,39 @@ export default function useColumnAutoScrollLoop({
   const animate = useCallback(
     (time: number) => {
       if (lastTimeRef.current === null) {
-        lastTimeRef.current = time; // Seed the previous time for delta math.
+        lastTimeRef.current = time;
       }
 
-      const deltaSeconds = (time - lastTimeRef.current) / 1000; // Convert to seconds.
-      lastTimeRef.current = time; // Store the current frame time.
+      const deltaSeconds = (time - lastTimeRef.current) / 1000;
+      lastTimeRef.current = time;
 
-      const maxScroll = loopHeightRef.current; // Finite max scroll distance for this column.
-      const track = trackRef.current; // DOM node to move.
+      const maxScroll = loopHeightRef.current;
+      const track = trackRef.current;
 
       const manualDecay = Math.exp(-MANUAL_VELOCITY_DECAY * deltaSeconds);
-      manualVelocityRef.current *= manualDecay; // Ease manual input out smoothly.
+      manualVelocityRef.current *= manualDecay;
       if (Math.abs(manualVelocityRef.current) < MIN_MANUAL_VELOCITY) {
-        manualVelocityRef.current = 0; // Snap tiny values to 0 to avoid jitter.
+        manualVelocityRef.current = 0;
       }
 
       if (track && maxScroll > 0 && !isDraggingRef.current) {
-        const revealThreshold = Math.max(maxScroll - endDeckHeight, 0); // Position where the bar should begin showing.
+        const revealThreshold = Math.max(maxScroll - endDeckHeight, 0);
         const lastCardHeight =
           track.lastElementChild instanceof HTMLElement
             ? track.lastElementChild.offsetHeight
             : 0;
-        const preloadPx = Math.max(24, lastCardHeight * 0.35); // Buffer before the final card bottom touches the feed bottom border.
-        const baseTarget = targetSpeedRef.current; // Base speed respects pause state.
-        const combinedTarget = baseTarget + manualVelocityRef.current; // Add manual velocity assist.
-        const speedDelta = (combinedTarget - speedRef.current) * 0.08; // Ease toward combined target.
-        let nextSpeed = speedRef.current + speedDelta; // Apply speed easing.
-        const previousPosition = positionRef.current; // Compare positions to detect forward loop completion.
-        const requestedPosition = previousPosition + nextSpeed * deltaSeconds; // Proposed next position before clamping.
-        const nextPosition = clampFinitePosition(
-          requestedPosition,
-          maxScroll,
-        ); // Clamp to finite track bounds so no cards repeat.
+        const preloadPx = Math.max(24, lastCardHeight * 0.35);
+        const baseTarget = targetSpeedRef.current;
+        const combinedTarget = baseTarget + manualVelocityRef.current;
+        const speedDelta = (combinedTarget - speedRef.current) * 0.08;
+        let nextSpeed = speedRef.current + speedDelta;
+        const previousPosition = positionRef.current;
+        const requestedPosition = previousPosition + nextSpeed * deltaSeconds;
+        const nextPosition = clampFinitePosition(requestedPosition, maxScroll);
         const reachedEndZone =
           previousPosition < revealThreshold && nextPosition >= revealThreshold;
-        const previousGapPx = Math.max(maxScroll - previousPosition, 0); // Distance between last-card bottom and feed bottom before moving.
-        const nextGapPx = Math.max(maxScroll - nextPosition, 0); // Distance between last-card bottom and feed bottom after moving.
+        const previousGapPx = Math.max(maxScroll - previousPosition, 0);
+        const nextGapPx = Math.max(maxScroll - nextPosition, 0);
         const reachedTopUpThreshold =
           previousGapPx > preloadPx && nextGapPx <= preloadPx;
         const reachedEnd = previousPosition < maxScroll && nextPosition >= maxScroll;
@@ -168,30 +161,28 @@ export default function useColumnAutoScrollLoop({
           (nextPosition <= 0 && nextSpeed < 0);
 
         if (hitBoundary) {
-          nextSpeed = 0; // Stop inertial drift once we hit the finite bounds.
-          manualVelocityRef.current = 0; // Prevent boundary jitter from residual velocity.
+          nextSpeed = 0;
+          manualVelocityRef.current = 0;
         }
 
-        speedRef.current = nextSpeed; // Update the current speed.
-        positionRef.current = nextPosition; // Cache the current position.
-        track.style.transform = `translateY(-${nextPosition}px)`; // Move the track.
+        speedRef.current = nextSpeed;
+        positionRef.current = nextPosition;
+        track.style.transform = `translateY(-${nextPosition}px)`;
 
         if (reachedEndZone) {
-          onReachEndZone?.(); // Reveal end-of-feed bar when the first column enters the bottom zone.
+          onReachEndZone?.();
         }
-
         if (reachedTopUpThreshold) {
-          onApproachEnd?.(); // Ask for additional cards before this column fully exhausts.
+          onApproachEnd?.();
         }
-
         if (reachedEnd) {
-          onForwardLoop?.(); // Notify finite-feed state when this column consumes its full deck.
+          onForwardLoop?.();
         }
       }
 
       animationRef.current = window.requestAnimationFrame((nextTime) =>
         animateRef.current(nextTime),
-      ); // Schedule next frame via ref to avoid direct self-reference.
+      );
     },
     [
       animateRef,
@@ -212,53 +203,47 @@ export default function useColumnAutoScrollLoop({
   );
 
   useEffect(() => {
-    animateRef.current = animate; // Keep requestAnimationFrame recursion synced.
+    animateRef.current = animate;
   }, [animate, animateRef]);
 
   useEffect(() => {
-    durationRef.current = duration; // Track the latest duration value.
-    syncMetrics(); // Recompute speeds without resetting position.
+    durationRef.current = duration;
+    syncMetrics();
   }, [duration, durationRef, syncMetrics]);
 
   useEffect(() => {
-    if (deckLength === 0) {
-      return undefined; // Skip animation when there are no cards.
-    }
-
-    if (typeof window === "undefined") {
-      return undefined; // Skip animation on the server.
+    if (deckLength === 0 || typeof window === "undefined") {
+      return undefined;
     }
 
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-
     if (mediaQuery.matches) {
-      return undefined; // Respect reduced motion preferences.
+      return undefined;
     }
 
-    syncMetrics(); // Measure the track before starting.
-
+    syncMetrics();
     const handleResize = () => {
-      syncMetrics(); // Recompute metrics after layout changes.
+      syncMetrics();
     };
     const resizeObserver =
       "ResizeObserver" in window ? new ResizeObserver(syncMetrics) : null;
 
-    window.addEventListener("resize", handleResize); // Keep sizes current.
+    window.addEventListener("resize", handleResize);
     if (trackRef.current && resizeObserver) {
-      resizeObserver.observe(trackRef.current); // Track content height changes.
+      resizeObserver.observe(trackRef.current);
     }
 
     animationRef.current = window.requestAnimationFrame((nextTime) =>
       animateRef.current(nextTime),
-    ); // Start animation loop.
+    );
 
     return () => {
       if (animationRef.current) {
-        window.cancelAnimationFrame(animationRef.current); // Stop the animation loop.
+        window.cancelAnimationFrame(animationRef.current);
       }
-
-      resizeObserver?.disconnect(); // Clean up content resize observer.
-      window.removeEventListener("resize", handleResize); // Clean up resize listener.
+      resizeObserver?.disconnect();
+      window.removeEventListener("resize", handleResize);
     };
   }, [animateRef, animationRef, deckLength, syncMetrics, trackRef]);
 }
+

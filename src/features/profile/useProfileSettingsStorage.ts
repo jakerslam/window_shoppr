@@ -14,13 +14,13 @@ const clamp = (value: number, min: number, max: number) =>
  */
 const applyThemePreference = (themePreference: ThemePreference) => {
   if (typeof document === "undefined") {
-    return; // Skip theme updates during SSR.
-  }
-  if (themePreference === "system") {
-    delete document.documentElement.dataset.theme; // Revert to system theme when selected.
     return;
   }
-  document.documentElement.dataset.theme = themePreference; // Force explicit light or dark theme.
+  if (themePreference === "system") {
+    delete document.documentElement.dataset.theme;
+    return;
+  }
+  document.documentElement.dataset.theme = themePreference;
 };
 
 /**
@@ -31,17 +31,17 @@ export default function useProfileSettingsStorage({ listNames }: { listNames: st
   const accountSyncTimeoutRef = useRef<number | null>(null);
   const [settings, setSettings] = useState<ProfileSettingsState>(
     () => readStoredProfileSettings()?.settings ?? DEFAULT_SETTINGS,
-  ); // Initialize account/security settings from local storage once.
+  );
   const [themePreference, setThemePreference] = useState<ThemePreference>(
     () => readStoredProfileSettings()?.themePreference ?? "system",
-  ); // Initialize theme preference from local storage once.
+  );
   const [speedPreferences, setSpeedPreferences] = useState<FeedSpeedPreferences>(
     () => readStoredProfileSettings()?.speedPreferences ?? DEFAULT_SPEED_PREFERENCES,
-  ); // Initialize feed speed preferences from local storage once.
+  );
   const [contentPreferences, setContentPreferences] = useState<ContentPreferencesState>(
     () =>
       readStoredProfileSettings()?.contentPreferences ?? DEFAULT_CONTENT_PREFERENCES,
-  ); // Initialize content preferences from local storage once.
+  );
 
   /**
    * Hydrate account fields from the active auth session when values are available.
@@ -49,11 +49,11 @@ export default function useProfileSettingsStorage({ listNames }: { listNames: st
   useEffect(() => {
     const session = readAuthSession();
     if (!session) {
-      return undefined; // Skip when users are not signed in.
+      return undefined;
     }
 
     if (typeof window === "undefined") {
-      return undefined; // Skip deferred state updates during SSR.
+      return undefined;
     }
 
     const timeoutId = window.setTimeout(() => {
@@ -64,11 +64,11 @@ export default function useProfileSettingsStorage({ listNames }: { listNames: st
           typeof session.marketingEmails === "boolean"
             ? session.marketingEmails
             : prev.marketingEmails,
-      })); // Keep profile settings aligned with session-managed account defaults.
-    }, 0); // Defer to avoid set-state-in-effect lint warnings.
+      }));
+    }, 0);
 
     return () => {
-      window.clearTimeout(timeoutId); // Clean up deferred hydration update.
+      window.clearTimeout(timeoutId);
     };
   }, []);
 
@@ -77,26 +77,26 @@ export default function useProfileSettingsStorage({ listNames }: { listNames: st
    */
   useEffect(() => {
     if (!contentPreferences.recommendationListName) {
-      return undefined; // Skip validation when no list is selected.
+      return undefined;
     }
 
     if (listNames.includes(contentPreferences.recommendationListName)) {
-      return undefined; // Keep selection when the list still exists.
+      return undefined;
     }
 
     if (typeof window === "undefined") {
-      return undefined; // Skip deferred state updates during SSR.
+      return undefined;
     }
 
     const timeoutId = window.setTimeout(() => {
       setContentPreferences((prev) => ({
         ...prev,
         recommendationListName: null,
-      })); // Reset missing list preference to avoid stale personalization.
-    }, 0); // Defer to avoid render-phase lint warnings.
+      }));
+    }, 0);
 
     return () => {
-      window.clearTimeout(timeoutId); // Clean up deferred reset when list names change quickly.
+      window.clearTimeout(timeoutId);
     };
   }, [contentPreferences.recommendationListName, listNames]);
 
@@ -105,8 +105,8 @@ export default function useProfileSettingsStorage({ listNames }: { listNames: st
    */
   useEffect(() => {
     if (!hasMountedRef.current) {
-      hasMountedRef.current = true; // Skip first write and only apply theme.
-      applyThemePreference(themePreference); // Apply initial theme immediately.
+      hasMountedRef.current = true;
+      applyThemePreference(themePreference);
       return;
     }
 
@@ -119,8 +119,8 @@ export default function useProfileSettingsStorage({ listNames }: { listNames: st
         speedPreferencesVersion: SPEED_PREFERENCES_VERSION,
         contentPreferences,
       }),
-    ); // Persist latest profile + speed + content preferences.
-    applyThemePreference(themePreference); // Keep theme synced with selected preference.
+    );
+    applyThemePreference(themePreference);
   }, [settings, themePreference, speedPreferences, contentPreferences]);
 
   /**
@@ -129,19 +129,19 @@ export default function useProfileSettingsStorage({ listNames }: { listNames: st
   useEffect(() => {
     const session = readAuthSession();
     if (!session) {
-      return undefined; // Skip account sync when no session is active.
+      return undefined;
     }
 
     accountSyncTimeoutRef.current = window.setTimeout(() => {
       void updateAccountProfile({
         displayName: settings.displayName,
         marketingEmails: settings.marketingEmails,
-      }); // Push profile updates to backend wiring (or local auth fallback).
-    }, 300); // Debounce account updates to avoid sending every keystroke.
+      });
+    }, 300);
 
     return () => {
       if (accountSyncTimeoutRef.current) {
-        window.clearTimeout(accountSyncTimeoutRef.current); // Cancel pending sync when input changes quickly.
+        window.clearTimeout(accountSyncTimeoutRef.current);
         accountSyncTimeoutRef.current = null;
       }
     };
@@ -151,28 +151,28 @@ export default function useProfileSettingsStorage({ listNames }: { listNames: st
    * Update display name preference.
    */
   const handleDisplayNameChange = (nextValue: string) => {
-    setSettings((prev) => ({ ...prev, displayName: nextValue })); // Persist display name in local state.
+    setSettings((prev) => ({ ...prev, displayName: nextValue }));
   };
 
   /**
    * Toggle marketing email preference.
    */
   const handleMarketingEmailsToggle = (enabled: boolean) => {
-    setSettings((prev) => ({ ...prev, marketingEmails: enabled })); // Persist marketing email flag.
+    setSettings((prev) => ({ ...prev, marketingEmails: enabled }));
   };
 
   /**
    * Toggle sign-in alert preference.
    */
   const handleLoginAlertsToggle = (enabled: boolean) => {
-    setSettings((prev) => ({ ...prev, loginAlerts: enabled })); // Persist sign-in alert flag.
+    setSettings((prev) => ({ ...prev, loginAlerts: enabled }));
   };
 
   /**
    * Toggle two-factor auth stub preference.
    */
   const handleTwoFactorToggle = (enabled: boolean) => {
-    setSettings((prev) => ({ ...prev, requireTwoFactor: enabled })); // Persist 2FA stub flag.
+    setSettings((prev) => ({ ...prev, requireTwoFactor: enabled }));
   };
 
   /**
@@ -230,28 +230,28 @@ export default function useProfileSettingsStorage({ listNames }: { listNames: st
     setContentPreferences((prev) => ({
       ...prev,
       recommendationListName: nextValue ? nextValue : null,
-    })); // Persist list selection (or clear when "None" is chosen).
+    }));
   };
 
   /**
    * Update marketing email frequency preference.
    */
   const handleEmailFrequencyChange = (nextFrequency: EmailFrequency) => {
-    setContentPreferences((prev) => ({ ...prev, emailFrequency: nextFrequency })); // Persist email cadence preference.
+    setContentPreferences((prev) => ({ ...prev, emailFrequency: nextFrequency }));
   };
 
   /**
    * Override preferred category slugs (used by the onboarding taste quiz).
    */
   const setPreferredCategorySlugs = (nextCategorySlugs: string[]) => {
-    setContentPreferences((prev) => ({ ...prev, preferredCategorySlugs: nextCategorySlugs })); // Persist category taste selections.
+    setContentPreferences((prev) => ({ ...prev, preferredCategorySlugs: nextCategorySlugs }));
   };
 
   /**
    * Reset content preferences to their defaults (privacy clear action).
    */
   const resetContentPreferences = () => {
-    setContentPreferences(DEFAULT_CONTENT_PREFERENCES); // Restore defaults for content preferences.
+    setContentPreferences(DEFAULT_CONTENT_PREFERENCES);
   };
 
   return {

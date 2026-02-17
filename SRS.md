@@ -1,7 +1,7 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 80/92 (87.0%)  █████████████████░░░
+Overall: 81/92 (88.0%)  ██████████████████░░
 Frontend: 56/64 (87.5%) █████████████████░░░
 Backend: 17/22 (77.3%)  ███████████████░░░░░
 Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░░░
@@ -126,8 +126,8 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] R41: Feature flags for safe UI experiments
 - [x] R42: Accessibility audit tooling (axe/Lighthouse CI)
 - [x] R31: Add automated tests + CI/lint pipeline
-- [ ] 🔵 R32: Reduce verbose inline comments (keep only essential intent)
-- [ ] R33: Add feature public APIs (index exports) for cleaner imports
+- [x] R32: Reduce verbose inline comments (keep only essential intent)
+- [ ] 🔵 R33: Add feature public APIs (index exports) for cleaner imports
 - [ ] R34: Add comprehensive error boundaries + loading states
 - [ ] R35: Add architecture/structure documentation (docs/ARCHITECTURE.md)
 
