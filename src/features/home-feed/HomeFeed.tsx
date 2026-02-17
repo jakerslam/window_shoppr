@@ -30,16 +30,19 @@ const INITIAL_COLUMN_BATCH_SIZE = 3; // Cards dealt initially to each column whe
 const isValidSpeedMode = (value: string): value is "cozy" | "quick" =>
   value === "cozy" || value === "quick";
 
-const buildInitialDeckState = (products: Product[], columnCount: number) => {
+const buildInitialDeckState = (
+  products: Product[],
+  columnCount: number,
+  cardsPerColumn: number,
+) => {
   const decks: Product[][] = Array.from({ length: columnCount }, () => []);
   if (products.length === 0 || columnCount === 0) {
     return { decks, remaining: [] };
   }
 
-  const initialDealCount = Math.min(
-    products.length,
-    columnCount * INITIAL_COLUMN_BATCH_SIZE,
-  );
+  const perColumn =
+    cardsPerColumn > 0 ? cardsPerColumn : INITIAL_COLUMN_BATCH_SIZE;
+  const initialDealCount = Math.min(products.length, columnCount * perColumn);
 
   for (let index = 0; index < initialDealCount; index += 1) {
     decks[index % columnCount].push(products[index]);
@@ -164,6 +167,8 @@ export default function HomeFeed({
     () => getFeedColumnCount(viewportWidth),
     [viewportWidth],
   );
+  const columnsRef = useRef<HTMLDivElement | null>(null);
+  const [cardsPerColumn, setCardsPerColumn] = useState(5);
   const durationScale =
     speedMode === "quick" ? speedPreferences.quickScale : speedPreferences.cozyScale;
   const columnDurations = useMemo(
@@ -171,13 +176,16 @@ export default function HomeFeed({
     [durationScale],
   );
   const initialDeckState = useMemo(
-    () => buildInitialDeckState(feedProducts, columnCount),
-    [feedProducts, columnCount],
+    () => buildInitialDeckState(feedProducts, columnCount, cardsPerColumn),
+    [feedProducts, columnCount, cardsPerColumn],
   );
   const feedResetKey = useMemo(
-    () => `${columnCount}:${rankedProducts.map((product) => product.id).join("|")}`,
-    [columnCount, rankedProducts],
-  ); // Stable reset key for a new feed/query, independent from runtime deck rebalancing.
+    () =>
+      `${columnCount}:${cardsPerColumn}:${feedProducts
+        .map((product) => product.id)
+        .join("|")}`,
+    [cardsPerColumn, columnCount, feedProducts],
+  );
   const [deckState, setDeckState] = useState<{
     resetKey: string;
     decks: Product[][];
@@ -190,6 +198,41 @@ export default function HomeFeed({
   const columnDecksRef = useRef<Product[][]>(columnDecks);
   const completedColumnsRef = useRef<Set<number>>(new Set());
   const deckStateRef = useRef(deckState);
+
+  /**
+   * Re-measure how many cards fit within each column plus one buffer.
+   */
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return undefined;
+    }
+
+    const measure = () => {
+      const columnNode = columnsRef.current;
+      const cardNode = columnNode?.querySelector('[data-card="product-card"]');
+
+      if (!columnNode || !cardNode) {
+        return;
+      }
+
+      const columnHeight = columnNode.getBoundingClientRect().height;
+      const cardHeight = cardNode.getBoundingClientRect().height;
+      if (columnHeight <= 0 || cardHeight <= 0) {
+        return;
+      }
+
+      const visibleCards = Math.max(1, Math.floor(columnHeight / cardHeight));
+      const targetCards = visibleCards + 1; // Leave one extra card offscreen for smooth reveal.
+      setCardsPerColumn((prev) => (prev === targetCards ? prev : targetCards));
+    };
+
+    const id = window.requestAnimationFrame(measure);
+    window.addEventListener("resize", measure);
+    return () => {
+      window.cancelAnimationFrame(id);
+      window.removeEventListener("resize", measure);
+    };
+  }, [feedProducts.length, viewportWidth]);
 
   /**
    * Keep the runtime deck + column refs in sync with rendered decks.
@@ -274,6 +317,17 @@ export default function HomeFeed({
       return true;
     },
     [isDeckEnded],
+  );
+
+  const handleDeckApproachingEnd = useCallback(
+    (columnIndex: number) => {
+      if (columnIndex >= columnDecksRef.current.length) {
+        return;
+      }
+
+      dealNextCard(columnIndex);
+    },
+    [dealNextCard],
   );
 
   /**
@@ -386,7 +440,7 @@ export default function HomeFeed({
         onSortChange={setSortOption} // Update the selected sort option.
       />
 
-      <div className={styles.homeFeed__columns}>
+      <div className={styles.homeFeed__columns} ref={columnsRef}>
         {columnDecks.map((deck, index) => (
           <ScrollingColumn
             key={`column-${index}`}
@@ -398,6 +452,7 @@ export default function HomeFeed({
             isFeedEnded={isDeckEnded}
             endDeckHeight={END_DECK_BAR_HEIGHT}
             cycleToken={cycleToken}
+            onDeckApproachingEnd={handleDeckApproachingEnd}
             onDeckExhausted={handleDeckExhausted}
             onColumnEnterEndZone={handleColumnEnterEndZone}
             onColumnComplete={handleColumnCompleteWithTracking}

@@ -69,10 +69,8 @@ export default function ProductCard({
   const commentCount = useProductCommentCount(product.id); // Subscribe to local comment count updates.
   const showSaveCount = saveCount >= SOCIAL_PROOF_MIN_COUNT; // Hide weak social proof until count crosses the trust threshold.
   const showCommentCount = commentCount >= SOCIAL_PROOF_MIN_COUNT; // Hide weak social proof until count crosses the trust threshold.
-  const showSponsoredTag = Boolean(product.isSponsored);
-  const adCreative = showSponsoredTag
-    ? product.adCreative ?? DEFAULT_AD_CREATIVE
-    : null;
+  const adCreative = product.adCreative ?? DEFAULT_AD_CREATIVE;
+  const isAdCard = Boolean(product.isSponsored && adCreative);
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
     if (event.key === "Enter" || event.key === " ") {
@@ -81,11 +79,51 @@ export default function ProductCard({
     }
   };
 
+  const articleClassName = `${styles.productCard} ${
+    isCompact ? styles["productCard--compact"] : ""
+  }`;
+
+  if (isAdCard && adCreative) {
+    return (
+      <article
+        className={`${articleClassName}`}
+        role="button"
+        tabIndex={0}
+        aria-label={adCreative.headline}
+        data-card="product-card"
+        onClick={onOpen}
+        onKeyDown={handleKeyDown}
+      >
+        <div className={styles.productCard__media}>
+          <img
+            className={styles.productCard__image}
+            src={adCreative.image ?? imageSrc}
+            alt={adCreative.headline}
+            loading="lazy"
+            onError={(event) => {
+              event.currentTarget.src = PLACEHOLDER_IMAGE;
+            }}
+          />
+        </div>
+
+        <div className={styles.productCard__nameSection}>
+          <span className={styles.productCard__name}>{adCreative.headline}</span>
+          <span className={styles.productCard__meta}>{adCreative.body}</span>
+        </div>
+
+        <div className={styles.productCard__priceSection}>
+          <div className={styles.productCard__priceColumn}>
+            <span className={styles.productCard__adCta}>{adCreative.cta}</span>
+          </div>
+        </div>
+      </article>
+    );
+  }
+
   return (
     <article
-      className={`${styles.productCard} ${
-        isCompact ? styles["productCard--compact"] : ""
-      }`}
+      className={articleClassName}
+      data-card="product-card"
       role="button"
       tabIndex={0}
       aria-label={`View ${product.name}`}
@@ -126,16 +164,6 @@ export default function ProductCard({
 
       {/* Price section with optional strike-through and social actions. */}
       <div className={styles.productCard__priceSection}>
-        {showSponsoredTag && adCreative ? (
-          <div className={styles.productCard__sponsoredBanner}>
-            <span className={styles.productCard__sponsoredTag} aria-label="Sponsored content">
-              Sponsored
-            </span>
-            <p className={styles.productCard__adHeadline}>{adCreative.headline}</p>
-            <p className={styles.productCard__adBody}>{adCreative.body}</p>
-            <span className={styles.productCard__adCta}>{adCreative.cta}</span>
-          </div>
-        ) : null}
         {/* Price column with optional strike price. */}
         <div className={styles.productCard__priceColumn}>
           <div className={styles.productCard__priceRow}>
