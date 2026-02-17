@@ -160,6 +160,7 @@
     },
     "videoUrl": "https://www.youtube.com/watch?v=V-_O7nl0Ii0",
     "retailer": "Ulta",
+    "isSponsored": true,
     "tags": [
       "vanity",
       "mirror",
@@ -248,6 +249,7 @@
     "description": "QuietSip Thermal Tumbler is built for long, steady sips on the go, with a smooth lid design that reduces spills and keeps drinks at a comfortable temperature. The double-wall insulation helps keep iced beverages cold and warm drinks cozy for hours, while the slim profile fits most cup holders. The finish feels soft in the hand and resists fingerprints, making it a clean-looking companion for desks, car rides, and errands. The lid seals tightly and cleans easily, so it works well for daily routines without extra upkeep. If you like a tidy, modern tumbler that looks good and performs, this is a strong pick.",
     "affiliateUrl": "https://example.com/affiliate/tumbler",
     "retailer": "Target",
+    "isSponsored": true,
     "tags": [
       "tumbler",
       "insulated",
@@ -277,6 +279,7 @@
     "affiliateUrl": "https://example.com/affiliate/charger",
     "dealEndsAt": "2026-03-15T23:59:59Z",
     "retailer": "Best Buy",
+    "isSponsored": true,
     "tags": [
       "wireless charger",
       "phone",

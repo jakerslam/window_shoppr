@@ -62,6 +62,7 @@ export default function ProductCard({
   const commentCount = useProductCommentCount(product.id); // Subscribe to local comment count updates.
   const showSaveCount = saveCount >= SOCIAL_PROOF_MIN_COUNT; // Hide weak social proof until count crosses the trust threshold.
   const showCommentCount = commentCount >= SOCIAL_PROOF_MIN_COUNT; // Hide weak social proof until count crosses the trust threshold.
+  const showSponsoredTag = Boolean(product.isSponsored);
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
     if (event.key === "Enter" || event.key === " ") {
@@ -115,6 +116,14 @@ export default function ProductCard({
 
       {/* Price section with optional strike-through and social actions. */}
       <div className={styles.productCard__priceSection}>
+        {showSponsoredTag ? (
+          <span
+            className={styles.productCard__sponsoredTag}
+            aria-label="Sponsored content"
+          >
+            Sponsored
+          </span>
+        ) : null}
         {/* Price column with optional strike price. */}
         <div className={styles.productCard__priceColumn}>
           <div className={styles.productCard__priceRow}>

@@ -4,7 +4,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCategoryFilter } from "@/features/category-filter/CategoryFilterProvider";
 import { Product } from "@/shared/lib/catalog/types";
-import { formatCategoryLabel } from "@/features/home-feed/home-feed-utils";
+import {
+  formatCategoryLabel,
+  interleaveSponsoredProducts,
+} from "@/features/home-feed/home-feed-utils";
 import HomeFeedEmptyState from "@/features/home-feed/HomeFeedEmptyState";
 import HomeFeedEndDeck from "@/features/home-feed/HomeFeedEndDeck";
 import HomeFeedHeader from "@/features/home-feed/HomeFeedHeader";
@@ -150,7 +153,12 @@ export default function HomeFeed({
     recommendationListIds,
   });
 
-  const resultsLabel = `Browse ${sortedProducts.length} ${subtitleLabel}`;
+  const feedProducts = useMemo(
+    () => interleaveSponsoredProducts(rankedProducts),
+    [rankedProducts],
+  );
+
+  const resultsLabel = `Browse ${feedProducts.length} ${subtitleLabel}`;
 
   const columnCount = useMemo(
     () => getFeedColumnCount(viewportWidth),
@@ -163,8 +171,8 @@ export default function HomeFeed({
     [durationScale],
   );
   const initialDeckState = useMemo(
-    () => buildInitialDeckState(rankedProducts, columnCount),
-    [rankedProducts, columnCount],
+    () => buildInitialDeckState(feedProducts, columnCount),
+    [feedProducts, columnCount],
   );
   const feedResetKey = useMemo(
     () => `${columnCount}:${rankedProducts.map((product) => product.id).join("|")}`,
