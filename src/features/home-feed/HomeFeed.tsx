@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useCategoryFilter } from "@/features/category-filter/CategoryFilterProvider";
+import { useCategoryFilter } from "@/features/category-filter";
 import { Product } from "@/shared/lib/catalog/types";
 import {
   formatCategoryLabel,

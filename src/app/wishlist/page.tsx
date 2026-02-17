@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import WishlistPage from "@/features/wishlist/WishlistPage";
+import { WishlistPage } from "@/features/wishlist";
 
 /**
  * Canonical metadata for this route.

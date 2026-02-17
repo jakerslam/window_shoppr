@@ -1,6 +1,6 @@
 "use client";
 
-import TasteQuizModal from "@/features/preference-capture/TasteQuizModal";
+import { TasteQuizModal } from "@/features/preference-capture";
 import ProfileSettingsAccountSection from "@/features/profile/sections/ProfileSettingsAccountSection";
 import ProfileSettingsAppearanceSection from "@/features/profile/sections/ProfileSettingsAppearanceSection";
 import ProfileSettingsContentSection from "@/features/profile/sections/ProfileSettingsContentSection";
@@ -8,7 +8,7 @@ import ProfileSettingsRewardsSection from "@/features/profile/sections/ProfileSe
 import ProfileSettingsSecuritySection from "@/features/profile/sections/ProfileSettingsSecuritySection";
 import useProfileSettingsState from "@/features/profile/useProfileSettingsState";
 import styles from "@/features/profile/ProfileSettings.module.css";
-import { useWishlist } from "@/features/wishlist/wishlist";
+import { useWishlist } from "@/features/wishlist";
 import useAuthSessionState from "@/shared/lib/platform/useAuthSessionState";
 
 /**

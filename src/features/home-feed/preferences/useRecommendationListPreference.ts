@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import {
   WISHLIST_EVENT,
   WISHLIST_LISTS_STORAGE_KEY,
-} from "@/features/wishlist/wishlist-constants";
+} from "@/features/wishlist";
 
 /**
  * Read wishlist list ids from local storage for list-based recommendations.
@@ -89,4 +89,3 @@ export default function useRecommendationListPreference({
     };
   }, [recommendationListName, setRecommendationListIds]);
 }
-

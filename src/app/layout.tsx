@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import { Cormorant, Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
-import TopBar from "@/features/top-bar/TopBar";
-import MobileBottomNav from "@/features/top-bar/mobile/MobileBottomNav";
-import CategoryFilterProvider from "@/features/category-filter/CategoryFilterProvider";
+import { TopBar, MobileBottomNav } from "@/features/top-bar";
+import { CategoryFilterProvider } from "@/features/category-filter";
 import Footer from "@/shared/components/footer/Footer";
-import EmailCaptureModal from "@/features/email-capture/EmailCaptureModal";
-import PurchaseFollowupPrompt from "@/features/purchase-followup/PurchaseFollowupPrompt";
+import { EmailCaptureModal } from "@/features/email-capture";
+import { PurchaseFollowupPrompt } from "@/features/purchase-followup";
 import CookieConsent from "@/shared/components/privacy/CookieConsent";
 import MonitoringBootstrap from "@/shared/components/monitoring/MonitoringBootstrap";
 import { SITE_URL } from "@/shared/lib/platform/seo";

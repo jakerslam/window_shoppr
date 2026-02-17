@@ -32,6 +32,10 @@ Open http://localhost:3000
 - `src/data` — JSON product catalog fallback
 - `docs/agent` — Agent integration docs (planned ingestion/moderation API)
 
+## Feature Public APIs
+- Import feature entry points from root barrels for cleaner boundaries.
+- Example: use `@/features/home-feed` instead of `@/features/home-feed/HomeFeed`.
+
 ## Data + Ingestion
 The current build reads from `src/data/products.json` and normalizes source metadata in `src/shared/lib/catalog/data.ts`.
 

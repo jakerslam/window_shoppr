@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import ProductDetail from "@/features/product-detail/ProductDetail";
+import { ProductDetail } from "@/features/product-detail";
 import { fetchProductBySlug, fetchProducts } from "@/shared/lib/catalog/data";
 import { buildMetaDescription, SITE_URL } from "@/shared/lib/platform/seo";
 import { Product } from "@/shared/lib/catalog/types";

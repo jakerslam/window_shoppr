@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useCategoryFilter } from "@/features/category-filter/CategoryFilterProvider";
+import { useCategoryFilter } from "@/features/category-filter";
 import {
   formatDealTimeRemaining,
   isDealWindowActive,

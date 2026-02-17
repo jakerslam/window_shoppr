@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { Product } from "@/shared/lib/catalog/types";
 import ProductCard from "@/shared/components/product-card/ProductCard";
-import WishlistSaveButton from "@/features/wishlist/WishlistSaveButton";
+import { WishlistSaveButton } from "@/features/wishlist";
 import useColumnMotion from "@/features/home-feed/scrolling-column/useColumnMotion";
 import styles from "@/features/home-feed/HomeFeed.module.css";
 

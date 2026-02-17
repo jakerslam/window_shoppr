@@ -11,7 +11,7 @@ import {
   writeAuthRedirectPath,
 } from "@/shared/lib/platform/auth-redirect";
 import useAuthSessionState from "@/shared/lib/platform/useAuthSessionState";
-import { useCategoryFilter } from "@/features/category-filter/CategoryFilterProvider";
+import { useCategoryFilter } from "@/features/category-filter";
 import styles from "@/features/top-bar/TopBar.module.css";
 import { HomeIcon, SearchIcon, StarIcon, UserIcon } from "@/features/top-bar/NavIcons";
 import MobileCategoriesSheet from "@/features/top-bar/mobile/MobileCategoriesSheet";
@@ -22,7 +22,7 @@ import {
   WISHLIST_SEARCH_EVENT,
   WISHLIST_SEARCH_STORAGE_KEY,
   writeWishlistSearchQuery,
-} from "@/features/wishlist/lib/wishlist-search";
+} from "@/features/wishlist";
 
 /**
  * Mobile bottom navigation with category sheet and search overlay.

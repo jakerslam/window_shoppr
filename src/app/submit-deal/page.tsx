@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import SubmitDealForm from "@/features/deal-submission/SubmitDealForm";
+import { SubmitDealForm } from "@/features/deal-submission";
 import styles from "@/app/submit-deal/page.module.css";
 
 /**

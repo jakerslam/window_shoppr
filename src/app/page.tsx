@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import HomeFeed from "@/features/home-feed/HomeFeed";
+import { HomeFeed } from "@/features/home-feed";
 import { fetchProducts } from "@/shared/lib/catalog/data";
 import styles from "@/app/page.module.css";
 

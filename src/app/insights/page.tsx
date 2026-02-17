@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Product } from "@/shared/lib/catalog/types";
 import { INSIGHT_TEMPLATES } from "@/data/insight-templates";
-import { buildIntentProductList } from "@/features/insights/insight-utils";
+import { buildIntentProductList } from "@/features/insights";
 import { fetchProducts } from "@/shared/lib/catalog/data";
 import styles from "@/app/insights/page.module.css";
 

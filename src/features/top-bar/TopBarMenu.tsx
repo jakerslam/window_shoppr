@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { getAvailableCategories } from "@/shared/lib/catalog/categories";
 import { getProductCatalog } from "@/shared/lib/catalog/products";
-import { useCategoryFilter } from "@/features/category-filter/CategoryFilterProvider";
+import { useCategoryFilter } from "@/features/category-filter";
 import TopBarCategoriesMenuList from "@/features/top-bar/menu/TopBarCategoriesMenuList";
 import styles from "@/features/top-bar/TopBar.module.css";
 

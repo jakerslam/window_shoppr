@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback } from "react";
-import { useCategoryFilter } from "@/features/category-filter/CategoryFilterProvider";
+import { useCategoryFilter } from "@/features/category-filter";
 import { PlusIcon } from "@/features/top-bar/NavIcons";
 import { trackSearch } from "@/shared/lib/engagement/analytics";
 import TopBarBrand from "@/features/top-bar/TopBarBrand";

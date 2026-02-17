@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import HomeFeed from "@/features/home-feed/HomeFeed";
+import { HomeFeed } from "@/features/home-feed";
 import { getAvailableCategories, toCategorySlug } from "@/shared/lib/catalog/categories";
 import { fetchProducts } from "@/shared/lib/catalog/data";
 import { buildMetaDescription, SITE_URL } from "@/shared/lib/platform/seo";

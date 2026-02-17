@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import LoginForm from "@/features/auth/LoginForm";
-import ProfileSettings from "@/features/profile/ProfileSettings";
+import { LoginForm } from "@/features/auth";
+import { ProfileSettings } from "@/features/profile";
 import styles from "@/app/login/page.module.css";
 
 /**

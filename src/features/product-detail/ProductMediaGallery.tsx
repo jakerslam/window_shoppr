@@ -2,7 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element */
 import { useMemo, useState } from "react";
-import WishlistSaveButton from "@/features/wishlist/WishlistSaveButton";
+import { WishlistSaveButton } from "@/features/wishlist";
 import { toAssetPath } from "@/shared/lib/catalog/assets";
 import useThumbnailRail from "@/features/product-detail/media-gallery/useThumbnailRail";
 import styles from "@/features/product-detail/ProductDetail.module.css";

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import SignupForm from "@/features/auth/SignupForm";
+import { SignupForm } from "@/features/auth";
 import styles from "@/app/signup/page.module.css";
 
 /**
