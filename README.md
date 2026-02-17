@@ -76,6 +76,9 @@ See: `docs/agent/README.md`, `docs/agent/SKILL.md`, and `docs/agent/AGENT_SKILL.
 ## Scripts
 - `npm run dev` — local dev server
 - `npm run lint` — lint checks
+- `npm run audit:axe` — run axe-core CLI accessibility scan on key pages
+- `npm run audit:lighthouse` — run Lighthouse CI audit on key pages
+- `npm run audit:accessibility` — run both axe + Lighthouse audits
 
 ## Notes
 - This repo includes UI and UX stubs for future backend integrations (SQL, ingestion API, analytics).
