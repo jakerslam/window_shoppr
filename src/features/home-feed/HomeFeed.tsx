@@ -23,6 +23,7 @@ const BASE_COLUMN_DURATIONS = [38, 46, 54, 62, 70]; // Base scroll speeds per co
 const SPEED_MODE_STORAGE_KEY = "window_shoppr_feed_speed_mode"; // Persist user-selected speed toggle mode.
 const END_DECK_BAR_HEIGHT = 126; // Full-width end-of-feed bar height used as the stop boundary offset.
 const INITIAL_COLUMN_BATCH_SIZE = 3; // Cards dealt initially to each column when a new feed loads.
+const REFILL_BATCH_SIZE = 2; // Cards dealt per refill request to better support fast manual scrolling.
 
 /**
  * Validate storage values before applying them to speed mode state.
@@ -285,34 +286,41 @@ export default function HomeFeed({
     [router],
   );
 
-  const dealNextCard = useCallback(
-    (columnIndex: number) => {
+  /**
+   * Deal the next set of cards from the master stack into a single column deck.
+   */
+  const dealNextCards = useCallback(
+    (columnIndex: number, count: number) => {
       if (isDeckEnded) {
-        return false; // Do not add cards once the feed is finished.
+        return 0; // Do not add cards once the feed is finished.
       }
 
       const current = deckStateRef.current;
 
       if (columnIndex >= current.decks.length) {
-        return false; // Guard against missing columns.
+        return 0; // Guard against missing columns.
       }
 
-      if (current.remaining.length === 0) {
-        return false; // No cards left in the stack.
+      const dealCount = Math.max(0, Math.min(count, current.remaining.length));
+      if (dealCount === 0) {
+        return 0; // No cards left in the stack.
       }
 
-      const [nextCard, ...rest] = current.remaining;
+      const nextCards = current.remaining.slice(0, dealCount);
+      const rest = current.remaining.slice(dealCount);
       const nextDecks = current.decks.map((deck, index) =>
-        index === columnIndex ? [...deck, nextCard] : deck,
+        index === columnIndex ? [...deck, ...nextCards] : deck,
       );
-
-      setDeckState({
+      const nextState = {
         resetKey: current.resetKey,
         decks: nextDecks,
         remaining: rest,
-      });
+      };
 
-      return true;
+      deckStateRef.current = nextState; // Keep ref-based reads current for rapid successive refill calls.
+      setDeckState(nextState); // Apply refills to rendered deck state.
+
+      return dealCount;
     },
     [isDeckEnded],
   );
@@ -323,9 +331,9 @@ export default function HomeFeed({
         return;
       }
 
-      dealNextCard(columnIndex);
+      dealNextCards(columnIndex, REFILL_BATCH_SIZE);
     },
-    [dealNextCard],
+    [dealNextCards],
   );
 
   /**
@@ -337,12 +345,12 @@ export default function HomeFeed({
         return false; // Do not refill once the feed is already in its final ended state.
       }
 
-      if (dealNextCard(columnIndex)) {
+      if (dealNextCards(columnIndex, REFILL_BATCH_SIZE) > 0) {
         return true; // A new card was dealt, so keep scrolling after the column completes.
       }
       return false;
     },
-    [isDeckEnded, dealNextCard],
+    [isDeckEnded, dealNextCards],
   );
 
   /**
