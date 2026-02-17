@@ -3,6 +3,16 @@
  */
 export type ProductPublishState = "draft" | "published" | "unpublished";
 
+export type AffiliateVerificationSource = "first_party" | "agent" | "merchant";
+
+export type AffiliateVerificationStatus = "verified" | "pending" | "failed";
+
+export type AffiliateVerification = {
+  source: AffiliateVerificationSource;
+  status: AffiliateVerificationStatus;
+  network?: string;
+};
+
 export type Product = {
   id: string;
   source?: string;
@@ -22,6 +32,7 @@ export type Product = {
   images: string[];
   description: string;
   affiliateUrl: string;
+  affiliateVerification?: AffiliateVerification;
   retailer?: string;
   videoUrl?: string;
   dealEndsAt?: string;

@@ -49,6 +49,8 @@ export default function ScrollingColumn({
   isFeedEnded,
   endDeckHeight,
   cycleToken,
+  onDeckApproachingEnd,
+  onDeckExhausted,
   onColumnEnterEndZone,
   onColumnComplete,
 }: {
@@ -60,6 +62,8 @@ export default function ScrollingColumn({
   isFeedEnded: boolean;
   endDeckHeight: number;
   cycleToken: string;
+  onDeckApproachingEnd?: (columnIndex: number) => void;
+  onDeckExhausted?: (columnIndex: number) => boolean;
   onColumnEnterEndZone: (columnIndex: number) => void;
   onColumnComplete: (columnIndex: number) => void;
 }) {
@@ -94,13 +98,24 @@ export default function ScrollingColumn({
    * Notify the feed when this visible column completes one full loop.
    */
   const handleForwardLoop = useCallback(() => {
+    if (onDeckExhausted?.(columnIndex)) {
+      return; // Parent refilled this column from another stack; keep scrolling instead of ending.
+    }
+
     if (hasReportedCompletion.current) {
       return; // Report one completion per cycle to avoid duplicate end-state updates.
     }
 
     hasReportedCompletion.current = true;
     onColumnComplete(columnIndex);
-  }, [columnIndex, onColumnComplete]);
+  }, [columnIndex, onColumnComplete, onDeckExhausted]);
+
+  /**
+   * Request a top-up shortly before this column reaches its current end.
+   */
+  const handleApproachEnd = useCallback(() => {
+    onDeckApproachingEnd?.(columnIndex); // Ask parent to deal more cards if available.
+  }, [columnIndex, onDeckApproachingEnd]);
 
   // Memoize open handlers so cards do not receive new callbacks on every render.
   const openHandlers = useMemo(
@@ -124,12 +139,12 @@ export default function ScrollingColumn({
     endPointerGesture,
   } = useColumnMotion({
     duration,
-    deckSignature,
     cycleToken,
     deckLength: deck.length,
     isModalOpen,
     isFeedEnded,
     endDeckHeight,
+    onApproachEnd: handleApproachEnd,
     onReachEndZone: handleReachEndZone,
     onForwardLoop: handleForwardLoop,
   });

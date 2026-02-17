@@ -7,7 +7,13 @@ import { getFeedColumnCount } from "@/features/home-feed/column-layout";
 /**
  * Finite-feed state for end-of-deck messaging and replay flow.
  */
-export default function useFiniteFeedState({ columnDecks }: { columnDecks: Product[][] }) {
+export default function useFiniteFeedState({
+  columnDecks,
+  resetKey,
+}: {
+  columnDecks: Product[][];
+  resetKey: string;
+}) {
   const [viewportWidth, setViewportWidth] = useState(() =>
     typeof window === "undefined" ? 1280 : window.innerWidth,
   );
@@ -27,10 +33,6 @@ export default function useFiniteFeedState({ columnDecks }: { columnDecks: Produ
     indexes: [],
   });
 
-  const deckSignature = useMemo(
-    () => columnDecks.map((deck) => deck.map((product) => product.id).join(",")).join("|"),
-    [columnDecks],
-  ); // Reset completion tracking when deck content changes.
   const visibleColumnCount = useMemo(
     () => getFeedColumnCount(viewportWidth),
     [viewportWidth],
@@ -44,12 +46,12 @@ export default function useFiniteFeedState({ columnDecks }: { columnDecks: Produ
     [columnDecks, visibleColumnCount],
   ); // Track only visible columns that actually render cards.
   const completedColumnIndexes =
-    completionState.deckSignature === deckSignature
+    completionState.deckSignature === resetKey
       ? completionState.indexes
       : [];
   const endZoneColumnIndexes =
-    endZoneState.deckSignature === deckSignature ? endZoneState.indexes : [];
-  const cycleToken = `${deckSignature}:${replayCount}`;
+    endZoneState.deckSignature === resetKey ? endZoneState.indexes : [];
+  const cycleToken = `${resetKey}:${replayCount}`;
   const isComplete =
     activeColumnIndexes.length > 0 &&
     activeColumnIndexes.every((index) => completedColumnIndexes.includes(index)); // Detect when the visible deck has been consumed.
@@ -84,18 +86,18 @@ export default function useFiniteFeedState({ columnDecks }: { columnDecks: Produ
   const handleColumnEnterEndZone = useCallback((columnIndex: number) => {
     setEndZoneState((previous) => {
       const currentIndexes =
-        previous.deckSignature === deckSignature ? previous.indexes : [];
+        previous.deckSignature === resetKey ? previous.indexes : [];
 
       if (currentIndexes.includes(columnIndex)) {
         return previous; // Avoid duplicate enter-end-zone entries.
       }
 
       return {
-        deckSignature,
+        deckSignature: resetKey,
         indexes: [...currentIndexes, columnIndex],
       };
     });
-  }, [deckSignature]);
+  }, [resetKey]);
 
   /**
    * Track a visible column reaching the end of its deck.
@@ -103,33 +105,33 @@ export default function useFiniteFeedState({ columnDecks }: { columnDecks: Produ
   const handleColumnComplete = useCallback((columnIndex: number) => {
     setCompletionState((previous) => {
       const currentIndexes =
-        previous.deckSignature === deckSignature ? previous.indexes : [];
+        previous.deckSignature === resetKey ? previous.indexes : [];
 
       if (currentIndexes.includes(columnIndex)) {
         return previous; // Avoid duplicate completion entries.
       }
 
       return {
-        deckSignature,
+        deckSignature: resetKey,
         indexes: [...currentIndexes, columnIndex],
       };
     });
-  }, [deckSignature]);
+  }, [resetKey]);
 
   /**
    * Replay the same deck from the beginning.
    */
   const handleReplayDeck = useCallback(() => {
     setEndZoneState({
-      deckSignature,
+      deckSignature: resetKey,
       indexes: [],
     }); // Clear end-zone state.
     setCompletionState({
-      deckSignature,
+      deckSignature: resetKey,
       indexes: [],
     }); // Clear completion state.
     setReplayCount((previous) => previous + 1); // Reset per-column completion guards.
-  }, [deckSignature]);
+  }, [resetKey]);
 
   return {
     isDeckEnded,

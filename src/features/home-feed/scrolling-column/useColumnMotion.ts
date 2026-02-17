@@ -12,22 +12,22 @@ import useWheelAssist from "@/features/home-feed/scrolling-column/useWheelAssist
  */
 export default function useColumnMotion({
   duration,
-  deckSignature,
   cycleToken,
   deckLength,
   isModalOpen,
   isFeedEnded,
   endDeckHeight,
+  onApproachEnd,
   onReachEndZone,
   onForwardLoop,
 }: {
   duration: number;
-  deckSignature: string;
   cycleToken: string;
   deckLength: number;
   isModalOpen: boolean;
   isFeedEnded: boolean;
   endDeckHeight: number;
+  onApproachEnd?: () => void;
   onReachEndZone?: () => void;
   onForwardLoop?: () => void;
 }) {
@@ -131,6 +131,7 @@ export default function useColumnMotion({
     deckLength,
     duration,
     endDeckHeight,
+    onApproachEnd,
     onReachEndZone,
     onForwardLoop,
     columnRef,
@@ -162,7 +163,7 @@ export default function useColumnMotion({
     if (trackRef.current) {
       trackRef.current.style.transform = "translateY(0px)"; // Keep transform in sync with reset position.
     }
-  }, [cycleToken, deckSignature, resetTouchState]);
+  }, [cycleToken, resetTouchState]);
 
   /**
    * Clean up pending cooldown timers when this column unmounts.

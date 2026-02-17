@@ -58,7 +58,7 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] R28: Category/subcategory gating (hide nav items + noindex pages until content threshold is met)
 - [x] R22.5: Category + subcategory landing pages with SEO metadata, schema, and slug routing
 - [x] R22.6: Category slug routing + canonical pages (category + subcategory)
-- [ ] R25 (Phase 2 Optional): AI-curated blog engine with intent-to-product mapping (pillar templates, FAQ schema)
+- [x] R25 (Phase 2 Optional): AI-curated blog engine with intent-to-product mapping (pillar templates, FAQ schema)
 - [x] R20: SEO structured data (Product/Offer JSON-LD)
 - [x] R21: Sitemap, robots, and canonical URLs
 
@@ -83,7 +83,7 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] R29.8: Social proof counts (display save count on product pages + cards)
 - [x] R29.5: User-submitted deals (submit link + optional price/info; moderation queue for AI agent/gatekeeper; auto-enrich into draft products; optional revenue share later)
 - [x] R29.14: Affiliate-link minting pipeline for submitted products (extract/normalize product URL, attempt first-party affiliate link generation automatically or via agent queue, validate compliance, then auto-replace listing link with audit trail + rollback).
-- [NEXT] 🔵 R29.15: Monetization-aware feed ranking boost (prefer products with verified first-party affiliate links, with capped weight so relevance/quality signals still dominate).
+- [x] R29.15: Monetization-aware feed ranking boost (prefer products with verified first-party affiliate links, with capped weight so relevance/quality signals still dominate).
 - [ ] R29.4: Native ad cards (occasional sponsored cards in feed, non-disruptive)
 - [x] R23: Click tracking for affiliate links
 - [x] R24: Cookie consent + privacy/affiliate disclosure (accept all + essential only)

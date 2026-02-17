@@ -30,6 +30,13 @@ export const ProductSchema: z.ZodType<Product> = z
     images: z.array(z.string().min(1)).min(1), // Primary image + optional gallery.
     description: z.string().min(1), // SEO-friendly description stored per product.
     affiliateUrl: z.string().url(), // Outbound affiliate destination.
+    affiliateVerification: z
+      .object({
+        source: z.enum(["first_party", "agent", "merchant"]),
+        status: z.enum(["verified", "pending", "failed"]),
+        network: z.string().min(1).optional(),
+      })
+      .optional(),
     retailer: z.string().min(1).optional(), // Retailer label for CTA text.
     videoUrl: z.string().url().optional(), // Optional review/demo video.
     dealEndsAt: ISO_DATE_TIME_SCHEMA.optional(), // Optional deal expiration timestamp.

@@ -98,6 +98,8 @@ const buildListWeights = (listIds: string[], productLookup: Map<string, Product>
   };
 };
 
+const AFFILIATE_MONETIZATION_BOOST = 1.8; // Gentle boost so monetization signal stays secondary.
+
 /**
  * Rank products for each user using recently viewed preferences.
  */
@@ -185,6 +187,19 @@ export const rankProductsForUser = (
         tasteBoost +
         listBoost; // Combine recency, taste, and list-driven boosts.
 
+      const isVerifiedFirstPartyAffiliate =
+        product.affiliateVerification?.status === "verified" &&
+        product.affiliateVerification?.source === "first_party";
+      const monetizationBoost = isVerifiedFirstPartyAffiliate
+        ? AFFILIATE_MONETIZATION_BOOST
+        : 0;
+
+      return {
+        product,
+        score: score + monetizationBoost,
+        index,
+      };
+
       return {
         product,
         score,
@@ -200,4 +215,3 @@ export const rankProductsForUser = (
     })
     .map((entry) => entry.product);
 };
-

@@ -18,6 +18,11 @@
     ],
     "description": "Cozy Cloud Throw Blanket is a soft, plush, all-season layer designed for couch lounging, nap-time, and movie nights. The microfiber weave keeps warmth in without overheating, while the breathable surface helps reduce static cling. The size is generous enough to share, yet light enough to toss in a carry bag for travel. Use it on a bed as an accent, on a chair as a texture boost, or as a comfort layer for quick afternoon resets. The fabric is gentle on skin, machine washable, and built to keep its loft after repeated cycles. This style pairs well with neutral rooms, warm tones, and minimalist spaces that need a soft pop. If you like weighted comfort without the heavy feel, this is the relaxing in-between option that stays cozy, tidy, and easy to maintain.",
     "affiliateUrl": "https://example.com/affiliate/blanket",
+    "affiliateVerification": {
+      "source": "first_party",
+      "status": "verified",
+      "network": "amazon_associates"
+    },
     "videoUrl": "https://www.youtube.com/watch?v=5qap5aO4i9A",
     "dealEndsAt": "2026-02-28T23:59:59Z",
     "retailer": "Amazon",
@@ -47,6 +52,11 @@
     ],
     "description": "Glow Breeze Mini Desk Fan delivers a quiet cooling stream for work desks, vanity spaces, and small bedside tables. The compact frame tucks neatly under shelves, while a multi-angle tilt lets you direct airflow without shifting your workspace. It uses a low-power motor for steady comfort and can run for long stretches without the high hum typical of bigger units. The styling leans clean and modern, making it a good fit for cozy rooms and minimalist setups. Use it as a light summer companion or a year-round airflow helper that keeps you comfortable while you focus. Setup takes seconds, and the simple control dial keeps it easy to use for anyone who prefers straightforward, no-fuss gear.",
     "affiliateUrl": "https://example.com/affiliate/fan",
+    "affiliateVerification": {
+      "source": "first_party",
+      "status": "verified",
+      "network": "best_buy_affiliate"
+    },
     "retailer": "Best Buy",
     "tags": [
       "desk",
@@ -75,6 +85,11 @@
     ],
     "description": "LunaLift Collagen Matcha blends ceremonial-grade green tea with collagen peptides for a smooth, lightly sweet cup that fits into morning rituals. It dissolves easily in warm water or oat milk, creating a creamy texture without gritty residue. The flavor is mellow and balanced, making it a simple swap for sugary coffee drinks while still offering a gentle caffeine lift. For people who like structured wellness habits, this is an easy daily add-on because the scoop size is consistent and the taste is mild enough to mix into smoothies or latte blends. The jar is compact for countertop storage, and the lid seals tightly to keep the powder fresh between uses.",
     "affiliateUrl": "https://example.com/affiliate/matcha",
+    "affiliateVerification": {
+      "source": "first_party",
+      "status": "verified",
+      "network": "amazon_associates"
+    },
     "dealEndsAt": "2026-03-05T23:59:59Z",
     "retailer": "Amazon",
     "tags": [
@@ -104,6 +119,11 @@
     ],
     "description": "Pet Haven Calming Bed is a plush donut-style lounger designed to give small and medium pets a cozy, secure nook. The raised rim offers head and neck support, while the center cushion stays soft enough for burrowing and nesting. A neutral tone makes it easy to blend into living rooms, bedrooms, or office corners without looking like a loud pet accessory. The cover is machine washable to keep things fresh, and the base includes a gentle non-slip backing so it stays put on hardwood or tile. If your pet likes to curl, stretch, or rest with a little structure, this bed keeps them settled and comfortable throughout the day.",
     "affiliateUrl": "https://example.com/affiliate/pet-bed",
+    "affiliateVerification": {
+      "source": "first_party",
+      "status": "verified",
+      "network": "chewy_partner"
+    },
     "dealEndsAt": "2026-03-12T23:59:59Z",
     "retailer": "Chewy",
     "tags": [
@@ -133,6 +153,11 @@
     ],
     "description": "Aurora LED Vanity Mirror brings bright, even lighting to everyday routines, from skincare to detailed makeup work. The light ring is designed to reduce harsh shadows, helping you see true tones and blend accurately. A slim profile keeps it elegant on counters, and the adjustable angle makes it easy to position at eye level. The touch controls are simple and responsive, so you can brighten or soften the glow depending on the time of day. This mirror feels premium without being oversized, making it a useful upgrade for anyone who likes a clean, organized vanity setup that still feels warm and inviting.",
     "affiliateUrl": "https://example.com/affiliate/vanity-mirror",
+    "affiliateVerification": {
+      "source": "first_party",
+      "status": "verified",
+      "network": "ulta_affiliate"
+    },
     "videoUrl": "https://www.youtube.com/watch?v=V-_O7nl0Ii0",
     "retailer": "Ulta",
     "tags": [
@@ -190,6 +215,11 @@
     ],
     "description": "SteamFresh Handheld Steamer is a compact, travel-friendly tool for smoothing wrinkles without setting up a full ironing board. The water tank heats quickly and delivers a consistent stream, making it easy to freshen shirts, dresses, or light upholstery in minutes. The handle sits comfortably in the hand, and the trigger is simple to operate, even for quick touchups before a meeting or event. It is light enough to store in a closet or take on a trip, while still delivering enough steam to make a visible difference on delicate fabrics. For everyday care, it keeps clothes looking crisp with minimal fuss.",
     "affiliateUrl": "https://example.com/affiliate/steamer",
+    "affiliateVerification": {
+      "source": "first_party",
+      "status": "verified",
+      "network": "amazon_associates"
+    },
     "retailer": "Amazon",
     "tags": [
       "steamer",

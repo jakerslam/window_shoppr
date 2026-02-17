@@ -15,6 +15,7 @@ export default function useColumnAutoScrollLoop({
   deckLength,
   duration,
   endDeckHeight,
+  onApproachEnd,
   onReachEndZone,
   onForwardLoop,
   columnRef,
@@ -35,6 +36,7 @@ export default function useColumnAutoScrollLoop({
   deckLength: number;
   duration: number;
   endDeckHeight: number;
+  onApproachEnd?: () => void;
   onReachEndZone?: () => void;
   onForwardLoop?: () => void;
   columnRef: RefObject<HTMLDivElement | null>;
@@ -149,6 +151,7 @@ export default function useColumnAutoScrollLoop({
 
       if (track && maxScroll > 0 && !isDraggingRef.current) {
         const revealThreshold = Math.max(maxScroll - endDeckHeight, 0); // Position where the bar should begin showing.
+        const topUpThreshold = Math.max(maxScroll - Math.max(120, endDeckHeight + 24), 0); // Trigger top-ups shortly before the current stack is exhausted.
         const baseTarget = targetSpeedRef.current; // Base speed respects pause state.
         const combinedTarget = baseTarget + manualVelocityRef.current; // Add manual velocity assist.
         const speedDelta = (combinedTarget - speedRef.current) * 0.08; // Ease toward combined target.
@@ -161,6 +164,8 @@ export default function useColumnAutoScrollLoop({
         ); // Clamp to finite track bounds so no cards repeat.
         const reachedEndZone =
           previousPosition < revealThreshold && nextPosition >= revealThreshold;
+        const reachedTopUpThreshold =
+          previousPosition < topUpThreshold && nextPosition >= topUpThreshold;
         const reachedEnd = previousPosition < maxScroll && nextPosition >= maxScroll;
         const hitBoundary =
           (nextPosition >= maxScroll && nextSpeed > 0) ||
@@ -177,6 +182,10 @@ export default function useColumnAutoScrollLoop({
 
         if (reachedEndZone) {
           onReachEndZone?.(); // Reveal end-of-feed bar when the first column enters the bottom zone.
+        }
+
+        if (reachedTopUpThreshold) {
+          onApproachEnd?.(); // Ask for additional cards before this column fully exhausts.
         }
 
         if (reachedEnd) {
@@ -200,6 +209,7 @@ export default function useColumnAutoScrollLoop({
       targetSpeedRef,
       trackRef,
       endDeckHeight,
+      onApproachEnd,
       onReachEndZone,
       onForwardLoop,
     ],

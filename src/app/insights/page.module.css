@@ -1,0 +1,164 @@
+.insightsPage {
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+  padding: 4rem 1.5rem 5rem;
+}
+
+.insightsPage__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  max-width: 48rem;
+}
+
+.insightsPage__headingTitle {
+  font-weight: 700;
+  font-size: clamp(2rem, 4vw, 2.75rem);
+}
+
+.insightsPage__subtitle {
+  color: var(--neutral-500);
+  line-height: 1.5;
+}
+
+.insightCard {
+  border-radius: 1.25rem;
+  padding: 2rem;
+  background: var(--surface-muted);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 25px 60px rgba(10, 10, 10, 0.2);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.insightCard__hero {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.insightCard__pillar {
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  font-weight: 600;
+  font-size: 0.75rem;
+  color: var(--accent);
+}
+
+.insightCard__title {
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-weight: 700;
+}
+
+.insightCard__summary {
+  color: var(--neutral-300);
+  line-height: 1.5;
+}
+
+.insightCard__prompt,
+.insightCard__heroLine {
+  font-style: italic;
+  color: var(--neutral-400);
+}
+
+.insightCard__products {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.insightCard__productGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+}
+
+.insightProductTile {
+  border-radius: 0.85rem;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  min-height: 240px;
+}
+
+.insightProductTile__media {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 0.7rem;
+  overflow: hidden;
+}
+
+.insightProductTile__media {
+  display: block;
+  position: relative;
+}
+
+.insightProductTile__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.insightProductTile__name {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.insightProductTile__meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  color: var(--neutral-400);
+}
+
+.insightProductTile__price {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.insightCard__faq {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.insightCard__faqTitle {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.insightCard__faqItem {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.insightCard__faqQuestion {
+  font-weight: 600;
+}
+
+.insightCard__faqAnswer {
+  margin-top: 0.35rem;
+  color: var(--neutral-300);
+}
+
+.insightCard__faqSchema {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .insightsPage {
+    padding: 3rem 1rem 4rem;
+  }
+
+  .insightCard {
+    padding: 1.5rem;
+  }
+}

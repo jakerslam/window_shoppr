@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCategoryFilter } from "@/features/category-filter/CategoryFilterProvider";
 import { Product } from "@/shared/lib/catalog/types";
@@ -11,7 +11,6 @@ import HomeFeedHeader from "@/features/home-feed/HomeFeedHeader";
 import { SortOption } from "@/features/home-feed/SortDropdown";
 import ScrollingColumn from "@/features/home-feed/ScrollingColumn";
 import { getFeedColumnCount } from "@/features/home-feed/column-layout";
-import { buildCardDecks } from "@/features/home-feed/deck-utils";
 import useHomeFeedPreferences from "@/features/home-feed/useHomeFeedPreferences";
 import useFilteredSortedProducts from "@/features/home-feed/useFilteredSortedProducts";
 import useFiniteFeedState from "@/features/home-feed/useFiniteFeedState";
@@ -20,6 +19,7 @@ import styles from "@/features/home-feed/HomeFeed.module.css";
 const BASE_COLUMN_DURATIONS = [38, 46, 54, 62, 70]; // Base scroll speeds per column.
 const SPEED_MODE_STORAGE_KEY = "window_shoppr_feed_speed_mode"; // Persist user-selected speed toggle mode.
 const END_DECK_BAR_HEIGHT = 126; // Full-width end-of-feed bar height used as the stop boundary offset.
+const INITIAL_COLUMN_BATCH_SIZE = 3; // Cards dealt initially to each column when a new feed loads.
 
 /**
  * Validate storage values before applying them to speed mode state.
@@ -27,6 +27,28 @@ const END_DECK_BAR_HEIGHT = 126; // Full-width end-of-feed bar height used as th
 const isValidSpeedMode = (value: string): value is "cozy" | "quick" =>
   value === "cozy" || value === "quick";
 
+const buildInitialDeckState = (products: Product[], columnCount: number) => {
+  const decks: Product[][] = Array.from({ length: columnCount }, () => []);
+  if (products.length === 0 || columnCount === 0) {
+    return { decks, remaining: [] };
+  }
+
+  const initialDealCount = Math.min(
+    products.length,
+    columnCount * INITIAL_COLUMN_BATCH_SIZE,
+  );
+
+  for (let index = 0; index < initialDealCount; index += 1) {
+    decks[index % columnCount].push(products[index]);
+  }
+
+  const remaining = products.slice(initialDealCount);
+  return { decks, remaining };
+};
+
+/**
+ * Build initial column stacks and the next undealt index from a single ranked deck.
+ */
 /**
  * Client-side feed renderer with sorting and search.
  */
@@ -140,10 +162,53 @@ export default function HomeFeed({
     () => BASE_COLUMN_DURATIONS.map((value) => value * durationScale),
     [durationScale],
   );
-  const columnDecks = useMemo(
-    () => buildCardDecks(rankedProducts, columnCount),
+  const initialDeckState = useMemo(
+    () => buildInitialDeckState(rankedProducts, columnCount),
     [rankedProducts, columnCount],
   );
+  const feedResetKey = useMemo(
+    () => `${columnCount}:${rankedProducts.map((product) => product.id).join("|")}`,
+    [columnCount, rankedProducts],
+  ); // Stable reset key for a new feed/query, independent from runtime deck rebalancing.
+  const [deckState, setDeckState] = useState<{
+    resetKey: string;
+    decks: Product[][];
+    remaining: Product[];
+  }>(() => ({
+    resetKey: feedResetKey,
+    ...initialDeckState,
+  }));
+  const columnDecks = deckState.resetKey === feedResetKey ? deckState.decks : initialDeckState.decks;
+  const columnDecksRef = useRef<Product[][]>(columnDecks);
+  const completedColumnsRef = useRef<Set<number>>(new Set());
+  const deckStateRef = useRef(deckState);
+
+  /**
+   * Keep the runtime deck + column refs in sync with rendered decks.
+   */
+  useEffect(() => {
+    columnDecksRef.current = columnDecks; // Keep current deck snapshot available to callbacks.
+    deckStateRef.current = deckState; // Keep a mutable pointer for dynamic dealings.
+  }, [columnDecks, deckState]);
+
+  /**
+   * Re-sync deck state whenever the query or breakpoint changes.
+   */
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setDeckState((previous) => {
+      if (previous.resetKey === feedResetKey) {
+        return previous;
+      }
+
+      return {
+        resetKey: feedResetKey,
+        ...initialDeckState,
+      };
+    });
+    completedColumnsRef.current = new Set(); // Reset completed-column tracking for new queries/breakpoints.
+  }, [feedResetKey, initialDeckState]);
+
   const {
     isDeckEnded,
     hasAnyColumnEnteredEndZone,
@@ -151,7 +216,7 @@ export default function HomeFeed({
     handleColumnEnterEndZone,
     handleColumnComplete,
     handleReplayDeck,
-  } = useFiniteFeedState({ columnDecks });
+  } = useFiniteFeedState({ columnDecks, resetKey: feedResetKey });
 
   /**
    * Reset filters and return to the all-categories feed.
@@ -170,6 +235,141 @@ export default function HomeFeed({
     },
     [router],
   );
+
+  const dealNextCard = useCallback(
+    (columnIndex: number) => {
+      if (isDeckEnded) {
+        return false; // Do not add cards once the feed is finished.
+      }
+
+      const current = deckStateRef.current;
+
+      if (columnIndex >= current.decks.length) {
+        return false; // Guard against missing columns.
+      }
+
+      if (current.remaining.length === 0) {
+        return false; // No cards left in the stack.
+      }
+
+      const [nextCard, ...rest] = current.remaining;
+      const nextDecks = current.decks.map((deck, index) =>
+        index === columnIndex ? [...deck, nextCard] : deck,
+      );
+
+      setDeckState({
+        resetKey: current.resetKey,
+        decks: nextDecks,
+        remaining: rest,
+      });
+
+      return true;
+    },
+    [isDeckEnded],
+  );
+
+  const handleDeckApproachingEnd = useCallback(
+    (columnIndex: number) => {
+      dealNextCard(columnIndex); // Deal the next card preemptively.
+    },
+    [dealNextCard],
+  );
+
+  /**
+   * Rebalance cards by lending 1-2 tail cards from the longest active stack to an exhausted stack.
+   */
+  const handleDeckExhausted = useCallback(
+    (columnIndex: number) => {
+      if (isDeckEnded) {
+        return false; // Do not refill once the feed is already in its final ended state.
+      }
+
+      if (dealNextCard(columnIndex)) {
+        return true; // A new card was dealt, so keep scrolling.
+      }
+
+      const currentDecks = columnDecksRef.current;
+      const receiverDeck = currentDecks[columnIndex];
+
+      if (!receiverDeck || receiverDeck.length === 0) {
+        return false; // Skip invalid or empty receivers.
+      }
+
+      let donorIndex = -1;
+      let donorLength = -1;
+
+      currentDecks.forEach((deck, index) => {
+        if (index === columnIndex) {
+          return; // Skip self.
+        }
+
+        if (completedColumnsRef.current.has(index)) {
+          return; // Do not borrow from stacks already marked complete.
+        }
+
+        if (deck.length > donorLength) {
+          donorLength = deck.length;
+          donorIndex = index; // Choose the longest available donor stack.
+        }
+      });
+
+      if (donorIndex < 0) {
+        return false; // No eligible donor stack.
+      }
+
+      if (donorLength <= 2) {
+        return false; // Keep at least a small runway in donor stacks.
+      }
+
+      const receiverLength = receiverDeck.length;
+      const lengthGap = donorLength - receiverLength; // Positive when donor has more total cards.
+      const desiredTransfer = lengthGap >= 3 ? 2 : 1; // Favor 2-card top-ups only when donor is clearly longer.
+      const transferCount = Math.min(desiredTransfer, donorLength - 1); // Keep at least one card in donor.
+
+      if (transferCount <= 0) {
+        return false; // Guard against empty/near-empty donor stacks.
+      }
+
+      const nextDecks = currentDecks.map((deck) => [...deck]);
+      const movedCards = nextDecks[donorIndex].splice(-transferCount, transferCount); // Move unseen tail cards from donor.
+
+      if (movedCards.length === 0) {
+        return false;
+      }
+
+      nextDecks[columnIndex].push(...movedCards); // Extend the faster stack so stacks end closer together.
+      setDeckState((previous) => ({
+        ...previous,
+        decks: nextDecks,
+      })); // Re-render columns with new stack lengths.
+      return true;
+    },
+    [isDeckEnded, dealNextCard],
+  );
+
+  /**
+   * Track completed columns locally and in finite-feed state.
+   */
+  const handleColumnCompleteWithTracking = useCallback(
+    (columnIndex: number) => {
+      completedColumnsRef.current.add(columnIndex); // Prevent this stack from donating after it has ended.
+      handleColumnComplete(columnIndex); // Update finite-feed completion state.
+    },
+    [handleColumnComplete],
+  );
+
+  /**
+   * Replay from the initial deck distribution for the current query.
+   */
+  const handleReplayFeed = useCallback(() => {
+    const resetState = {
+      resetKey: feedResetKey,
+      ...initialDeckState,
+    };
+    completedColumnsRef.current = new Set(); // Clear completed-column state.
+    setDeckState(resetState);
+    handleReplayDeck(); // Reset finite-feed progress tracking.
+  }, [feedResetKey, handleReplayDeck, initialDeckState]);
 
   return (
     <section className={styles.homeFeed} aria-label={resultsLabel}>
@@ -197,8 +397,10 @@ export default function HomeFeed({
             isFeedEnded={isDeckEnded}
             endDeckHeight={END_DECK_BAR_HEIGHT}
             cycleToken={cycleToken}
+            onDeckApproachingEnd={handleDeckApproachingEnd}
+            onDeckExhausted={handleDeckExhausted}
             onColumnEnterEndZone={handleColumnEnterEndZone}
-            onColumnComplete={handleColumnComplete}
+            onColumnComplete={handleColumnCompleteWithTracking}
           />
         ))}
 
@@ -209,7 +411,7 @@ export default function HomeFeed({
             <HomeFeedEndDeck
               categoryLabel={displayCategory || "all categories"}
               showActions
-              onReplayDeck={handleReplayDeck}
+              onReplayDeck={handleReplayFeed}
               onBrowseAllCategories={handleBrowseAllCategories}
             />
           </div>
