@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { ContentPreferencesState, DEFAULT_CONTENT_PREFERENCES, DEFAULT_SETTINGS, DEFAULT_SPEED_PREFERENCES, EmailFrequency, FeedSpeedPreferences, PROFILE_SETTINGS_STORAGE_KEY, ProfileSettingsState, SPEED_LIMITS, ThemePreference, readStoredProfileSettings } from "@/shared/lib/profile/profile-settings";
+import { ContentPreferencesState, DEFAULT_CONTENT_PREFERENCES, DEFAULT_SETTINGS, DEFAULT_SPEED_PREFERENCES, EmailFrequency, FeedSpeedPreferences, PROFILE_SETTINGS_STORAGE_KEY, ProfileSettingsState, SPEED_LIMITS, SPEED_PREFERENCES_VERSION, ThemePreference, readStoredProfileSettings } from "@/shared/lib/profile/profile-settings";
 import { updateAccountProfile } from "@/shared/lib/platform/auth-service";
 import { readAuthSession } from "@/shared/lib/platform/auth-session";
 /**
@@ -116,6 +116,7 @@ export default function useProfileSettingsStorage({ listNames }: { listNames: st
         settings,
         themePreference,
         speedPreferences,
+        speedPreferencesVersion: SPEED_PREFERENCES_VERSION,
         contentPreferences,
       }),
     ); // Persist latest profile + speed + content preferences.
@@ -175,16 +176,16 @@ export default function useProfileSettingsStorage({ listNames }: { listNames: st
   };
 
   /**
-   * Update cozy speed while preserving the minimum gap above quick speed.
+   * Update cozy speed while preserving the minimum gap below quick speed.
    */
   const handleCozySpeedChange = (nextValue: number) => {
     setSpeedPreferences((prev) => {
       const cozyScale = clamp(nextValue, SPEED_LIMITS.cozyMin, SPEED_LIMITS.cozyMax);
-      const maxQuick = Math.min(SPEED_LIMITS.quickMax, cozyScale - SPEED_LIMITS.minGap);
+      const minQuick = Math.max(SPEED_LIMITS.quickMin, cozyScale + SPEED_LIMITS.minGap);
       const quickScale = clamp(
         prev.quickScale,
-        SPEED_LIMITS.quickMin,
-        Math.max(SPEED_LIMITS.quickMin, maxQuick),
+        Math.min(SPEED_LIMITS.quickMax, minQuick),
+        SPEED_LIMITS.quickMax,
       );
 
       return { cozyScale, quickScale };
@@ -192,16 +193,16 @@ export default function useProfileSettingsStorage({ listNames }: { listNames: st
   };
 
   /**
-   * Update quick speed while preserving the minimum gap below cozy speed.
+   * Update quick speed while preserving the minimum gap above cozy speed.
    */
   const handleQuickSpeedChange = (nextValue: number) => {
     setSpeedPreferences((prev) => {
       const quickScale = clamp(nextValue, SPEED_LIMITS.quickMin, SPEED_LIMITS.quickMax);
-      const maxQuick = Math.min(quickScale, prev.cozyScale - SPEED_LIMITS.minGap);
+      const minQuick = Math.max(SPEED_LIMITS.quickMin, prev.cozyScale + SPEED_LIMITS.minGap);
 
       return {
         cozyScale: prev.cozyScale,
-        quickScale: clamp(maxQuick, SPEED_LIMITS.quickMin, SPEED_LIMITS.quickMax),
+        quickScale: clamp(quickScale, Math.min(SPEED_LIMITS.quickMax, minQuick), SPEED_LIMITS.quickMax),
       };
     });
   };

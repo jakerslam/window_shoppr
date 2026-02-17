@@ -27,6 +27,7 @@ const PUBLIC_ENV_SCHEMA = z.object({
   NEXT_PUBLIC_AUTH_API_URL: z.string().url().optional(), // Optional external auth API base URL.
   NEXT_PUBLIC_DATA_API_URL: z.string().url().optional(), // Optional external data API base URL.
   NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG: z.string().trim().min(1).optional(), // Optional Associates tag for auto-minting Amazon links.
+  NEXT_PUBLIC_MONITORING_API_URL: z.string().url().optional(), // Optional monitoring endpoint for error/perf envelopes.
 });
 
 /**
@@ -39,6 +40,7 @@ const parsePublicEnv = () => {
     NEXT_PUBLIC_AUTH_API_URL: process.env.NEXT_PUBLIC_AUTH_API_URL,
     NEXT_PUBLIC_DATA_API_URL: process.env.NEXT_PUBLIC_DATA_API_URL,
     NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG: process.env.NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG,
+    NEXT_PUBLIC_MONITORING_API_URL: process.env.NEXT_PUBLIC_MONITORING_API_URL,
   }); // Pull only public vars so this module is safe in client bundles.
 
   if (!parsed.success) {
@@ -61,6 +63,7 @@ const parsePublicEnv = () => {
     authApiUrl: data.NEXT_PUBLIC_AUTH_API_URL ?? "", // Optional auth API endpoint for backend session wiring.
     dataApiUrl: data.NEXT_PUBLIC_DATA_API_URL ?? "", // Optional data API endpoint for SQL-backed catalog and submissions.
     amazonAssociateTag: data.NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG ?? "", // Optional auto-mint tag for Amazon submission links.
+    monitoringApiUrl: data.NEXT_PUBLIC_MONITORING_API_URL ?? "", // Optional monitoring endpoint for runtime errors and trace signals.
   };
 };
 

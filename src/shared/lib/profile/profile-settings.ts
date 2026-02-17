@@ -26,10 +26,12 @@ export type StoredProfileSettings = {
   settings: ProfileSettingsState;
   themePreference: ThemePreference;
   speedPreferences: FeedSpeedPreferences;
+  speedPreferencesVersion?: number;
   contentPreferences: ContentPreferencesState;
 };
 
 export const PROFILE_SETTINGS_STORAGE_KEY = "window-shoppr-profile-settings";
+export const SPEED_PREFERENCES_VERSION = 2;
 
 export const DEFAULT_SETTINGS: ProfileSettingsState = {
   displayName: "",
@@ -44,7 +46,7 @@ export const DEFAULT_CONTENT_PREFERENCES: ContentPreferencesState = {
   recommendationListName: null,
 };
 
-export const SPEED_LIMITS = {
+const LEGACY_SPEED_LIMITS = {
   cozyMin: 0.7,
   cozyMax: 1.4,
   quickMin: 0.35,
@@ -52,9 +54,17 @@ export const SPEED_LIMITS = {
   minGap: 0.05,
 } as const;
 
+export const SPEED_LIMITS = {
+  cozyMin: 0.72,
+  cozyMax: 1.45,
+  quickMin: 0.9,
+  quickMax: 2.9,
+  minGap: 0.12,
+} as const;
+
 export const DEFAULT_SPEED_PREFERENCES: FeedSpeedPreferences = {
   cozyScale: 1,
-  quickScale: 0.52,
+  quickScale: 1.92,
 };
 
 const AVAILABLE_CATEGORY_SLUGS = new Set(
@@ -68,9 +78,11 @@ const clamp = (value: number, min: number, max: number) =>
   Math.min(max, Math.max(min, value));
 
 /**
- * Normalize persisted speed preferences and enforce quick < cozy.
+ * Normalize modern speed preferences and enforce quick > cozy.
  */
-const normalizeSpeedPreferences = (rawValue: unknown): FeedSpeedPreferences => {
+const normalizeModernSpeedPreferences = (
+  rawValue: unknown,
+): FeedSpeedPreferences => {
   const candidate =
     typeof rawValue === "object" && rawValue !== null
       ? (rawValue as Partial<FeedSpeedPreferences>)
@@ -84,21 +96,70 @@ const normalizeSpeedPreferences = (rawValue: unknown): FeedSpeedPreferences => {
     SPEED_LIMITS.cozyMax,
   );
 
-  const maxQuick = Math.min(SPEED_LIMITS.quickMax, cozyScale - SPEED_LIMITS.minGap);
-  const quickUpperBound = Math.max(SPEED_LIMITS.quickMin, maxQuick);
+  const minQuick = Math.max(SPEED_LIMITS.quickMin, cozyScale + SPEED_LIMITS.minGap);
+  const quickLowerBound = Math.min(SPEED_LIMITS.quickMax, minQuick);
 
   const quickScale = clamp(
     typeof candidate?.quickScale === "number"
       ? candidate.quickScale
       : DEFAULT_SPEED_PREFERENCES.quickScale,
-    SPEED_LIMITS.quickMin,
-    quickUpperBound,
+    quickLowerBound,
+    SPEED_LIMITS.quickMax,
   );
 
   return {
     cozyScale,
     quickScale,
   };
+};
+
+/**
+ * Normalize legacy speed preferences (lower=fast), then map into modern semantics (higher=fast).
+ */
+const migrateLegacySpeedPreferences = (rawValue: unknown): FeedSpeedPreferences => {
+  const candidate =
+    typeof rawValue === "object" && rawValue !== null
+      ? (rawValue as Partial<FeedSpeedPreferences>)
+      : undefined;
+
+  const cozyLegacy = clamp(
+    typeof candidate?.cozyScale === "number"
+      ? candidate.cozyScale
+      : 1,
+    LEGACY_SPEED_LIMITS.cozyMin,
+    LEGACY_SPEED_LIMITS.cozyMax,
+  );
+  const maxQuickLegacy = Math.min(
+    LEGACY_SPEED_LIMITS.quickMax,
+    cozyLegacy - LEGACY_SPEED_LIMITS.minGap,
+  );
+  const quickLegacyUpperBound = Math.max(LEGACY_SPEED_LIMITS.quickMin, maxQuickLegacy);
+  const quickLegacy = clamp(
+    typeof candidate?.quickScale === "number"
+      ? candidate.quickScale
+      : 0.52,
+    LEGACY_SPEED_LIMITS.quickMin,
+    quickLegacyUpperBound,
+  );
+
+  return normalizeModernSpeedPreferences({
+    cozyScale: 1 / cozyLegacy,
+    quickScale: 1 / quickLegacy,
+  });
+};
+
+/**
+ * Normalize persisted speed preferences and migrate legacy values when needed.
+ */
+const normalizeSpeedPreferences = (
+  rawValue: unknown,
+  version?: number,
+): FeedSpeedPreferences => {
+  if (version === SPEED_PREFERENCES_VERSION) {
+    return normalizeModernSpeedPreferences(rawValue);
+  }
+
+  return migrateLegacySpeedPreferences(rawValue);
 };
 
 /**
@@ -181,7 +242,10 @@ export const parseStoredProfileSettings = (
             : DEFAULT_SETTINGS.requireTwoFactor,
       },
       themePreference,
-      speedPreferences: normalizeSpeedPreferences(parsed.speedPreferences),
+      speedPreferences: normalizeSpeedPreferences(
+        parsed.speedPreferences,
+        parsed.speedPreferencesVersion,
+      ),
       contentPreferences: normalizeContentPreferences(parsed.contentPreferences),
     };
   } catch {

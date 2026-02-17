@@ -170,8 +170,9 @@ export default function HomeFeed({
   );
   const columnsRef = useRef<HTMLDivElement | null>(null);
   const [cardsPerColumn, setCardsPerColumn] = useState(5);
-  const durationScale =
+  const speedFactor =
     speedMode === "quick" ? speedPreferences.quickScale : speedPreferences.cozyScale;
+  const durationScale = 1 / Math.max(speedFactor, 0.01); // Convert user-facing speed factor (higher=faster) into duration scale.
   const columnDurations = useMemo(
     () => BASE_COLUMN_DURATIONS.map((value) => value * durationScale),
     [durationScale],

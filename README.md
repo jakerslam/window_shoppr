@@ -53,6 +53,7 @@ See: `docs/agent/README.md`, `docs/agent/SKILL.md`, and `docs/agent/AGENT_SKILL.
   - `POST /data/submissions/affiliate-mint`
 - `NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG` (optional): enables automatic Amazon affiliate-link minting for submitted deal URLs.
 - `NEXT_PUBLIC_AUTH_API_URL` (optional): enables auth backend wiring (`/auth/*` routes).
+- `NEXT_PUBLIC_MONITORING_API_URL` (optional): receives client error + performance envelopes (`kind: "error" | "trace"`). When not set, monitoring remains local-only (stored in localStorage).
 
 ## Scripts
 - `npm run dev` — local dev server

@@ -1,8 +1,8 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 74/92 (80.4%)  ████████████████░░░░
-Frontend: 54/64 (84.4%) █████████████████░░░
+Overall: 76/92 (82.6%)  ████████████████░░░░
+Frontend: 56/64 (87.5%) █████████████████░░░
 Backend: 17/22 (77.3%)  ███████████████░░░░░
 Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░░░
 
@@ -118,11 +118,11 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] R15.1: Theme system (light/dark) applied to components
 
 ## UI Tuning Backlog
-- [ ] U1: Scroll speed settings UX polish (make speed inputs easier to use and invert semantics so higher value = faster), with migration of saved preferences so existing users keep equivalent behavior.
+- [x] U1: Scroll speed settings UX polish (make speed inputs easier to use and invert semantics so higher value = faster), with migration of saved preferences so existing users keep equivalent behavior.
 
 ## Later-Stage Polish
-- [ ] R39: Error monitoring + performance tracing (Sentry or similar)
-- [ ] R40: ISR/edge caching strategy for product pages
+- [x] R39: Error monitoring + performance tracing (Sentry or similar)
+- [ ] 🔵 R40: ISR/edge caching strategy for product pages
 - [ ] R41: Feature flags for safe UI experiments
 - [ ] R42: Accessibility audit tooling (axe/Lighthouse CI)
 - [ ] R31: Add automated tests + CI/lint pipeline

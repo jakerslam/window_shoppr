@@ -58,6 +58,25 @@
   gap: 10px;
 }
 
+.profileSettings__speedControl {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.profileSettings__speedControlHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.profileSettings__speedValue {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-primary-strong);
+}
+
 .profileSettings__rewardGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -119,8 +138,16 @@
   cursor: pointer;
 }
 
+.profileSettings__range {
+  width: 100%;
+  margin: 0;
+  accent-color: var(--color-primary-strong);
+  cursor: pointer;
+}
+
 .profileSettings__input:focus,
-.profileSettings__select:focus {
+.profileSettings__select:focus,
+.profileSettings__range:focus {
   outline: none;
   border-color: var(--color-primary-strong);
   box-shadow: 0 0 0 2px rgba(111, 69, 41, 0.18);
@@ -245,6 +272,7 @@
 
 .profileSettings__input:focus-visible,
 .profileSettings__select:focus-visible,
+.profileSettings__range:focus-visible,
 .profileSettings__chip:focus-visible,
 .profileSettings__actionButton:focus-visible,
 .profileSettings__dangerButton:focus-visible,

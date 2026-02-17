@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect } from "react";
 import styles from "@/app/error.module.css";
+import { trackMonitoringError } from "@/shared/lib/engagement/monitoring";
 
 /**
  * Global error boundary fallback for unexpected failures.
@@ -14,6 +16,18 @@ export default function GlobalError({
   reset: () => void;
 }) {
   const showDetails = process.env.NODE_ENV === "development"; // Only show details in dev.
+
+  /**
+   * Emit React error-boundary failures to monitoring.
+   */
+  useEffect(() => {
+    trackMonitoringError({
+      type: "react_error_boundary",
+      message: error.message || "React error boundary triggered",
+      stack: error.stack,
+      digest: error.digest,
+    }); // Capture boundary-level crashes for diagnostics.
+  }, [error]);
 
   return (
     <div className={styles.appError}>

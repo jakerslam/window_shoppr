@@ -52,30 +52,40 @@ export default function ProfileSettingsAccountSection({
 
       {/* Feed speed settings consumed by the home speed toggle. */}
       <div className={styles.profileSettings__speedGrid}>
-        <label className={styles.profileSettings__field}>
-          <span className={styles.profileSettings__label}>Cozy speed (slow mode)</span>
+        <label className={styles.profileSettings__speedControl}>
+          <span className={styles.profileSettings__speedControlHeader}>
+            <span className={styles.profileSettings__label}>Cozy speed (slow mode)</span>
+            <span className={styles.profileSettings__speedValue}>
+              {speedPreferences.cozyScale.toFixed(2)}x
+            </span>
+          </span>
           <input
-            className={styles.profileSettings__input}
-            type="number"
+            className={styles.profileSettings__range}
+            type="range"
             min={SPEED_LIMITS.cozyMin}
             max={SPEED_LIMITS.cozyMax}
             step="0.01"
-            value={speedPreferences.cozyScale.toFixed(2)}
+            value={speedPreferences.cozyScale}
             onChange={(event) =>
               onCozySpeedChange(Number.parseFloat(event.target.value || "0"))
             } // Update cozy speed multiplier.
           />
         </label>
 
-        <label className={styles.profileSettings__field}>
-          <span className={styles.profileSettings__label}>Quick speed (fast mode)</span>
+        <label className={styles.profileSettings__speedControl}>
+          <span className={styles.profileSettings__speedControlHeader}>
+            <span className={styles.profileSettings__label}>Quick speed (fast mode)</span>
+            <span className={styles.profileSettings__speedValue}>
+              {speedPreferences.quickScale.toFixed(2)}x
+            </span>
+          </span>
           <input
-            className={styles.profileSettings__input}
-            type="number"
+            className={styles.profileSettings__range}
+            type="range"
             min={SPEED_LIMITS.quickMin}
             max={SPEED_LIMITS.quickMax}
             step="0.01"
-            value={speedPreferences.quickScale.toFixed(2)}
+            value={speedPreferences.quickScale}
             onChange={(event) =>
               onQuickSpeedChange(Number.parseFloat(event.target.value || "0"))
             } // Update quick speed multiplier.
@@ -84,9 +94,8 @@ export default function ProfileSettingsAccountSection({
       </div>
 
       <p className={styles.profileSettings__hint}>
-        Lower numbers scroll faster. Quick stays faster than cozy.
+        Higher numbers scroll faster. Quick stays faster than cozy.
       </p>
     </div>
   );
 }
-
