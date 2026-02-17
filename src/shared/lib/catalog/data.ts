@@ -6,6 +6,10 @@ import {
   normalizeCatalogSource,
   normalizeProductSource,
 } from "@/shared/lib/catalog/products";
+import {
+  getCatalogListCacheConfig,
+  getProductDetailCacheConfig,
+} from "@/shared/lib/platform/cache-strategy";
 import { requestDataApi } from "@/shared/lib/platform/data-api";
 
 const DEV_LOADING_DELAY_MS = 400; // Artificial delay to preview loading UI in dev.
@@ -62,6 +66,7 @@ export const fetchProductsFromSql = async (): Promise<Product[] | null> => {
   const response = await requestDataApi<unknown>({
     path: "/data/products",
     method: "GET",
+    cacheConfig: getCatalogListCacheConfig(),
   }); // Request catalog rows from external SQL-backed API.
   if (!response || !response.ok) {
     return null; // Fall back to JSON when API is unavailable or returns errors.
@@ -79,6 +84,7 @@ export const fetchProductBySlugFromSql = async (
   const response = await requestDataApi<unknown>({
     path: `/data/products/${encodeURIComponent(slug)}`,
     method: "GET",
+    cacheConfig: getProductDetailCacheConfig(slug),
   }); // Request single product row by slug from external API.
   if (!response || !response.ok) {
     return null; // Fall back to JSON when API is unavailable or returns errors.

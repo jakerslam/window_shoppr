@@ -3,15 +3,23 @@ import { buildSecurityHeaders } from "./src/shared/lib/platform/security";
 
 const REPO_NAME = "window_shoppr"; // GitHub Pages repo name.
 const isProd = process.env.NODE_ENV === "production"; // Detect production builds.
+const deployTarget =
+  process.env.DEPLOY_TARGET ??
+  process.env.NEXT_PUBLIC_DEPLOY_TARGET ??
+  "static-export"; // Default to static-export for current GitHub Pages flow.
+const isStaticExport = deployTarget === "static-export"; // Gate static-export-only options.
 const basePath =
-  process.env.NEXT_PUBLIC_BASE_PATH ?? (isProd ? `/${REPO_NAME}` : ""); // Allow overrides.
+  isStaticExport
+    ? process.env.NEXT_PUBLIC_BASE_PATH ?? (isProd ? `/${REPO_NAME}` : "")
+    : ""; // Only use basePath for static-export deployments.
 const securityHeaders = buildSecurityHeaders(isProd); // Baseline headers for hosted deployments.
 
 const nextConfig: NextConfig = {
-  output: "export", // Generate a static export for GitHub Pages.
-  trailingSlash: true, // Ensure directory-style URLs for static hosting.
+  output: isStaticExport ? "export" : undefined, // Generate static export on GitHub Pages; runtime mode enables ISR/edge caching.
+  trailingSlash: isStaticExport, // Use directory-style URLs only for static hosting.
   basePath, // Prefix routes when hosted from a repo subpath.
-  assetPrefix: basePath ? `${basePath}/` : undefined, // Prefix static assets in production.
+  assetPrefix:
+    isStaticExport && basePath ? `${basePath}/` : undefined, // Prefix static assets only when static export is enabled.
   async headers() {
     return [
       {

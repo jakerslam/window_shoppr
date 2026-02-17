@@ -43,6 +43,7 @@ Planned ingestion (agent‑driven):
 See: `docs/agent/README.md`, `docs/agent/SKILL.md`, and `docs/agent/AGENT_SKILL.md`.
 
 ### Backend Wiring (SQL/API)
+- `NEXT_PUBLIC_DEPLOY_TARGET` (optional): `static-export` (default, GitHub Pages) or `runtime` (enables ISR-style fetch revalidation and edge/runtime hosting mode).
 - `NEXT_PUBLIC_DATA_API_URL` (optional): enables SQL-backed data API wiring for:
   - `GET /data/products`
   - `GET /data/products/:slug`
@@ -54,6 +55,11 @@ See: `docs/agent/README.md`, `docs/agent/SKILL.md`, and `docs/agent/AGENT_SKILL.
 - `NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG` (optional): enables automatic Amazon affiliate-link minting for submitted deal URLs.
 - `NEXT_PUBLIC_AUTH_API_URL` (optional): enables auth backend wiring (`/auth/*` routes).
 - `NEXT_PUBLIC_MONITORING_API_URL` (optional): receives client error + performance envelopes (`kind: "error" | "trace"`). When not set, monitoring remains local-only (stored in localStorage).
+
+### Runtime Cache Strategy (R40)
+- Product list requests (`/data/products`) use `revalidate: 300` with cache tag `catalog:products` in `runtime` mode.
+- Product detail requests (`/data/products/:slug`) use `revalidate: 900` with tags `catalog:products` + `catalog:product:{slug}` in `runtime` mode.
+- In `static-export` mode, cache hints are disabled so GitHub Pages behavior remains unchanged.
 
 ## Scripts
 - `npm run dev` — local dev server

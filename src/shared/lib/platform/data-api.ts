@@ -19,6 +19,14 @@ type DataApiEnvelope<T> = {
   message?: string;
 };
 
+type RequestDataApiCacheConfig = {
+  cache?: RequestCache;
+  next?: {
+    revalidate?: number;
+    tags?: string[];
+  };
+};
+
 /**
  * Resolve the configured data API base URL.
  */
@@ -31,10 +39,12 @@ export const requestDataApi = async <T>({
   path,
   method = "GET",
   body,
+  cacheConfig,
 }: {
   path: string;
   method?: "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
   body?: Record<string, unknown>;
+  cacheConfig?: RequestDataApiCacheConfig;
 }): Promise<DataApiResult<T> | null> => {
   const baseUrl = getDataApiBaseUrl();
   if (!baseUrl) {
@@ -42,14 +52,18 @@ export const requestDataApi = async <T>({
   }
 
   try {
-    const response = await fetch(`${baseUrl}${path}`, {
+    const requestInit: RequestInit & {
+      next?: { revalidate?: number; tags?: string[] };
+    } = {
       method,
       headers: {
         "Content-Type": "application/json",
       },
       body: body ? JSON.stringify(body) : undefined,
-      cache: "no-store",
-    });
+      cache: cacheConfig?.cache ?? "no-store",
+      next: cacheConfig?.next,
+    };
+    const response = await fetch(`${baseUrl}${path}`, requestInit);
 
     const parsed = (await response.json().catch(() => undefined)) as
       | DataApiEnvelope<T>
