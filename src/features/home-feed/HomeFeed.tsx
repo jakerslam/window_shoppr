@@ -196,7 +196,6 @@ export default function HomeFeed({
   }));
   const columnDecks = deckState.resetKey === feedResetKey ? deckState.decks : initialDeckState.decks;
   const columnDecksRef = useRef<Product[][]>(columnDecks);
-  const completedColumnsRef = useRef<Set<number>>(new Set());
   const deckStateRef = useRef(deckState);
 
   /**
@@ -257,7 +256,6 @@ export default function HomeFeed({
         ...initialDeckState,
       };
     });
-    completedColumnsRef.current = new Set(); // Reset completed-column tracking for new queries/breakpoints.
   }, [feedResetKey, initialDeckState]);
 
   const {
@@ -331,7 +329,7 @@ export default function HomeFeed({
   );
 
   /**
-   * Rebalance cards by lending 1-2 tail cards from the longest active stack to an exhausted stack.
+   * Continue this column only by dealing from the master stack.
    */
   const handleDeckExhausted = useCallback(
     (columnIndex: number) => {
@@ -342,75 +340,9 @@ export default function HomeFeed({
       if (dealNextCard(columnIndex)) {
         return true; // A new card was dealt, so keep scrolling after the column completes.
       }
-
-      const currentDecks = columnDecksRef.current;
-      const receiverDeck = currentDecks[columnIndex];
-
-      if (!receiverDeck || receiverDeck.length === 0) {
-        return false; // Skip invalid or empty receivers.
-      }
-
-      let donorIndex = -1;
-      let donorLength = -1;
-
-      currentDecks.forEach((deck, index) => {
-        if (index === columnIndex) {
-          return; // Skip self.
-        }
-
-        if (completedColumnsRef.current.has(index)) {
-          return; // Do not borrow from stacks already marked complete.
-        }
-
-        if (deck.length > donorLength) {
-          donorLength = deck.length;
-          donorIndex = index; // Choose the longest available donor stack.
-        }
-      });
-
-      if (donorIndex < 0) {
-        return false; // No eligible donor stack.
-      }
-
-      if (donorLength <= 2) {
-        return false; // Keep at least a small runway in donor stacks.
-      }
-
-      const receiverLength = receiverDeck.length;
-      const lengthGap = donorLength - receiverLength; // Positive when donor has more total cards.
-      const desiredTransfer = lengthGap >= 3 ? 2 : 1; // Favor 2-card top-ups only when donor is clearly longer.
-      const transferCount = Math.min(desiredTransfer, donorLength - 1); // Keep at least one card in donor.
-
-      if (transferCount <= 0) {
-        return false; // Guard against empty/near-empty donor stacks.
-      }
-
-      const nextDecks = currentDecks.map((deck) => [...deck]);
-      const movedCards = nextDecks[donorIndex].splice(-transferCount, transferCount);
-
-      if (movedCards.length === 0) {
-        return false;
-      }
-
-      nextDecks[columnIndex].push(...movedCards);
-      setDeckState((previous) => ({
-        ...previous,
-        decks: nextDecks,
-      }));
-      return true;
+      return false;
     },
     [isDeckEnded, dealNextCard],
-  );
-
-  /**
-   * Track completed columns locally and in finite-feed state.
-   */
-  const handleColumnCompleteWithTracking = useCallback(
-    (columnIndex: number) => {
-      completedColumnsRef.current.add(columnIndex); // Prevent this stack from donating after it has ended.
-      handleColumnComplete(columnIndex); // Update finite-feed completion state.
-    },
-    [handleColumnComplete],
   );
 
   /**
@@ -421,7 +353,6 @@ export default function HomeFeed({
       resetKey: feedResetKey,
       ...initialDeckState,
     };
-    completedColumnsRef.current = new Set(); // Clear completed-column state.
     setDeckState(resetState);
     handleReplayDeck(); // Reset finite-feed progress tracking.
   }, [feedResetKey, handleReplayDeck, initialDeckState]);
@@ -455,7 +386,7 @@ export default function HomeFeed({
             onDeckApproachingEnd={handleDeckApproachingEnd}
             onDeckExhausted={handleDeckExhausted}
             onColumnEnterEndZone={handleColumnEnterEndZone}
-            onColumnComplete={handleColumnCompleteWithTracking}
+            onColumnComplete={handleColumnComplete}
           />
         ))}
 

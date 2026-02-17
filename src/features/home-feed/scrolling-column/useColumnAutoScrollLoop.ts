@@ -80,20 +80,10 @@ export default function useColumnAutoScrollLoop({
       return; // Skip when layout has no measurable card height.
     }
 
-    const previousMaxScroll = loopHeightRef.current; // Read previous range before updating.
     const wasPaused = isPausedRef.current; // Preserve paused state.
 
-    if (previousMaxScroll > 0 && previousMaxScroll !== maxScroll) {
-      const normalizedPosition = positionRef.current / previousMaxScroll; // Preserve visual progress across size changes.
-      positionRef.current = clampFinitePosition(
-        normalizedPosition * maxScroll,
-        maxScroll,
-      ); // Re-scale position for the new measured track height.
-      track.style.transform = `translateY(-${positionRef.current}px)`; // Apply updated position immediately.
-    } else {
-      positionRef.current = clampFinitePosition(positionRef.current, maxScroll); // Clamp stale position after resize/deck changes.
-      track.style.transform = `translateY(-${positionRef.current}px)`; // Keep transform coherent with clamped position.
-    }
+    positionRef.current = clampFinitePosition(positionRef.current, maxScroll); // Keep absolute position stable and only clamp when needed.
+    track.style.transform = `translateY(-${positionRef.current}px)`; // Keep transform coherent with clamped position.
 
     loopHeightRef.current = maxScroll; // Cache finite max scroll distance.
     baseSpeedRef.current =
@@ -151,7 +141,11 @@ export default function useColumnAutoScrollLoop({
 
       if (track && maxScroll > 0 && !isDraggingRef.current) {
         const revealThreshold = Math.max(maxScroll - endDeckHeight, 0); // Position where the bar should begin showing.
-        const topUpThreshold = Math.max(maxScroll - Math.max(120, endDeckHeight + 24), 0); // Trigger top-ups shortly before the current stack is exhausted.
+        const lastCardHeight =
+          track.lastElementChild instanceof HTMLElement
+            ? track.lastElementChild.offsetHeight
+            : 0;
+        const preloadPx = Math.max(24, lastCardHeight * 0.35); // Buffer before the final card bottom touches the feed bottom border.
         const baseTarget = targetSpeedRef.current; // Base speed respects pause state.
         const combinedTarget = baseTarget + manualVelocityRef.current; // Add manual velocity assist.
         const speedDelta = (combinedTarget - speedRef.current) * 0.08; // Ease toward combined target.
@@ -164,8 +158,10 @@ export default function useColumnAutoScrollLoop({
         ); // Clamp to finite track bounds so no cards repeat.
         const reachedEndZone =
           previousPosition < revealThreshold && nextPosition >= revealThreshold;
+        const previousGapPx = Math.max(maxScroll - previousPosition, 0); // Distance between last-card bottom and feed bottom before moving.
+        const nextGapPx = Math.max(maxScroll - nextPosition, 0); // Distance between last-card bottom and feed bottom after moving.
         const reachedTopUpThreshold =
-          previousPosition < topUpThreshold && nextPosition >= topUpThreshold;
+          previousGapPx > preloadPx && nextGapPx <= preloadPx;
         const reachedEnd = previousPosition < maxScroll && nextPosition >= maxScroll;
         const hitBoundary =
           (nextPosition >= maxScroll && nextSpeed > 0) ||
