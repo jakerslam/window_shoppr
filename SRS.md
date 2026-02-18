@@ -1,7 +1,7 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 83/92 (90.2%)  ██████████████████░░
+Overall: 84/92 (91.3%)  ██████████████████░░
 Frontend: 58/64 (90.6%) ██████████████████░░
 Backend: 17/22 (77.3%)  ███████████████░░░░░
 Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░░░
@@ -129,10 +129,10 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] R32: Reduce verbose inline comments (keep only essential intent)
 - [x] R33: Add feature public APIs (index exports) for cleaner imports
 - [x] R34: Add comprehensive error boundaries + loading states
-- [ ] 🔵 R35: Add architecture/structure documentation (docs/ARCHITECTURE.md)
+- [x] R35: Add architecture/structure documentation (docs/ARCHITECTURE.md)
 
 ## Production Hardening Backlog
-- [ ] R51: CI required checks (lint + typecheck + unit + integration + e2e + build must pass before merge)
+- [ ] 🔵 R51: CI required checks (lint + typecheck + unit + integration + e2e + build must pass before merge)
 - [ ] R52: Coverage gate in CI (minimum line/branch thresholds with fail-fast enforcement)
 - [ ] R53: PR governance (CODEOWNERS, PR template, branch protection, required review policy)
 - [ ] R54: API contract discipline (OpenAPI spec + contract tests for ingestion/moderation endpoints)
