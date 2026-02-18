@@ -1,0 +1,12 @@
+# Window Shoppr code ownership
+# Keep at least one active owner for all paths.
+
+* @jakerslam
+
+# Critical governance and runtime surfaces
+/.github/workflows/* @jakerslam
+/docs/* @jakerslam
+/src/shared/lib/agent/* @jakerslam
+/src/shared/lib/engagement/* @jakerslam
+/src/features/auth/* @jakerslam
+/src/features/profile/* @jakerslam
