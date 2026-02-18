@@ -1,7 +1,7 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 87/92 (94.6%)  ███████████████████░
+Overall: 88/92 (95.7%)  ████████████████████
 Frontend: 58/64 (90.6%) ██████████████████░░
 Backend: 17/22 (77.3%)  ███████████████░░░░░
 Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░░░
@@ -135,8 +135,8 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] R51: CI required checks (lint + typecheck + unit + integration + e2e + build must pass before merge)
 - [x] R52: Coverage gate in CI (minimum line/branch thresholds with fail-fast enforcement)
 - [x] R53: PR governance (CODEOWNERS, PR template, branch protection, required review policy)
-- [ ] 🔵 R54: API contract discipline (OpenAPI spec + contract tests for ingestion/moderation endpoints)
-- [ ] R55: DB migration safety (versioned migrations, rollback scripts, deterministic seeds)
+- [x] R54: API contract discipline (OpenAPI spec + contract tests for ingestion/moderation endpoints)
+- [ ] 🔵 R55: DB migration safety (versioned migrations, rollback scripts, deterministic seeds)
 - [ ] R56: Auth and authorization hardening (real sessions, role-based access, audit logging for privileged actions)
 - [ ] R57: Observability baseline (structured logs, request IDs, tracing, error tracking, uptime checks)
 - [ ] R58: Incident response readiness (SLOs, alert thresholds, runbooks, on-call escalation flow)

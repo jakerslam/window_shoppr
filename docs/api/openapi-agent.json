@@ -1,0 +1,172 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Window Shoppr Agent Ingestion API",
+    "version": "1.0.0",
+    "description": "Contract for agent ingestion and moderation queue operations."
+  },
+  "servers": [
+    { "url": "https://windowshoppr.example.com" }
+  ],
+  "paths": {
+    "/api/agent/products/upsert": {
+      "post": {
+        "summary": "Queue product upsert",
+        "security": [{ "AgentKey": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/AgentProductUpsertInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Accepted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AgentAcknowledgeResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/agent/products/publish": {
+      "post": {
+        "summary": "Queue product publish-state mutation",
+        "security": [{ "AgentKey": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/AgentProductPublishInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Accepted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AgentAcknowledgeResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/agent/moderation/resolve": {
+      "post": {
+        "summary": "Queue moderation resolution",
+        "security": [{ "AgentKey": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/AgentModerationResolveInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Accepted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AgentAcknowledgeResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/agent/signals/submit": {
+      "post": {
+        "summary": "Queue competitor/source signal",
+        "security": [{ "AgentKey": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/AgentSignalSubmissionInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Accepted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AgentAcknowledgeResponse" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "AgentKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-agent-key"
+      }
+    },
+    "schemas": {
+      "AgentAcknowledgeResponse": {
+        "type": "object",
+        "required": ["ok", "id", "idempotencyKey", "acceptedAt"],
+        "properties": {
+          "ok": { "type": "boolean", "const": true },
+          "id": { "type": "string" },
+          "idempotencyKey": { "type": "string" },
+          "acceptedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "AgentProductUpsertInput": {
+        "type": "object",
+        "required": ["product"],
+        "properties": {
+          "product": { "type": "object", "description": "Product payload following ProductSchema." },
+          "dryRun": { "type": "boolean" }
+        }
+      },
+      "AgentProductPublishInput": {
+        "type": "object",
+        "required": ["slug", "publishState"],
+        "properties": {
+          "slug": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+          "publishState": { "type": "string", "enum": ["draft", "published", "unpublished"] }
+        }
+      },
+      "AgentModerationResolveInput": {
+        "type": "object",
+        "required": ["queueItemId", "status"],
+        "properties": {
+          "queueItemId": { "type": "string", "minLength": 1 },
+          "status": { "type": "string", "enum": ["triaged", "resolved", "dismissed"] },
+          "reviewNotes": { "type": "string", "minLength": 1 }
+        }
+      },
+      "AgentSignalSubmissionInput": {
+        "type": "object",
+        "required": ["source", "signalUrl"],
+        "properties": {
+          "source": {
+            "type": "string",
+            "enum": ["slickdeals_rss", "manual_competitor_signal", "other_signal"]
+          },
+          "signalUrl": { "type": "string", "format": "uri", "pattern": "^https?://" },
+          "merchantUrl": { "type": "string", "format": "uri", "pattern": "^https?://" },
+          "titleHint": { "type": "string", "minLength": 1 },
+          "categoryHint": { "type": "string", "minLength": 1 },
+          "subCategoryHint": { "type": "string", "minLength": 1 },
+          "notes": { "type": "string", "minLength": 1 },
+          "discoveredAt": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}
