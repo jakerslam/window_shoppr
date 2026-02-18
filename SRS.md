@@ -1,8 +1,8 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 82/92 (89.1%)  ██████████████████░░
-Frontend: 57/64 (89.1%) ██████████████████░░
+Overall: 83/92 (90.2%)  ██████████████████░░
+Frontend: 58/64 (90.6%) ██████████████████░░
 Backend: 17/22 (77.3%)  ███████████████░░░░░
 Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░░░
 
@@ -128,8 +128,8 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] R31: Add automated tests + CI/lint pipeline
 - [x] R32: Reduce verbose inline comments (keep only essential intent)
 - [x] R33: Add feature public APIs (index exports) for cleaner imports
-- [ ] 🔵 R34: Add comprehensive error boundaries + loading states
-- [ ] R35: Add architecture/structure documentation (docs/ARCHITECTURE.md)
+- [x] R34: Add comprehensive error boundaries + loading states
+- [ ] 🔵 R35: Add architecture/structure documentation (docs/ARCHITECTURE.md)
 
 ## Production Hardening Backlog
 - [ ] R51: CI required checks (lint + typecheck + unit + integration + e2e + build must pass before merge)
