@@ -1,8 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCategoryFilter } from "@/features/category-filter";
+import { ProductDetail } from "@/features/product-detail";
 import { Product } from "@/shared/lib/catalog/types";
 import {
   formatCategoryLabel,
@@ -18,6 +19,8 @@ import useHomeFeedPreferences from "@/features/home-feed/useHomeFeedPreferences"
 import useFilteredSortedProducts from "@/features/home-feed/useFilteredSortedProducts";
 import useFiniteFeedState from "@/features/home-feed/useFiniteFeedState";
 import { useFeatureFlag } from "@/shared/lib/platform/useFeatureFlag";
+import Modal from "@/shared/components/modal/Modal";
+import { PUBLIC_ENV } from "@/shared/lib/platform/env";
 import styles from "@/features/home-feed/HomeFeed.module.css";
 
 const BASE_COLUMN_DURATIONS = [38, 46, 54, 62, 70];
@@ -67,6 +70,7 @@ export default function HomeFeed({
   subtitleLabel?: string;
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [viewportWidth, setViewportWidth] = useState(1280);
   const [sortOption, setSortOption] = useState<SortOption>("newest");
   const [speedMode, setSpeedMode] = useState<"cozy" | "quick">(() => {
@@ -165,6 +169,14 @@ export default function HomeFeed({
   );
 
   const resultsLabel = `Browse ${feedProducts.length} ${subtitleLabel}`;
+  const modalProductSlug = searchParams.get("product");
+  const modalProduct = useMemo(
+    () =>
+      modalProductSlug
+        ? products.find((product) => product.slug === modalProductSlug) ?? null
+        : null,
+    [modalProductSlug, products],
+  );
 
   const columnCount = useMemo(
     () => getFeedColumnCount(viewportWidth),
@@ -284,6 +296,11 @@ export default function HomeFeed({
    */
   const handleCardOpen = useCallback(
     (product: Product) => () => {
+      if (PUBLIC_ENV.deployTarget === "runtime") {
+        router.push(`/?product=${encodeURIComponent(product.slug)}`); // Runtime mode restores feed-preserving modal routing.
+        return;
+      }
+
       router.push(`/product/${product.slug}/`);
     },
     [router],
@@ -420,6 +437,12 @@ export default function HomeFeed({
           onClearFilters={() => clearFilters()}
         />
       )}
+
+      {PUBLIC_ENV.deployTarget === "runtime" && modalProduct ? (
+        <Modal>
+          <ProductDetail product={modalProduct} inModal />
+        </Modal>
+      ) : null}
     </section>
   );
 }
