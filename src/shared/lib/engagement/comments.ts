@@ -1,4 +1,9 @@
 import { consumeRateLimit } from "@/shared/lib/platform/rate-limit";
+import {
+  sanitizeUserText,
+  validateCommentBody,
+  validateDisplayName,
+} from "@/shared/lib/platform/input-hardening";
 
 export type ProductComment = {
   id: string;
@@ -84,12 +89,23 @@ export const submitComment = ({
     throw new Error(rateLimitResult.message); // Surface 429-style messaging to the comment UI handler.
   }
 
+  const safeAuthor = sanitizeUserText(author, 40) || "Anonymous";
+  const safeBody = sanitizeUserText(body, 500);
+
+  if (safeAuthor !== "Anonymous" && !validateDisplayName(safeAuthor).success) {
+    throw new Error("Please use a valid name.");
+  }
+
+  if (!validateCommentBody(safeBody).success) {
+    throw new Error("Please add at least 3 characters.");
+  }
+
   const comment: ProductComment = {
     id: `comment-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
     productId,
     productSlug,
-    author: author.trim() || "Anonymous",
-    body: body.trim(),
+    author: safeAuthor,
+    body: safeBody,
     createdAt: new Date().toISOString(),
     moderationState: "visible",
   }; // Use a lightweight local id until backend persistence is available.

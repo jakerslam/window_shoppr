@@ -1,9 +1,9 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 130/150 (86.7%)  █████████████████░░░
+Overall: 131/150 (87.3%)  █████████████████░░░
 Frontend: 58/64 (90.6%)   ██████████████████░░
-Backend: 19/22 (86.4%)    █████████████████░░░
+Backend: 20/22 (90.9%)    ██████████████████░░
 Automation: 0/4 (0.0%)    ░░░░░░░░░░░░░░░░░░░░
 
 
@@ -185,8 +185,8 @@ Automation: 0/4 (0.0%)    ░░░░░░░░░░░░░░░░░░
 - [x] D7: Launch cleanup - remove local auth fallback account/session store and require backend auth endpoints in production.
 - [x] R63: Abuse protection and rate limiting (per-IP/session throttles, burst cooldowns, bot challenge on write endpoints, idempotency keys, 429 handling, and violation alerting).
 - [x] R64: CSRF protection for state-changing requests (token/origin enforcement for mutation endpoints).
-- [ ] 🔵 R65: Input/output hardening (centralized sanitization, strict validation, and safe rendering rules for user-generated content).
-- [ ] R66: CORS and origin allowlist policy (deny-by-default with environment-specific allowlists).
+- [x] R65: Input/output hardening (centralized sanitization, strict validation, and safe rendering rules for user-generated content).
+- [ ] 🔵 R66: CORS and origin allowlist policy (deny-by-default with environment-specific allowlists).
 - [ ] R67: Auth session hardening (secure HttpOnly cookies at backend cutover, session rotation, idle + absolute timeout policies).
 - [ ] R68: Security headers runtime verification (automated checks to ensure CSP/HSTS/frame protections are present in deployed environments).
 - [ ] R69: File/upload security policy (type/size validation, malware scanning, signed URL flow, quarantine handling) [activate when uploads are introduced].

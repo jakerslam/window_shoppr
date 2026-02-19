@@ -2,6 +2,10 @@
 
 import { requestDataApi } from "@/shared/lib/platform/data-api";
 import { consumeRateLimit } from "@/shared/lib/platform/rate-limit";
+import {
+  sanitizeUserText,
+  validateEmailInput,
+} from "@/shared/lib/platform/input-hardening";
 import { queueAffiliateMintForSubmission } from "@/shared/lib/engagement/affiliate-minting";
 import {
   DEAL_SUBMISSION_CREATED_EVENT,
@@ -79,12 +83,31 @@ export const submitDealSubmission = async (input: {
     return { ok: false, message: "Please enter a valid product URL." } as const;
   }
 
-  if (!input.title.trim()) {
+  const safeTitle = sanitizeUserText(input.title, 120);
+  const safeCategory = sanitizeUserText(input.category, 80);
+  const safeSubCategory = input.subCategory
+    ? sanitizeUserText(input.subCategory, 80)
+    : undefined;
+  const safeCouponCode = input.couponCode
+    ? sanitizeUserText(input.couponCode, 60)
+    : undefined;
+  const safeStore = input.store ? sanitizeUserText(input.store, 80) : undefined;
+  const safeBrand = input.brand ? sanitizeUserText(input.brand, 80) : undefined;
+  const safeNotes = input.notes ? sanitizeUserText(input.notes, 1200) : undefined;
+  const safeSubmitterEmail = input.submitterEmail
+    ? sanitizeUserText(input.submitterEmail.toLowerCase(), 160)
+    : undefined;
+
+  if (!safeTitle) {
     return { ok: false, message: "Please add a deal title." } as const;
   }
 
-  if (!input.category.trim()) {
+  if (!safeCategory) {
     return { ok: false, message: "Please choose a category." } as const;
+  }
+
+  if (safeSubmitterEmail && !validateEmailInput(safeSubmitterEmail).success) {
+    return { ok: false, message: "Please use a valid email address." } as const;
   }
 
   if (!input.agreeIndependent || !input.agreeAccuracy) {
@@ -108,16 +131,16 @@ export const submitDealSubmission = async (input: {
   const submittedAt = new Date().toISOString();
   const submission: DealSubmissionPayload = {
     url: normalizedUrl,
-    title: input.title.trim(),
-    category: input.category.trim(),
-    subCategory: input.subCategory?.trim() || undefined,
+    title: safeTitle,
+    category: safeCategory,
+    subCategory: safeSubCategory || undefined,
     salePrice: input.salePrice,
     listPrice: input.listPrice,
-    couponCode: input.couponCode?.trim() || undefined,
-    store: input.store?.trim() || undefined,
-    brand: input.brand?.trim() || undefined,
-    notes: input.notes?.trim() || undefined,
-    submitterEmail: input.submitterEmail?.trim().toLowerCase() || undefined,
+    couponCode: safeCouponCode || undefined,
+    store: safeStore || undefined,
+    brand: safeBrand || undefined,
+    notes: safeNotes || undefined,
+    submitterEmail: safeSubmitterEmail || undefined,
     agreeIndependent: true,
     agreeAccuracy: true,
     submittedAt,

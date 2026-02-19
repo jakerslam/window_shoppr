@@ -1,5 +1,6 @@
 import { requestDataApi } from "@/shared/lib/platform/data-api";
 import { consumeRateLimit } from "@/shared/lib/platform/rate-limit";
+import { validateEmailInput } from "@/shared/lib/platform/input-hardening";
 
 const EMAIL_CAPTURE_QUEUE_STORAGE_KEY = "windowShopprEmailCaptureQueue"; // Local fallback queue for deferred SQL submission.
 
@@ -37,6 +38,13 @@ const queueEmailCaptureRecord = (record: EmailCaptureRecord) => {
  */
 export const submitEmailCapture = async (email: string) => {
   const normalizedEmail = email.trim().toLowerCase();
+  if (!validateEmailInput(normalizedEmail).success) {
+    return {
+      ok: false,
+      message: "Please enter a valid email address.",
+    } as const;
+  }
+
   const rateLimitResult = consumeRateLimit({
     action: "email_capture_write",
     windowMs: 1000 * 60 * 10,

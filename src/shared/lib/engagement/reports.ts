@@ -1,4 +1,5 @@
 import { consumeRateLimit } from "@/shared/lib/platform/rate-limit";
+import { sanitizeUserText } from "@/shared/lib/platform/input-hardening";
 
 export type ReportReason = "inaccuracy" | "inappropriate" | "spam" | "other";
 export type ReportStatus = "pending" | "triaged" | "resolved" | "dismissed";
@@ -150,9 +151,13 @@ export const submitReport = (payload: Omit<ReportPayload, "timestamp">) => {
     } as const;
   }
 
+  const safeDetails = payload.details
+    ? sanitizeUserText(payload.details, 800)
+    : undefined;
+
   const report: ReportPayload = {
     ...payload,
-    details: payload.details?.trim() || undefined,
+    details: safeDetails || undefined,
     timestamp: new Date().toISOString(),
   };
   const queueItem: ModerationQueueItem = {
