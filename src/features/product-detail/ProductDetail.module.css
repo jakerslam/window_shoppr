@@ -411,6 +411,21 @@
   font-weight: 600;
 }
 
+.productDetail__blogLink {
+  width: fit-content;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-primary-strong);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  opacity: 0.85;
+  transition: opacity 150ms ease;
+}
+
+.productDetail__blogLink:hover {
+  opacity: 1;
+}
+
 .productDetail__comments {
   display: flex;
   flex-direction: column;
@@ -630,6 +645,7 @@
 .productDetail__cta:focus-visible,
 .productDetail__share:focus-visible,
 .productDetail__descriptionToggle:focus-visible,
+.productDetail__blogLink:focus-visible,
 .productDetail__commentInput:focus-visible,
 .productDetail__commentTextarea:focus-visible,
 .productDetail__commentSubmit:focus-visible,

@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { useMemo } from "react";
 import { Product, PRODUCT_UI } from "@/shared/lib/catalog/types";
 import { trackAffiliateClick } from "@/shared/lib/engagement/analytics";
 import {
@@ -18,6 +20,7 @@ import ProductDetailShareButton from "@/features/product-detail/ProductDetailSha
 import ProductDetailComments from "@/features/product-detail/info/ProductDetailComments";
 import ProductDetailReport from "@/features/product-detail/info/ProductDetailReport";
 import ProductDetailTaste from "@/features/product-detail/info/ProductDetailTaste";
+import { getBlogArticleById, getBlogArticleBySlug } from "@/shared/lib/blog/data";
 import styles from "@/features/product-detail/ProductDetail.module.css";
 import { clamp, formatPrice } from "@/features/product-detail/product-detail-utils";
 
@@ -46,6 +49,17 @@ export default function ProductDetailInfo({
   const saveCount = useProductSaveCount(product.id, product.saveCount ?? 0); // Subscribe to live save-count updates for this product.
   const saveCountLabel = formatSaveCountLabel(saveCount); // Render compact social-proof text.
   const showSaveCount = saveCount >= SOCIAL_PROOF_MIN_COUNT; // Hide weak social proof until threshold is met.
+  const relatedBlogArticle = useMemo(() => {
+    if (product.blogSlug) {
+      return getBlogArticleBySlug(product.blogSlug);
+    }
+
+    if (product.blogId) {
+      return getBlogArticleById(product.blogId);
+    }
+
+    return null;
+  }, [product.blogId, product.blogSlug]);
 
   /**
    * Track outbound affiliate clicks for analytics.
@@ -133,6 +147,15 @@ export default function ProductDetailInfo({
         text={product.description}
         characterLimit={PRODUCT_UI.DESCRIPTION_COLLAPSE_LIMIT}
       />
+
+      {relatedBlogArticle ? (
+        <Link
+          className={styles.productDetail__blogLink}
+          href={`/blog/${relatedBlogArticle.slug}/`}
+        >
+          Read blog post
+        </Link>
+      ) : null}
 
       <ProductDetailTaste product={product} />
 

@@ -191,3 +191,9 @@ export const getBlogArticles = () =>
  */
 export const getBlogArticleBySlug = (slug: string) =>
   BLOG_ARTICLES.find((article) => article.slug === slug) ?? null;
+
+/**
+ * Find one article by id.
+ */
+export const getBlogArticleById = (id: string) =>
+  BLOG_ARTICLES.find((article) => article.id === id) ?? null;
