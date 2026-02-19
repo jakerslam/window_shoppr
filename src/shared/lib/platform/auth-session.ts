@@ -1,11 +1,16 @@
 export type AuthProvider = "email" | "google" | "x" | "meta";
+export type AuthRole = "user" | "editor" | "agent" | "admin";
 
 export type AuthSession = {
   isAuthenticated: true;
   provider: AuthProvider;
+  roles: AuthRole[];
   email?: string;
   displayName?: string;
   marketingEmails?: boolean;
+  sessionId: string;
+  issuedAt: string;
+  expiresAt: string;
   updatedAt: string;
 };
 
@@ -32,6 +37,12 @@ const normalizeAuthSession = (input: unknown): AuthSession | null => {
   return {
     isAuthenticated: true,
     provider,
+    roles: Array.isArray(parsed.roles) && parsed.roles.length > 0
+      ? parsed.roles.filter(
+        (role): role is AuthRole =>
+          role === "user" || role === "editor" || role === "agent" || role === "admin",
+      )
+      : ["user"],
     email: typeof parsed.email === "string" ? parsed.email : undefined,
     displayName:
       typeof parsed.displayName === "string" ? parsed.displayName : undefined,
@@ -39,6 +50,18 @@ const normalizeAuthSession = (input: unknown): AuthSession | null => {
       typeof parsed.marketingEmails === "boolean"
         ? parsed.marketingEmails
         : undefined,
+    sessionId:
+      typeof parsed.sessionId === "string" && parsed.sessionId.trim()
+        ? parsed.sessionId
+        : `sess_${Date.now().toString(36)}`,
+    issuedAt:
+      typeof parsed.issuedAt === "string" && parsed.issuedAt.trim()
+        ? parsed.issuedAt
+        : parsed.updatedAt,
+    expiresAt:
+      typeof parsed.expiresAt === "string" && parsed.expiresAt.trim()
+        ? parsed.expiresAt
+        : new Date(Date.now() + 1000 * 60 * 60 * 24 * 14).toISOString(),
     updatedAt: parsed.updatedAt,
   };
 };
@@ -58,7 +81,17 @@ export const readAuthSession = (): AuthSession | null => {
     }
 
     const parsed = JSON.parse(raw) as unknown;
-    return normalizeAuthSession(parsed);
+    const session = normalizeAuthSession(parsed);
+    if (!session) {
+      return null;
+    }
+
+    if (Number.isFinite(new Date(session.expiresAt).getTime()) && new Date(session.expiresAt) < new Date()) {
+      clearAuthSession(); // Clear expired sessions automatically.
+      return null;
+    }
+
+    return session;
   } catch {
     return null; // Ignore parse failures.
   }
@@ -69,28 +102,43 @@ export const readAuthSession = (): AuthSession | null => {
  */
 export const writeAuthSession = ({
   provider,
+  roles,
   email,
   displayName,
   marketingEmails,
   updatedAt,
+  expiresAt,
 }: {
   provider: AuthProvider;
+  roles?: AuthRole[];
   email?: string;
   displayName?: string;
   marketingEmails?: boolean;
   updatedAt?: string;
+  expiresAt?: string;
 }) => {
   if (typeof window === "undefined") {
     return; // Skip storage writes during SSR.
   }
 
+  const issuedAt = new Date().toISOString();
   const payload: AuthSession = {
     isAuthenticated: true,
     provider,
+    roles:
+      roles && roles.length > 0
+        ? roles.filter(
+          (role): role is AuthRole =>
+            role === "user" || role === "editor" || role === "agent" || role === "admin",
+        )
+        : ["user"],
     email: email?.trim() || undefined,
     displayName: displayName?.trim() || undefined,
     marketingEmails,
-    updatedAt: updatedAt ?? new Date().toISOString(),
+    sessionId: `sess_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`,
+    issuedAt,
+    expiresAt: expiresAt ?? new Date(Date.now() + 1000 * 60 * 60 * 24 * 14).toISOString(),
+    updatedAt: updatedAt ?? issuedAt,
   };
 
   try {

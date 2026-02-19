@@ -1,4 +1,4 @@
-import { AuthProvider, AuthSession } from "@/shared/lib/platform/auth-session";
+import { AuthProvider, AuthRole, AuthSession } from "@/shared/lib/platform/auth-session";
 
 export type LocalAuthAccount = {
   id: string;
@@ -7,6 +7,7 @@ export type LocalAuthAccount = {
   displayName?: string;
   marketingEmails: boolean;
   provider: AuthProvider;
+  roles?: AuthRole[];
   createdAt: string;
   updatedAt: string;
 };

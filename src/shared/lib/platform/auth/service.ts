@@ -1,7 +1,8 @@
 import { requestAuthApi } from "@/shared/lib/platform/auth/api";
 import { buildLocalAccountId, normalizeEmail, readLocalAuthAccounts, writeLocalAuthAccounts } from "@/shared/lib/platform/auth/local-accounts";
+import { logPrivilegedAuditEvent } from "@/shared/lib/platform/auth/audit-log";
 import { AuthActionResult } from "@/shared/lib/platform/auth/types";
-import { AuthProvider, clearAuthSession, readAuthSession, writeAuthSession } from "@/shared/lib/platform/auth-session";
+import { AuthProvider, AuthRole, clearAuthSession, readAuthSession, writeAuthSession } from "@/shared/lib/platform/auth-session";
 
 const AUTH_PROVIDER_LABEL: Record<AuthProvider, string> = {
   email: "Email",
@@ -15,16 +16,18 @@ const AUTH_PROVIDER_LABEL: Record<AuthProvider, string> = {
  */
 const persistSession = ({
   provider,
+  roles,
   email,
   displayName,
   marketingEmails,
 }: {
   provider: AuthProvider;
+  roles?: AuthRole[];
   email?: string;
   displayName?: string;
   marketingEmails?: boolean;
 }): AuthActionResult => {
-  writeAuthSession({ provider, email, displayName, marketingEmails });
+  writeAuthSession({ provider, roles, email, displayName, marketingEmails });
   const session = readAuthSession();
   if (!session) {
     return { ok: false, message: "Unable to persist authenticated session." };
@@ -64,6 +67,7 @@ export const signInWithEmail = async ({
 
   return persistSession({
     provider: "email",
+    roles: account.roles ?? ["user"],
     email: account.email,
     displayName: account.displayName,
     marketingEmails: account.marketingEmails,
@@ -104,6 +108,7 @@ export const signUpWithEmail = async ({
   }
 
   const nowIso = new Date().toISOString();
+  const roleSeed: AuthRole[] = accounts.length === 0 ? ["admin"] : ["user"]; // First local account is admin for bootstrapping.
   const createdAccount = {
     id: buildLocalAccountId(),
     email: normalizedEmail,
@@ -111,6 +116,7 @@ export const signUpWithEmail = async ({
     displayName: displayName?.trim() || undefined,
     marketingEmails,
     provider: "email" as const,
+    roles: roleSeed,
     createdAt: nowIso,
     updatedAt: nowIso,
   };
@@ -118,6 +124,7 @@ export const signUpWithEmail = async ({
 
   return persistSession({
     provider: "email",
+    roles: createdAccount.roles,
     email: createdAccount.email,
     displayName: createdAccount.displayName,
     marketingEmails: createdAccount.marketingEmails,
@@ -151,6 +158,7 @@ export const signInWithProvider = async ({
       displayName: `${AUTH_PROVIDER_LABEL[provider]} user`,
       marketingEmails: false,
       provider,
+      roles: ["user"],
       createdAt: nowIso,
       updatedAt: nowIso,
     });
@@ -160,6 +168,7 @@ export const signInWithProvider = async ({
   const account = accounts.find((candidate) => candidate.email === fallbackEmail);
   return persistSession({
     provider,
+    roles: account?.roles ?? ["user"],
     email: account?.email,
     displayName: account?.displayName,
     marketingEmails: account?.marketingEmails,
@@ -170,9 +179,16 @@ export const signInWithProvider = async ({
  * Sign out from API (when configured) and clear local session state.
  */
 export const signOutAccount = async () => {
+  const session = readAuthSession();
   await requestAuthApi({
     path: "/auth/logout",
     body: {},
   }); // Fire-and-forget API logout when backend auth is configured.
   clearAuthSession(); // Always clear local session to finalize sign-out.
+  await logPrivilegedAuditEvent({
+    action: "auth.logout",
+    status: "allowed",
+    session,
+    metadata: { provider: session?.provider ?? "unknown" },
+  }); // Track session termination events for auth audit trails.
 };

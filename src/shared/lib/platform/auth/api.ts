@@ -1,9 +1,10 @@
 import { PUBLIC_ENV } from "@/shared/lib/platform/env";
-import { AuthProvider, readAuthSession, writeAuthSession } from "@/shared/lib/platform/auth-session";
+import { AuthProvider, AuthRole, readAuthSession, writeAuthSession } from "@/shared/lib/platform/auth-session";
 import { AuthActionResult } from "@/shared/lib/platform/auth/types";
 
 type ApiSessionPayload = {
   provider?: AuthProvider;
+  roles?: AuthRole[];
   email?: string;
   displayName?: string;
   marketingEmails?: boolean;
@@ -19,16 +20,18 @@ const getAuthApiBaseUrl = () => PUBLIC_ENV.authApiUrl.replace(/\/+$/, "");
  */
 const persistSession = ({
   provider,
+  roles,
   email,
   displayName,
   marketingEmails,
 }: {
   provider: AuthProvider;
+  roles?: AuthRole[];
   email?: string;
   displayName?: string;
   marketingEmails?: boolean;
 }) => {
-  writeAuthSession({ provider, email, displayName, marketingEmails });
+  writeAuthSession({ provider, roles, email, displayName, marketingEmails });
   return readAuthSession();
 };
 
@@ -44,6 +47,7 @@ const persistApiSession = (
 
   const session = persistSession({
     provider: sessionPayload.provider,
+    roles: sessionPayload.roles,
     email: sessionPayload.email,
     displayName: sessionPayload.displayName,
     marketingEmails: sessionPayload.marketingEmails,
