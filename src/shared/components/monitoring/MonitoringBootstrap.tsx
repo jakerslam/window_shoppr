@@ -100,6 +100,46 @@ export default function MonitoringBootstrap() {
   }, []);
 
   /**
+   * Run periodic uptime probes against a lightweight same-origin endpoint.
+   */
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return undefined;
+    }
+
+    const runProbe = async () => {
+      const start = performance.now();
+      let ok = false;
+
+      try {
+        const response = await fetch("/robots.txt", {
+          method: "GET",
+          cache: "no-store",
+        });
+        ok = response.ok;
+      } catch {
+        ok = false;
+      }
+
+      trackMonitoringTrace({
+        type: "uptime_check",
+        pathname: window.location.pathname,
+        durationMs: performance.now() - start,
+        metadata: { ok },
+      }); // Emit periodic availability probes into observability traces.
+    };
+
+    void runProbe(); // Prime the first signal on bootstrap.
+    const id = window.setInterval(() => {
+      void runProbe();
+    }, 60_000);
+
+    return () => {
+      window.clearInterval(id);
+    };
+  }, []);
+
+  /**
    * Track App Router route-transition timing for client-side navigations.
    */
   useEffect(() => {
@@ -129,4 +169,3 @@ export default function MonitoringBootstrap() {
 
   return null;
 }
-
