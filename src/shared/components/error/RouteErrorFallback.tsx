@@ -23,7 +23,10 @@ export default function RouteErrorFallback({
   backHref?: string;
   backLabel?: string;
 }) {
-  const showDetails = process.env.NODE_ENV === "development";
+  const showDetails =
+    process.env.NODE_ENV === "development" &&
+    typeof window !== "undefined" &&
+    new URLSearchParams(window.location.search).has("debug"); // Hide error details unless explicitly requested.
 
   useEffect(() => {
     trackMonitoringError({
@@ -58,4 +61,3 @@ export default function RouteErrorFallback({
     </div>
   );
 }
-

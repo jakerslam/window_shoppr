@@ -15,7 +15,10 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const showDetails = process.env.NODE_ENV === "development"; // Only show details in dev.
+  const showDetails =
+    process.env.NODE_ENV === "development" &&
+    typeof window !== "undefined" &&
+    new URLSearchParams(window.location.search).has("debug"); // Hide error details unless explicitly requested.
 
   /**
    * Emit React error-boundary failures to monitoring.
