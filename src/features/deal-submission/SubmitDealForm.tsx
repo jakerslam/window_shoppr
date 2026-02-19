@@ -3,60 +3,44 @@
 import { useMemo, useState } from "react";
 import { CATEGORY_TREE } from "@/shared/lib/catalog/categories";
 import { submitDealSubmission } from "@/shared/lib/engagement/deal-submissions";
+import SubmitDealFormFields from "@/features/deal-submission/SubmitDealFormFields";
+import SubmitDealPreview from "@/features/deal-submission/SubmitDealPreview";
+import {
+  DEFAULT_SUBMIT_DEAL_STATE,
+  SubmitDealState,
+} from "@/features/deal-submission/submit-deal-form-types";
 import styles from "@/features/deal-submission/SubmitDealForm.module.css";
-
-type SubmitDealState = {
-  url: string;
-  title: string;
-  category: string;
-  subCategory: string;
-  salePrice: string;
-  listPrice: string;
-  couponCode: string;
-  store: string;
-  brand: string;
-  notes: string;
-  submitterEmail: string;
-  agreeIndependent: boolean;
-  agreeAccuracy: boolean;
-};
-
-const DEFAULT_STATE: SubmitDealState = {
-  url: "",
-  title: "",
-  category: "",
-  subCategory: "",
-  salePrice: "",
-  listPrice: "",
-  couponCode: "",
-  store: "",
-  brand: "",
-  notes: "",
-  submitterEmail: "",
-  agreeIndependent: false,
-  agreeAccuracy: false,
-};
 
 /**
  * URL-first deal submission form for user-contributed links.
  */
 export default function SubmitDealForm() {
-  const [form, setForm] = useState<SubmitDealState>(DEFAULT_STATE);
+  const [form, setForm] = useState<SubmitDealState>(DEFAULT_SUBMIT_DEAL_STATE);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
 
-  const selectedCategory = useMemo(
-    () => CATEGORY_TREE.find((category) => category.label === form.category) ?? null,
+  const selectedSubCategories = useMemo(
+    () =>
+      CATEGORY_TREE.find((category) => category.label === form.category)
+        ?.subCategories ?? [],
     [form.category],
   );
+
+  const updateField = (field: keyof SubmitDealState, value: string) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const updateBooleanField = (field: keyof SubmitDealState, value: boolean) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+  };
 
   /**
    * Attempt lightweight title/store prefill from the entered URL.
    */
   const handleUrlPrefill = () => {
     if (!form.url.trim()) {
-      return; // Skip prefill when URL is empty.
+      return;
     }
 
     try {
@@ -65,7 +49,7 @@ export default function SubmitDealForm() {
         .replace(/^www\./, "")
         .split(".")[0]
         .replace(/[-_]+/g, " ")
-        .replace(/\b\w/g, (char) => char.toUpperCase()); // Convert hostname to readable store label.
+        .replace(/\b\w/g, (char) => char.toUpperCase());
       const pathLabel = parsed.pathname
         .split("/")
         .filter(Boolean)
@@ -77,7 +61,7 @@ export default function SubmitDealForm() {
         ...prev,
         store: prev.store || hostLabel,
         title: prev.title || pathLabel || prev.title,
-      })); // Fill missing fields only.
+      }));
     } catch {
       // Ignore invalid URLs during prefill; validation happens on submit.
     }
@@ -123,7 +107,7 @@ export default function SubmitDealForm() {
         ? `Submitted. Queue id: ${result.id}`
         : `Submitted locally. Queue id: ${result.id}`,
     );
-    setForm(DEFAULT_STATE);
+    setForm(DEFAULT_SUBMIT_DEAL_STATE);
     setIsPreviewOpen(false);
     setIsSubmitting(false);
   };
@@ -140,211 +124,20 @@ export default function SubmitDealForm() {
       </header>
 
       <form className={styles.submitDeal__form} onSubmit={handleSubmit}>
-        <label className={styles.submitDeal__field}>
-          Deal URL
-          <input
-            className={styles.submitDeal__input}
-            type="url"
-            value={form.url}
-            onBlur={handleUrlPrefill}
-            onChange={(event) => setForm((prev) => ({ ...prev, url: event.target.value }))}
-            placeholder="https://example.com/product"
-            required
-          />
-        </label>
-
-        <label className={styles.submitDeal__field}>
-          Deal title
-          <input
-            className={styles.submitDeal__input}
-            type="text"
-            value={form.title}
-            onChange={(event) => setForm((prev) => ({ ...prev, title: event.target.value }))}
-            placeholder="Short product/deal title"
-            required
-          />
-        </label>
-
-        <div className={styles.submitDeal__grid}>
-          <label className={styles.submitDeal__field}>
-            Category
-            <select
-              className={styles.submitDeal__input}
-              value={form.category}
-              onChange={(event) =>
-                setForm((prev) => ({
-                  ...prev,
-                  category: event.target.value,
-                  subCategory: "",
-                }))
-              }
-              required
-            >
-              <option value="">Select category</option>
-              {CATEGORY_TREE.map((category) => (
-                <option key={category.label} value={category.label}>
-                  {category.label}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className={styles.submitDeal__field}>
-            Subcategory
-            <select
-              className={styles.submitDeal__input}
-              value={form.subCategory}
-              onChange={(event) =>
-                setForm((prev) => ({ ...prev, subCategory: event.target.value }))
-              }
-              disabled={!selectedCategory}
-            >
-              <option value="">Optional</option>
-              {(selectedCategory?.subCategories ?? []).map((subCategory) => (
-                <option key={subCategory} value={subCategory}>
-                  {subCategory}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className={styles.submitDeal__field}>
-            Sale price
-            <input
-              className={styles.submitDeal__input}
-              type="number"
-              step="0.01"
-              min="0"
-              value={form.salePrice}
-              onChange={(event) => setForm((prev) => ({ ...prev, salePrice: event.target.value }))}
-              placeholder="Optional"
-            />
-          </label>
-
-          <label className={styles.submitDeal__field}>
-            List price
-            <input
-              className={styles.submitDeal__input}
-              type="number"
-              step="0.01"
-              min="0"
-              value={form.listPrice}
-              onChange={(event) => setForm((prev) => ({ ...prev, listPrice: event.target.value }))}
-              placeholder="Optional"
-            />
-          </label>
-
-          <label className={styles.submitDeal__field}>
-            Coupon code
-            <input
-              className={styles.submitDeal__input}
-              type="text"
-              value={form.couponCode}
-              onChange={(event) =>
-                setForm((prev) => ({ ...prev, couponCode: event.target.value }))
-              }
-              placeholder="Optional (e.g. SAVE10)"
-            />
-          </label>
-        </div>
-
-        <div className={styles.submitDeal__grid}>
-          <label className={styles.submitDeal__field}>
-            Store
-            <input
-              className={styles.submitDeal__input}
-              type="text"
-              value={form.store}
-              onChange={(event) => setForm((prev) => ({ ...prev, store: event.target.value }))}
-              placeholder="Optional"
-            />
-          </label>
-
-          <label className={styles.submitDeal__field}>
-            Brand
-            <input
-              className={styles.submitDeal__input}
-              type="text"
-              value={form.brand}
-              onChange={(event) => setForm((prev) => ({ ...prev, brand: event.target.value }))}
-              placeholder="Optional"
-            />
-          </label>
-        </div>
-
-        <label className={styles.submitDeal__field}>
-          Notes
-          <textarea
-            className={styles.submitDeal__textarea}
-            rows={4}
-            value={form.notes}
-            onChange={(event) => setForm((prev) => ({ ...prev, notes: event.target.value }))}
-            placeholder="Optional context about why this is a good deal"
-          />
-        </label>
-
-        <label className={styles.submitDeal__field}>
-          Contact email (optional)
-          <input
-            className={styles.submitDeal__input}
-            type="email"
-            value={form.submitterEmail}
-            onChange={(event) =>
-              setForm((prev) => ({ ...prev, submitterEmail: event.target.value }))
-            }
-            placeholder="you@example.com"
-          />
-        </label>
-
-        <label className={styles.submitDeal__checkRow}>
-          <input
-            type="checkbox"
-            checked={form.agreeIndependent}
-            onChange={(event) =>
-              setForm((prev) => ({ ...prev, agreeIndependent: event.target.checked }))
-            }
-          />
-          I am not the seller and have no undisclosed affiliation with this listing.
-        </label>
-
-        <label className={styles.submitDeal__checkRow}>
-          <input
-            type="checkbox"
-            checked={form.agreeAccuracy}
-            onChange={(event) =>
-              setForm((prev) => ({ ...prev, agreeAccuracy: event.target.checked }))
-            }
-          />
-          This information is accurate to the best of my knowledge.
-        </label>
-
-        <div className={styles.submitDeal__actions}>
-          <button
-            className={styles.submitDeal__secondary}
-            type="button"
-            onClick={() => setIsPreviewOpen((prev) => !prev)}
-          >
-            {isPreviewOpen ? "Hide preview" : "Preview"}
-          </button>
-          <button className={styles.submitDeal__primary} type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Submitting..." : "Submit deal"}
-          </button>
-        </div>
-
-        {statusMessage ? <p className={styles.submitDeal__status}>{statusMessage}</p> : null}
+        <SubmitDealFormFields
+          form={form}
+          isSubmitting={isSubmitting}
+          isPreviewOpen={isPreviewOpen}
+          statusMessage={statusMessage}
+          selectedSubCategories={selectedSubCategories}
+          onUrlBlur={handleUrlPrefill}
+          onFieldChange={updateField}
+          onBooleanChange={updateBooleanField}
+          onTogglePreview={() => setIsPreviewOpen((prev) => !prev)}
+        />
       </form>
 
-      {isPreviewOpen ? (
-        <aside className={styles.submitDeal__preview}>
-          <h2 className={styles.submitDeal__previewTitle}>Preview</h2>
-          <p><strong>Title:</strong> {form.title || "—"}</p>
-          <p><strong>URL:</strong> {form.url || "—"}</p>
-          <p><strong>Category:</strong> {form.category || "—"}</p>
-          <p><strong>Subcategory:</strong> {form.subCategory || "—"}</p>
-          <p><strong>Price:</strong> {form.salePrice || "—"}</p>
-          <p><strong>Coupon:</strong> {form.couponCode || "—"}</p>
-        </aside>
-      ) : null}
+      {isPreviewOpen ? <SubmitDealPreview form={form} /> : null}
     </section>
   );
 }

@@ -7,11 +7,13 @@ const authSessionPath = resolve(process.cwd(), "src/shared/lib/platform/auth-ses
 const authorizationPath = resolve(process.cwd(), "src/shared/lib/platform/auth/authorization.ts");
 const auditPath = resolve(process.cwd(), "src/shared/lib/platform/auth/audit-log.ts");
 const ingestionPath = resolve(process.cwd(), "src/shared/lib/agent/ingestion.ts");
+const ingestionAuthPath = resolve(process.cwd(), "src/shared/lib/agent/ingestion-auth.ts");
 
 const authSessionSource = readFileSync(authSessionPath, "utf8");
 const authorizationSource = readFileSync(authorizationPath, "utf8");
 const auditSource = readFileSync(auditPath, "utf8");
 const ingestionSource = readFileSync(ingestionPath, "utf8");
+const ingestionAuthSource = readFileSync(ingestionAuthPath, "utf8");
 
 /**
  * Ensure sessions now carry explicit roles and expiry metadata.
@@ -31,7 +33,7 @@ test("privileged authorization guard is defined and wired into ingestion", () =>
   assert.match(authorizationSource, /export const assertPrivilegedSession/);
   assert.match(authorizationSource, /Unauthorized: authenticated session required/);
   assert.match(authorizationSource, /Forbidden: insufficient role/);
-  assert.match(ingestionSource, /assertPrivilegedSession\(/);
+  assert.match(ingestionAuthSource, /assertPrivilegedSession\(/);
 });
 
 /**
@@ -51,9 +53,10 @@ test("privileged audit logging is defined and invoked", () => {
     "agent.queue.signal_submission",
   ];
 
+  const combinedSource = `${ingestionSource}\n${ingestionAuthSource}`;
   requiredActions.forEach((action) => {
     assert.match(
-      ingestionSource,
+      combinedSource,
       new RegExp(action.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")),
       `missing audit action: ${action}`,
     );
