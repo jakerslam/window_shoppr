@@ -1,7 +1,7 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 123/150 (82.0%)  ████████████████░░░░
+Overall: 124/150 (82.7%)  ████████████████░░░░
 Frontend: 58/64 (90.6%)   ██████████████████░░
 Backend: 17/22 (77.3%)    ███████████████░░░░░
 Automation: 0/4 (0.0%)    ░░░░░░░░░░░░░░░░░░░░
@@ -160,8 +160,8 @@ Automation: 0/4 (0.0%)    ░░░░░░░░░░░░░░░░░░
 ## Deployment
 - [x] D1: Hosting + build pipeline (Vercel or equivalent)
 - [x] D2: Environment config (SITE_URL, API keys, affiliate IDs)
-- [ ] 🔵 D3: Custom domain + SSL
-- [ ] D4: Production data source (switch JSON → SQL/API)
+- [x] D3: Custom domain + SSL
+- [ ] 🔵 D4: Production data source (switch JSON → SQL/API)
 - [ ] D5: Monitoring + error reporting (Sentry or similar)
 - [ ] D6: Restore modal routing (intercepting routes) after moving off GitHub Pages
 - [ ] D7: Launch cleanup - remove local auth fallback account/session store and require backend auth endpoints in production.
