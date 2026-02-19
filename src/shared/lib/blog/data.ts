@@ -6,6 +6,7 @@ import {
   runBlogQualityGates,
   runEditorialPolishPass,
 } from "@/shared/lib/blog/workflows";
+import { FALLBACK_PRODUCTS } from "@/shared/lib/catalog/products";
 import { BlogArticle, BlogLayoutVariant, BlogTopicProposal } from "@/shared/lib/blog/types";
 
 type BlogSeed = {
@@ -18,7 +19,6 @@ type BlogSeed = {
   publishedAt: string;
   layoutVariant: BlogLayoutVariant;
   targetKeyword: string;
-  referralLinkCount: number;
   scores: {
     viralSignalScore: number;
     searchTrendScore: number;
@@ -38,7 +38,6 @@ const BLOG_SEEDS: BlogSeed[] = [
     publishedAt: "2026-02-01T00:00:00.000Z",
     layoutVariant: "guide",
     targetKeyword: "sleep routine products",
-    referralLinkCount: 3,
     scores: {
       viralSignalScore: 66,
       searchTrendScore: 80,
@@ -56,7 +55,6 @@ const BLOG_SEEDS: BlogSeed[] = [
     publishedAt: "2026-02-05T00:00:00.000Z",
     layoutVariant: "listicle",
     targetKeyword: "home office upgrades",
-    referralLinkCount: 4,
     scores: {
       viralSignalScore: 59,
       searchTrendScore: 74,
@@ -74,7 +72,6 @@ const BLOG_SEEDS: BlogSeed[] = [
     publishedAt: "2026-02-07T00:00:00.000Z",
     layoutVariant: "comparison",
     targetKeyword: "small-space kitchen tools",
-    referralLinkCount: 3,
     scores: {
       viralSignalScore: 55,
       searchTrendScore: 73,
@@ -92,7 +89,6 @@ const BLOG_SEEDS: BlogSeed[] = [
     publishedAt: "2026-02-09T00:00:00.000Z",
     layoutVariant: "guide",
     targetKeyword: "home fitness setup",
-    referralLinkCount: 3,
     scores: {
       viralSignalScore: 64,
       searchTrendScore: 77,
@@ -110,7 +106,6 @@ const BLOG_SEEDS: BlogSeed[] = [
     publishedAt: "2026-02-10T00:00:00.000Z",
     layoutVariant: "listicle",
     targetKeyword: "apartment pet care products",
-    referralLinkCount: 2,
     scores: {
       viralSignalScore: 61,
       searchTrendScore: 71,
@@ -128,7 +123,6 @@ const BLOG_SEEDS: BlogSeed[] = [
     publishedAt: "2026-02-11T00:00:00.000Z",
     layoutVariant: "guide",
     targetKeyword: "minimal beauty routine",
-    referralLinkCount: 2,
     scores: {
       viralSignalScore: 58,
       searchTrendScore: 69,
@@ -146,7 +140,6 @@ const BLOG_SEEDS: BlogSeed[] = [
     publishedAt: "2026-02-12T00:00:00.000Z",
     layoutVariant: "comparison",
     targetKeyword: "weekend travel gear",
-    referralLinkCount: 3,
     scores: {
       viralSignalScore: 62,
       searchTrendScore: 72,
@@ -164,7 +157,6 @@ const BLOG_SEEDS: BlogSeed[] = [
     publishedAt: "2026-02-13T00:00:00.000Z",
     layoutVariant: "listicle",
     targetKeyword: "budget tech upgrades",
-    referralLinkCount: 4,
     scores: {
       viralSignalScore: 70,
       searchTrendScore: 82,
@@ -182,7 +174,6 @@ const BLOG_SEEDS: BlogSeed[] = [
     publishedAt: "2026-02-14T00:00:00.000Z",
     layoutVariant: "guide",
     targetKeyword: "morning focus routine",
-    referralLinkCount: 3,
     scores: {
       viralSignalScore: 64,
       searchTrendScore: 76,
@@ -200,7 +191,6 @@ const BLOG_SEEDS: BlogSeed[] = [
     publishedAt: "2026-02-15T00:00:00.000Z",
     layoutVariant: "comparison",
     targetKeyword: "budget cozy bedding",
-    referralLinkCount: 3,
     scores: {
       viralSignalScore: 63,
       searchTrendScore: 75,
@@ -210,16 +200,92 @@ const BLOG_SEEDS: BlogSeed[] = [
   },
 ];
 
+const truncateDescription = (description: string) =>
+  description.length > 180 ? `${description.slice(0, 177).trimEnd()}...` : description;
+
+const normalizeToken = (value: string) => value.toLowerCase().trim();
+
+/**
+ * Pull related products from the current feed catalog for a blog seed.
+ */
+const getRelatedFeedProducts = (seed: BlogSeed) =>
+  FALLBACK_PRODUCTS.filter((product) => {
+    if (product.blogSlug === seed.slug) {
+      return true;
+    }
+
+    const seedCategory = normalizeToken(seed.category);
+    const productCategory = normalizeToken(product.category);
+    const productSubCategory = normalizeToken(product.subCategory ?? "");
+    if (productCategory === seedCategory || productSubCategory === seedCategory) {
+      return true;
+    }
+
+    const seedTagTokens = new Set(
+      seed.tags.map(normalizeToken).concat(seed.targetKeyword.split(/\s+/).map(normalizeToken)),
+    );
+    const productTagTokens = (product.tags ?? []).map(normalizeToken);
+    return productTagTokens.some((tag) => seedTagTokens.has(tag));
+  })
+    .slice(0, 3)
+    .map((product) => ({
+      name: product.name,
+      price: product.price,
+      retailer: product.retailer ?? "Retailer",
+      description: truncateDescription(product.description),
+    }));
+
+/**
+ * Inject live feed product details into the article comparison block.
+ */
+const enrichSectionsWithFeedProducts = ({
+  sections,
+  seed,
+}: {
+  sections: BlogArticle["sections"];
+  seed: BlogSeed;
+}) => {
+  const relatedProducts = getRelatedFeedProducts(seed);
+  if (relatedProducts.length === 0) {
+    return sections;
+  }
+
+  const feedBlock = relatedProducts
+    .map(
+      (product, index) =>
+        `${index + 1}. ${product.name} (${product.retailer}) - $${product.price.toFixed(
+          2,
+        )}. ${product.description}`,
+    )
+    .join("\n");
+
+  return sections.map((section) => {
+    if (section.kind !== "comparison") {
+      return section;
+    }
+
+    return {
+      ...section,
+      content: `${section.content}\n\nFeatured feed picks:\n${feedBlock}`,
+    };
+  });
+};
+
 /**
  * Run the local agentic workflow to produce a publishable fallback article.
  */
 const buildArticleFromSeed = (seed: BlogSeed): BlogArticle => {
+  const relatedProducts = getRelatedFeedProducts(seed);
+  const inferredSummary =
+    relatedProducts.length > 0
+      ? `Built from current feed picks: ${relatedProducts.map((product) => product.name).join(", ")}.`
+      : seed.summary;
   const proposal: BlogTopicProposal = {
     title: seed.title,
     targetKeyword: seed.targetKeyword,
     category: seed.category,
     tags: seed.tags,
-    referralLinkCount: seed.referralLinkCount,
+    referralLinkCount: Math.max(1, relatedProducts.length),
     ...seed.scores,
   };
 
@@ -229,20 +295,27 @@ const buildArticleFromSeed = (seed: BlogSeed): BlogArticle => {
   }
 
   const outline = generateBlogOutline(proposal);
-  const draft = generateBlogDraft(outline);
+  const enrichedSections = enrichSectionsWithFeedProducts({
+    sections: outline.sections,
+    seed,
+  });
+  const draft = generateBlogDraft({
+    ...outline,
+    sections: enrichedSections,
+  });
   const polished = runEditorialPolishPass(draft);
   const quality = runBlogQualityGates(polished);
   if (!quality.pass) {
     throw new Error(`Blog quality gate failed: ${seed.id}`);
   }
 
-  const metadata = generateBlogMetadata({ title: seed.title, summary: seed.summary });
+  const metadata = generateBlogMetadata({ title: seed.title, summary: inferredSummary });
 
   return {
     id: seed.id,
     slug: seed.slug, // Preserve stable route slugs for linked products.
     title: seed.title,
-    summary: seed.summary,
+    summary: inferredSummary,
     body: polished.body,
     category: seed.category,
     tags: seed.tags,
@@ -250,7 +323,7 @@ const buildArticleFromSeed = (seed: BlogSeed): BlogArticle => {
     seoTitle: metadata.title,
     seoDescription: metadata.description,
     layoutVariant: seed.layoutVariant,
-    sections: outline.sections,
+    sections: enrichedSections,
     status: score.totalScore >= 55 ? "published" : "review",
   };
 };
