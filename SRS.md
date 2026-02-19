@@ -1,8 +1,8 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 147/150 (98.0%)  ████████████████████
-Frontend: 58/64 (90.6%)   ██████████████████░░
+Overall: 152/155 (98.1%)  ████████████████████
+Frontend: 63/69 (91.3%)   ██████████████████░░
 Backend: 22/22 (100.0%)   ████████████████████
 Automation: 0/4 (0.0%)    ░░░░░░░░░░░░░░░░░░░░
 
@@ -63,12 +63,12 @@ Automation: 0/4 (0.0%)    ░░░░░░░░░░░░░░░░░░
 - [x] R21: Sitemap, robots, and canonical URLs
 
 ## BLOG
-- [ ] 🔵 B1: Blog information architecture (index page, article page, category/tag taxonomy, canonical + breadcrumb support).
-- [ ] B2: Desktop top-bar `Blog` navigation entry; mobile omits top-level blog nav (blog accessed via direct links/search/discovery modules).
-- [ ] B3: Agentic topic proposal scoring pipeline (LLM query signal + search trend signal + viral signal + affiliate-link coverage score + business priority score).
-- [ ] B4: Topic eligibility gate (must map to >=1 valid referral link; score boost for multiple relevant links).
-- [ ] B5: Agentic research workflow (SERP/content pattern scan, competitor format signals, source collection, fact checklist).
-- [ ] B6: Outline generation workflow (intent-first structure, FAQ blocks, comparison tables, and product-slot planning).
+- [x] B1: Blog information architecture (index page, article page, category/tag taxonomy, canonical + breadcrumb support).
+- [x] B2: Desktop top-bar `Blog` navigation entry; mobile omits top-level blog nav (blog accessed via direct links/search/discovery modules).
+- [x] B3: Agentic topic proposal scoring pipeline (LLM query signal + search trend signal + viral signal + affiliate-link coverage score + business priority score).
+- [x] B4: Topic eligibility gate (must map to >=1 valid referral link; score boost for multiple relevant links).
+- [x] B5: Agentic research workflow (SERP/content pattern scan, competitor format signals, source collection, fact checklist).
+- [ ] 🔵 B6: Outline generation workflow (intent-first structure, FAQ blocks, comparison tables, and product-slot planning).
 - [ ] B7: Draft generation workflow (helpful-first content, natural product insertion, dynamic media placeholders, disclosure-aware copy).
 - [ ] B8: SEO + LLM optimization layer (entities, semantic headings, concise answer blocks, quote-ready summaries, schema, internal links).
 - [ ] B9: AI metadata generation (title, meta description, OG/Twitter metadata, article schema fields, slug recommendations).

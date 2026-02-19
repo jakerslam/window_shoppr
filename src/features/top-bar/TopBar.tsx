@@ -88,14 +88,13 @@ export default function TopBar() {
           onLogoClick={handleLogoClick}
         />
         <TopBarMenu />
-        <button
+        <Link
           className={styles.topBar__blogButton}
-          type="button"
-          aria-label="Blog (coming soon)"
-          disabled
+          href="/blog/"
+          aria-label="Blog"
         >
           Blog
-        </button>
+        </Link>
       </div>
 
       {/* Feed search input (desktop + mobile). */}
