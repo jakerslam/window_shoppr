@@ -20,7 +20,11 @@ const applySqlDirectory = (db, directory) => {
  * Read the fallback JSON catalog and insert rows into SQL tables when empty.
  */
 const seedCatalogFromJson = (db) => {
-  const countRow = db.prepare("SELECT COUNT(1) as count FROM products").get();
+  const countRow = db
+    .prepare(
+      "SELECT COUNT(1) as count FROM products WHERE id NOT LIKE 'prod-seed-%'",
+    )
+    .get(); // Ignore deterministic seed rows so dev mode still imports the full JSON catalog.
   const count = typeof countRow?.count === "number" ? countRow.count : 0;
   if (count > 0) {
     return; // Skip when catalog rows already exist.
@@ -201,4 +205,3 @@ export const openDatabase = ({ sqlitePath }) => {
 
   return db;
 };
-

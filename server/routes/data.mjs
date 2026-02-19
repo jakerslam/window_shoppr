@@ -48,7 +48,10 @@ const mapProductRow = (row) => ({
   description: row.description,
   affiliateUrl: row.affiliate_url,
   publishState: row.publish_state,
-  images: Array.isArray(row.images) ? row.images : [],
+  images:
+    Array.isArray(row.images) && row.images.length > 0
+      ? row.images
+      : ["/images/product-placeholder.svg"], // Always provide at least one image to keep the catalog schema happy.
   tags: Array.isArray(row.tags) ? row.tags : undefined,
   videoUrl: row.video_url || undefined,
   dealEndsAt: row.deal_ends_at || undefined,
@@ -625,4 +628,3 @@ export const handleUpsertBlogArticle = async ({ db, body, res }) => {
 
   writeApiOk(res, { id: article.id });
 };
-
