@@ -1,0 +1,27 @@
+name: Runtime Security Headers
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 */12 * * *"
+
+jobs:
+  verify-runtime-headers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify deployed runtime headers
+        run: npm run security:headers-runtime
+        env:
+          SECURITY_HEADERS_CHECK_URL: ${{ secrets.SECURITY_HEADERS_CHECK_URL }}
+          SECURITY_HEADERS_CHECK_STRICT: "true"

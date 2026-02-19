@@ -1,7 +1,7 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 133/150 (88.7%)  ██████████████████░░
+Overall: 134/150 (89.3%)  ██████████████████░░
 Frontend: 58/64 (90.6%)   ██████████████████░░
 Backend: 22/22 (100.0%)   ████████████████████
 Automation: 0/4 (0.0%)    ░░░░░░░░░░░░░░░░░░░░
@@ -188,8 +188,8 @@ Automation: 0/4 (0.0%)    ░░░░░░░░░░░░░░░░░░
 - [x] R65: Input/output hardening (centralized sanitization, strict validation, and safe rendering rules for user-generated content).
 - [x] R66: CORS and origin allowlist policy (deny-by-default with environment-specific allowlists).
 - [x] R67: Auth session hardening (secure HttpOnly cookies at backend cutover, session rotation, idle + absolute timeout policies).
-- [ ] 🔵 R68: Security headers runtime verification (automated checks to ensure CSP/HSTS/frame protections are present in deployed environments).
-- [ ] R69: File/upload security policy (type/size validation, malware scanning, signed URL flow, quarantine handling) [activate when uploads are introduced].
+- [x] R68: Security headers runtime verification (automated checks to ensure CSP/HSTS/frame protections are present in deployed environments).
+- [ ] 🔵 R69: File/upload security policy (type/size validation, malware scanning, signed URL flow, quarantine handling) [activate when uploads are introduced].
 - [ ] R70: Admin/agent high-risk action safeguards (two-step confirmations, approval workflow options, immutable audit coverage).
 - [ ] R71: Backup and restore drill (documented RTO/RPO targets with periodic restore verification).
 - [ ] R72: Dependency/supply-chain hardening (lockfile enforcement, provenance checks, update cadence + SLA).
