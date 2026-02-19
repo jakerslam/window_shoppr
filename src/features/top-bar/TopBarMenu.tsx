@@ -16,7 +16,9 @@ export default function TopBarMenu() {
   const pathname = usePathname();
   const normalizedPathname = pathname.replace(/\/+$/, "") || "/"; // Normalize trailing slashes for static-host routing.
   const isCategoriesActive =
-    normalizedPathname === "/c" || normalizedPathname.startsWith("/c/"); // Highlight categories trigger on category routes.
+    normalizedPathname === "/" ||
+    normalizedPathname === "/c" ||
+    normalizedPathname.startsWith("/c/"); // Highlight categories trigger anywhere in the feed browsing experience.
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openCategory, setOpenCategory] = useState<string | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
