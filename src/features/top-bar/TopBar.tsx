@@ -18,6 +18,7 @@ import styles from "@/features/top-bar/TopBar.module.css";
 export default function TopBar() {
   const router = useRouter();
   const pathname = usePathname();
+  const normalizedPathname = pathname.replace(/\/+$/, "") || "/"; // Normalize trailing slashes for static hosting parity.
   const {
     selectedCategory,
     selectedSubCategory,
@@ -29,6 +30,8 @@ export default function TopBar() {
 
   const isOnAllCategories =
     pathname === "/" && !selectedCategory && !selectedSubCategory; // Track main feed default state.
+  const isBlogActive =
+    normalizedPathname === "/blog" || normalizedPathname.startsWith("/blog/"); // Highlight the Blog pill on blog routes.
 
   /**
    * Keep search text in sync with the shared filter state.
@@ -89,7 +92,7 @@ export default function TopBar() {
         />
         <TopBarMenu />
         <Link
-          className={styles.topBar__blogButton}
+          className={`${styles.topBar__blogButton} ${isBlogActive ? styles["topBar__navButton--active"] : ""}`}
           href="/blog/"
           aria-label="Blog"
         >

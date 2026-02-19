@@ -21,6 +21,10 @@ import useAuthSessionState from "@/shared/lib/platform/useAuthSessionState";
  */
 export default function TopBarActions() {
   const pathname = usePathname();
+  const normalizedPathname = useMemo(
+    () => pathname.replace(/\/+$/, "") || "/",
+    [pathname],
+  ); // Normalize trailing slashes so route matching works on static hosts.
   const session = useAuthSessionState();
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [notifications, setNotifications] = useState<NotificationItem[]>(
@@ -58,6 +62,15 @@ export default function TopBarActions() {
 
     return session.displayName?.trim() || "Account";
   }, [session]);
+  const isSubmitDealActive =
+    normalizedPathname === "/submit-deal" ||
+    normalizedPathname.startsWith("/submit-deal/"); // Highlight submit-deal pill on its route.
+  const isWishlistActive =
+    normalizedPathname === "/wishlist" ||
+    normalizedPathname.startsWith("/wishlist/"); // Highlight wishlist pill on wishlist routes.
+  const isAccountActive =
+    normalizedPathname === "/login" ||
+    normalizedPathname === "/signup"; // Highlight login/account pill on auth/profile routes.
   const pointsLabel = useMemo(
     () => `${pointsTotal > 9999 ? "9,999+" : pointsTotal.toLocaleString()} pts`,
     [pointsTotal],
@@ -172,18 +185,24 @@ export default function TopBarActions() {
   return (
     <div className={styles.topBar__actions}>
       {/* Desktop-only submit-deal shortcut. */}
-      <Link className={styles.topBar__actionButton} href="/submit-deal">
+      <Link
+        className={`${styles.topBar__actionButton} ${isSubmitDealActive ? styles["topBar__navButton--active"] : ""}`}
+        href="/submit-deal"
+      >
         Submit Deal
       </Link>
 
       {/* Desktop-only wishlist shortcut. */}
-      <Link className={styles.topBar__actionButton} href="/wishlist">
+      <Link
+        className={`${styles.topBar__actionButton} ${isWishlistActive ? styles["topBar__navButton--active"] : ""}`}
+        href="/wishlist"
+      >
         Wishlist
       </Link>
 
       {/* Desktop-only login shortcut. */}
       <Link
-        className={styles.topBar__actionButton}
+        className={`${styles.topBar__actionButton} ${isAccountActive ? styles["topBar__navButton--active"] : ""}`}
         href={loginHref}
         onClick={() => {
           if (!session) {

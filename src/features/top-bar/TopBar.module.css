@@ -69,6 +69,12 @@
   opacity: 0.7;
 }
 
+.topBar__navButton--active {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 1px var(--color-accent);
+  opacity: 1;
+}
+
 .topBar__categoriesTrigger {
   height: 36px;
   padding: 0 14px;

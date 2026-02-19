@@ -14,6 +14,9 @@ import styles from "@/features/top-bar/TopBar.module.css";
 export default function TopBarMenu() {
   const router = useRouter();
   const pathname = usePathname();
+  const normalizedPathname = pathname.replace(/\/+$/, "") || "/"; // Normalize trailing slashes for static-host routing.
+  const isCategoriesActive =
+    normalizedPathname === "/c" || normalizedPathname.startsWith("/c/"); // Highlight categories trigger on category routes.
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openCategory, setOpenCategory] = useState<string | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
@@ -153,7 +156,7 @@ export default function TopBarMenu() {
     >
       <button
         ref={triggerRef}
-        className={styles.topBar__categoriesTrigger}
+        className={`${styles.topBar__categoriesTrigger} ${isCategoriesActive ? styles["topBar__navButton--active"] : ""}`}
         type="button"
         aria-haspopup="menu"
         aria-expanded={isMenuOpen}
