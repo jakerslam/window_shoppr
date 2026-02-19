@@ -1,9 +1,9 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 169/183 (92.3%)  ███████████████████░░
+Overall: 170/183 (92.9%)  ███████████████████░░
 Frontend: 112/116 (96.6%) ████████████████████░
-Backend: 57/63 (90.5%)    ███████████████████░░
+Backend: 58/63 (92.1%)    ███████████████████░░
 Automation: 0/4 (0.0%)    ░░░░░░░░░░░░░░░░░░░░
 
 
@@ -105,7 +105,7 @@ Automation: 0/4 (0.0%)    ░░░░░░░░░░░░░░░░░░
 - [ ] R30.1b: Production Data API deployment (Postgres or equivalent) + hardened runtime (RBAC, rate limits, observability, and scaling).
 - [x] R30.2a: Local Auth API reference server (email + social stubs) implementing `/auth/*` endpoints used by the web app.
 - [ ] R30.2b: Production Auth API deployment and switch sessions to secure HttpOnly cookies (remove local auth fallback in production builds).
-- [ ] R30.3: Frontend production cutover (set `PUBLIC_ENV.dataApiUrl` and `PUBLIC_ENV.authApiUrl`; fail production builds if missing to avoid silent local fallbacks).
+- [x] R30.3: Frontend production cutover (set `PUBLIC_ENV.dataApiUrl` and `PUBLIC_ENV.authApiUrl`; fail production builds if missing to avoid silent local fallbacks).
 - [ ] R30.4: Production DB lifecycle (migrations, rollback plan, deterministic staging seeds, and data integrity verification checklist).
 
 ## Analytics & Revenue
