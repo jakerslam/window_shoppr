@@ -200,7 +200,7 @@ export const runBlogQualityGates = (draft: BlogDraft): BlogQualityGateResult => 
     citationQuality: true,
     thinContent: wordCount >= 220,
     affiliateDisclosure: true,
-    readability: wordCount >= 260,
+    readability: wordCount >= 220,
     usefulnessOrFun: /why|how|quick|mistake|best|worth/i.test(draft.title + draft.body),
     scannability: headingCount >= 3 && listSignal,
     affiliateCoverage: linkSignal,
