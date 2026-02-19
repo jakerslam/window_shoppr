@@ -268,6 +268,66 @@ export const handleAuthAudit = async ({ db, body, res }) => {
 };
 
 /**
+ * Handle POST /data/analytics/events.
+ *
+ * Stores consented analytics events for attribution and dashboards (local reference server).
+ */
+export const handleAnalyticsEvents = async ({ db, body, res }) => {
+  const parsed = z
+    .object({
+      events: z
+        .array(
+          z.object({
+            id: z.string().trim().min(4).max(180).optional(),
+            type: z.string().trim().min(1).max(80),
+            occurredAt: z.string().trim().min(8),
+            payload: z.record(z.unknown()).default({}),
+          }),
+        )
+        .min(1),
+    })
+    .safeParse(body);
+
+  if (!parsed.success) {
+    writeApiError(res, 400, "Invalid analytics payload.");
+    return;
+  }
+
+  const nowIso = new Date().toISOString();
+  const insertEvent = db.prepare(
+    `INSERT INTO analytics_events (id, type, occurred_at, received_at, payload_json)
+     VALUES (?, ?, ?, ?, ?)
+     ON CONFLICT(id) DO NOTHING;`,
+  );
+
+  db.exec("BEGIN");
+  try {
+    parsed.data.events.forEach((event) => {
+      const id =
+        event.id ??
+        `ae_${shortHash(
+          `${event.type}:${event.occurredAt}:${JSON.stringify(event.payload).slice(0, 180)}`,
+        )}`; // Deterministic fallback id for idempotent ingestion.
+
+      insertEvent.run(
+        id,
+        event.type,
+        event.occurredAt,
+        nowIso,
+        JSON.stringify(event.payload ?? {}),
+      );
+    });
+
+    db.exec("COMMIT");
+  } catch (error) {
+    db.exec("ROLLBACK");
+    throw error;
+  }
+
+  writeApiOk(res, { ok: true });
+};
+
+/**
  * Handle POST /data/social-proof/saves.
  */
 export const handleSaveDelta = async ({ db, body, res }) => {

@@ -11,6 +11,7 @@ import {
 } from "./routes/auth.mjs";
 import {
   handleAffiliateMintQueueItem,
+  handleAnalyticsEvents,
   handleAuthAudit,
   handleDealSubmission,
   handleEmailCapture,
@@ -105,6 +106,11 @@ const routes = [
     method: "POST",
     pattern: /^\/data\/auth\/audit$/,
     handler: handleAuthAudit,
+  },
+  {
+    method: "POST",
+    pattern: /^\/data\/analytics\/events$/,
+    handler: handleAnalyticsEvents,
   },
   {
     method: "POST",
