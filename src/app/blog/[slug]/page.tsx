@@ -15,8 +15,13 @@ export function generateStaticParams() {
 /**
  * Generate canonical/SEO metadata for each blog article.
  */
-export function generateMetadata({ params }: { params: { slug: string } }) {
-  const article = getBlogArticleBySlug(params.slug);
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }> | { slug: string };
+}) {
+  const { slug } = await Promise.resolve(params);
+  const article = getBlogArticleBySlug(slug);
   if (!article) {
     return {};
   }
@@ -32,8 +37,13 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
 /**
  * Blog article page with breadcrumbs, taxonomy, and canonical path.
  */
-export default function BlogArticlePage({ params }: { params: { slug: string } }) {
-  const article = getBlogArticleBySlug(params.slug);
+export default async function BlogArticlePage({
+  params,
+}: {
+  params: Promise<{ slug: string }> | { slug: string };
+}) {
+  const { slug } = await Promise.resolve(params);
+  const article = getBlogArticleBySlug(slug);
   if (!article) {
     notFound();
   }
