@@ -69,7 +69,7 @@ const parsePublicEnv = () => {
 
   const data = parsed.success ? parsed.data : {}; // Fall back to empty object when validation fails.
 
-  return {
+  const publicEnv = {
     siteUrl: data.NEXT_PUBLIC_SITE_URL ?? DEFAULT_SITE_URL, // Canonical URL for metadata + sitemap.
     basePath: data.NEXT_PUBLIC_BASE_PATH ?? "", // Base path for static assets and routes.
     deployTarget: data.NEXT_PUBLIC_DEPLOY_TARGET ?? "static-export", // Deployment mode toggle for static export vs runtime caching.
@@ -86,6 +86,31 @@ const parsePublicEnv = () => {
       : true, // Default true for compatibility; production runtime can disable.
     allowedOrigins: data.NEXT_PUBLIC_ALLOWED_ORIGINS ?? "", // Comma-delimited CORS/browser origin allowlist for mutation traffic.
   };
+
+  /**
+   * Production guard: runtime deployments must configure backend endpoints.
+   *
+   * This prevents accidentally shipping a runtime build that silently falls back to local JSON/auth stores.
+   */
+  if (process.env.NODE_ENV === "production" && publicEnv.deployTarget === "runtime") {
+    const missing: string[] = [];
+
+    if (!publicEnv.dataApiUrl.trim()) {
+      missing.push("NEXT_PUBLIC_DATA_API_URL");
+    }
+
+    if (!publicEnv.authApiUrl.trim()) {
+      missing.push("NEXT_PUBLIC_AUTH_API_URL");
+    }
+
+    if (missing.length > 0) {
+      throw new Error(
+        `Runtime deploy target requires backend endpoints: missing ${missing.join(", ")}.`,
+      );
+    }
+  }
+
+  return publicEnv;
 };
 
 /**
