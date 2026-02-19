@@ -1,6 +1,7 @@
 import { PUBLIC_ENV } from "@/shared/lib/platform/env";
 import { AuthProvider, AuthRole, readAuthSession, writeAuthSession } from "@/shared/lib/platform/auth-session";
 import { AuthActionResult } from "@/shared/lib/platform/auth/types";
+import { assertAuthBackendReady, isLocalAuthFallbackAllowed } from "@/shared/lib/platform/auth/launch-guard";
 
 type ApiSessionPayload = {
   provider?: AuthProvider;
@@ -71,8 +72,16 @@ export const requestAuthApi = async ({
   method?: "POST" | "PATCH";
   body?: Record<string, unknown>;
 }): Promise<AuthActionResult | null> => {
+  assertAuthBackendReady(`auth API request (${path})`);
   const apiBaseUrl = getAuthApiBaseUrl();
   if (!apiBaseUrl) {
+    if (!isLocalAuthFallbackAllowed()) {
+      return {
+        ok: false,
+        message: "Authentication backend is required in this deployment.",
+      };
+    }
+
     return null; // No backend auth configured.
   }
 

@@ -32,6 +32,7 @@ const PUBLIC_ENV_SCHEMA = z.object({
   NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG: z.string().trim().min(1).optional(), // Optional Associates tag for auto-minting Amazon links.
   NEXT_PUBLIC_MONITORING_API_URL: z.string().url().optional(), // Optional monitoring endpoint for error/perf envelopes.
   NEXT_PUBLIC_SENTRY_DSN: z.string().url().optional(), // Optional Sentry DSN for direct client-side error reporting.
+  NEXT_PUBLIC_ALLOW_LOCAL_AUTH_FALLBACK: z.enum(["true", "false"]).optional(), // Controls whether local auth fallback is allowed when auth API is unavailable.
 });
 
 /**
@@ -49,6 +50,7 @@ const parsePublicEnv = () => {
     NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG: process.env.NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG,
     NEXT_PUBLIC_MONITORING_API_URL: process.env.NEXT_PUBLIC_MONITORING_API_URL,
     NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
+    NEXT_PUBLIC_ALLOW_LOCAL_AUTH_FALLBACK: process.env.NEXT_PUBLIC_ALLOW_LOCAL_AUTH_FALLBACK,
   }); // Pull only public vars so this module is safe in client bundles.
 
   if (!parsed.success) {
@@ -77,6 +79,9 @@ const parsePublicEnv = () => {
     amazonAssociateTag: data.NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG ?? "", // Optional auto-mint tag for Amazon submission links.
     monitoringApiUrl: data.NEXT_PUBLIC_MONITORING_API_URL ?? "", // Optional monitoring endpoint for runtime errors and trace signals.
     sentryDsn: data.NEXT_PUBLIC_SENTRY_DSN ?? "", // Optional Sentry DSN for direct error reporting adapter.
+    allowLocalAuthFallback: data.NEXT_PUBLIC_ALLOW_LOCAL_AUTH_FALLBACK
+      ? data.NEXT_PUBLIC_ALLOW_LOCAL_AUTH_FALLBACK === "true"
+      : true, // Default true for compatibility; production runtime can disable.
   };
 };
 

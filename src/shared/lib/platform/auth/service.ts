@@ -1,6 +1,7 @@
 import { requestAuthApi } from "@/shared/lib/platform/auth/api";
 import { buildLocalAccountId, normalizeEmail, readLocalAuthAccounts, writeLocalAuthAccounts } from "@/shared/lib/platform/auth/local-accounts";
 import { logPrivilegedAuditEvent } from "@/shared/lib/platform/auth/audit-log";
+import { assertAuthBackendReady, isLocalAuthFallbackAllowed } from "@/shared/lib/platform/auth/launch-guard";
 import { AuthActionResult } from "@/shared/lib/platform/auth/types";
 import { AuthProvider, AuthRole, clearAuthSession, readAuthSession, writeAuthSession } from "@/shared/lib/platform/auth-session";
 
@@ -55,6 +56,11 @@ export const signInWithEmail = async ({
     return apiResult;
   }
 
+  assertAuthBackendReady("email sign-in fallback");
+  if (!isLocalAuthFallbackAllowed()) {
+    return { ok: false, message: "Sign-in requires backend auth in this deployment." };
+  }
+
   const account = readLocalAuthAccounts().find(
     (candidate) =>
       candidate.provider === "email" &&
@@ -102,6 +108,11 @@ export const signUpWithEmail = async ({
     return apiResult;
   }
 
+  assertAuthBackendReady("email sign-up fallback");
+  if (!isLocalAuthFallbackAllowed()) {
+    return { ok: false, message: "Sign-up requires backend auth in this deployment." };
+  }
+
   const accounts = readLocalAuthAccounts();
   if (accounts.some((candidate) => candidate.email === normalizedEmail)) {
     return { ok: false, message: "An account with that email already exists." };
@@ -145,6 +156,11 @@ export const signInWithProvider = async ({
   });
   if (apiResult) {
     return apiResult;
+  }
+
+  assertAuthBackendReady("provider sign-in fallback");
+  if (!isLocalAuthFallbackAllowed()) {
+    return { ok: false, message: "Provider sign-in requires backend auth in this deployment." };
   }
 
   const accounts = readLocalAuthAccounts();
