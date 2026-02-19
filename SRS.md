@@ -1,7 +1,7 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 91/92 (98.9%)  ████████████████████
+Overall: 94/95 (98.9%)  ████████████████████
 Frontend: 58/64 (90.6%) ██████████████████░░
 Backend: 17/22 (77.3%)  ███████████████░░░░░
 Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░░░
@@ -139,10 +139,10 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] R55: DB migration safety (versioned migrations, rollback scripts, deterministic seeds)
 - [x] R56: Auth and authorization hardening (real sessions, role-based access, audit logging for privileged actions)
 - [x] R57: Observability baseline (structured logs, request IDs, tracing, error tracking, uptime checks)
-- [ ] 🔵 R58: Incident response readiness (SLOs, alert thresholds, runbooks, on-call escalation flow)
-- [ ] R59: Security scanning in CI (dependency vuln scan, secret scan, static security checks)
-- [ ] R60: Performance budget gate (Lighthouse/Web Vitals budgets enforced in CI, with mobile thresholds)
-- [ ] R61: Data governance controls (retention policy, deletion/export flows, consent-linked data handling)
+- [x] R58: Incident response readiness (SLOs, alert thresholds, runbooks, on-call escalation flow)
+- [x] R59: Security scanning in CI (dependency vuln scan, secret scan, static security checks)
+- [x] R60: Performance budget gate (Lighthouse/Web Vitals budgets enforced in CI, with mobile thresholds)
+- [ ] 🔵 R61: Data governance controls (retention policy, deletion/export flows, consent-linked data handling)
 - [ ] R62: Release strategy hardening (staging environment, release checklist, rollback and smoke-test workflow)
 
 ## Optional Optimizations & Refactors

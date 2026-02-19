@@ -113,9 +113,46 @@ jobs:
       - name: Migration safety checks
         run: npm run db:check
 
+  incident-readiness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Incident readiness checks
+        run: npm run incident:check
+
+  security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Secret + static security checks
+        run: npm run security:check
+
+      - name: Dependency vulnerability audit
+        run: npm run security:audit-deps
+
   build:
     runs-on: ubuntu-latest
-    needs: [coverage, db-safety]
+    needs: [coverage, db-safety, incident-readiness, security]
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -164,3 +201,20 @@ jobs:
 
       - name: End-to-end smoke tests
         run: npm run test:e2e
+
+  performance-budget:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lighthouse performance gate
+        run: npm run audit:lighthouse
