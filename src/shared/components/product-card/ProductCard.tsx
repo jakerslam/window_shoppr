@@ -7,12 +7,17 @@ import {
   isDealWindowActive,
 } from "@/shared/lib/catalog/deals";
 import { Product } from "@/shared/lib/catalog/types";
+import { trackAffiliateClick } from "@/shared/lib/engagement/analytics";
 import {
   formatCompactCount,
   SOCIAL_PROOF_MIN_COUNT,
   useProductSaveCount,
 } from "@/shared/lib/engagement/social-proof";
 import { useProductCommentCount } from "@/shared/lib/engagement/comment-counts";
+import {
+  awardWindowPoints,
+  buildDailyWindowPointsKey,
+} from "@/shared/lib/engagement/window-points";
 import CommentIcon from "@/shared/components/icons/CommentIcon";
 import TimerIcon from "@/shared/components/icons/TimerIcon";
 import ProductCardShareButton from "@/shared/components/product-card/ProductCardShareButton";
@@ -84,15 +89,28 @@ export default function ProductCard({
   }`;
 
   if (isAdCard && adCreative) {
+    const handleAdClick = () => {
+      trackAffiliateClick({
+        productId: product.id,
+        productSlug: product.slug,
+        retailer: product.retailer,
+        affiliateUrl: product.affiliateUrl,
+      }); // Track ad-card clicks using the same affiliate-click pipeline.
+      awardWindowPoints({
+        action: "affiliate_click",
+        uniqueKey: buildDailyWindowPointsKey(`affiliate-click:${product.id}`),
+      }); // Reward ad engagement (deduped daily by product id).
+    };
+
     return (
-      <article
+      <a
         className={`${articleClassName}`}
-        role="button"
-        tabIndex={0}
+        href={product.affiliateUrl}
+        target="_blank"
+        rel="noopener noreferrer"
         aria-label={adCreative.headline}
         data-card="product-card"
-        onClick={onOpen}
-        onKeyDown={handleKeyDown}
+        onClick={handleAdClick} // Route directly to the ad destination.
       >
         <div className={styles.productCard__media}>
           <img
@@ -116,7 +134,7 @@ export default function ProductCard({
             <span className={styles.productCard__adCta}>{adCreative.cta}</span>
           </div>
         </div>
-      </article>
+      </a>
     );
   }
 

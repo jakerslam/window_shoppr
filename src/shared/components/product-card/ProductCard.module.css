@@ -3,6 +3,8 @@
   border-radius: 18px;
   padding: 16px;
   background: var(--color-surface);
+  text-decoration: none;
+  color: inherit;
   display: flex;
   flex-direction: column;
   gap: 12px;

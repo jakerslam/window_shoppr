@@ -13,6 +13,12 @@
   min-height: 100%;
 }
 
+@media (min-width: 821px) {
+  .productDetail--modal {
+    border-radius: 0;
+  }
+}
+
 
 .productDetail__back {
   display: inline-flex;
