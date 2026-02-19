@@ -101,14 +101,6 @@ export default function TopBarMenu() {
   const handleTriggerKeyDown = (
     event: React.KeyboardEvent<HTMLButtonElement>,
   ) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      setIsMenuOpen((prev) => !prev); // Toggle on keyboard activation.
-      if (!isMenuOpen) {
-        window.setTimeout(() => firstItemRef.current?.focus(), 0); // Focus first item.
-      }
-    }
-
     if (event.key === "ArrowDown") {
       event.preventDefault();
       handleMenuOpen(); // Open menu on arrow down.
@@ -161,7 +153,10 @@ export default function TopBarMenu() {
         aria-haspopup="menu"
         aria-expanded={isMenuOpen}
         aria-controls="topbar-categories-menu"
-        onClick={() => setIsMenuOpen((prev) => !prev)}
+        onClick={() => {
+          handleMenuClose(); // Close any open menu UI before navigating.
+          router.push("/"); // Treat the categories pill as a quick shortcut back to the feed.
+        }}
         onKeyDown={handleTriggerKeyDown}
       >
         Categories
