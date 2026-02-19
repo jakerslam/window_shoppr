@@ -1,7 +1,7 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 125/150 (83.3%)  ████████████████░░░░
+Overall: 126/150 (84.0%)  ████████████████░░░░
 Frontend: 58/64 (90.6%)   ██████████████████░░
 Backend: 17/22 (77.3%)    ███████████████░░░░░
 Automation: 0/4 (0.0%)    ░░░░░░░░░░░░░░░░░░░░
@@ -162,8 +162,8 @@ Automation: 0/4 (0.0%)    ░░░░░░░░░░░░░░░░░░
 - [x] D2: Environment config (SITE_URL, API keys, affiliate IDs)
 - [x] D3: Custom domain + SSL
 - [x] D4: Production data source (switch JSON → SQL/API)
-- [ ] 🔵 D5: Monitoring + error reporting (Sentry or similar)
-- [ ] D6: Restore modal routing (intercepting routes) after moving off GitHub Pages
+- [x] D5: Monitoring + error reporting (Sentry or similar)
+- [ ] 🔵 D6: Restore modal routing (intercepting routes) after moving off GitHub Pages
 - [ ] D7: Launch cleanup - remove local auth fallback account/session store and require backend auth endpoints in production.
 - [ ] R63: Abuse protection and rate limiting (per-IP/session throttles, burst cooldowns, bot challenge on write endpoints, idempotency keys, 429 handling, and violation alerting).
 - [ ] R64: CSRF protection for state-changing requests (token/origin enforcement for mutation endpoints).

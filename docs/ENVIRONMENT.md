@@ -13,6 +13,7 @@ Copy `.env.example` to `.env.local` for local development.
 - `NEXT_PUBLIC_AUTH_API_URL`: auth backend base URL.
 - `NEXT_PUBLIC_DATA_API_URL`: data backend base URL.
 - `NEXT_PUBLIC_MONITORING_API_URL`: monitoring ingest endpoint.
+- `NEXT_PUBLIC_SENTRY_DSN`: Sentry DSN for direct client-side error-reporting adapter.
 - `NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG`: affiliate tag for automatic minting.
 - `NEXT_PUBLIC_ALLOW_JSON_FALLBACK`: `true/false` gate for JSON catalog fallback when SQL/API is unavailable.
 

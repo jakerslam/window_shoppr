@@ -1,6 +1,7 @@
 "use client";
 
 import { PUBLIC_ENV } from "@/shared/lib/platform/env";
+import { reportErrorEvent } from "@/shared/lib/engagement/error-reporting";
 
 type MonitoringErrorType =
   | "window_error"
@@ -170,6 +171,17 @@ export const trackMonitoringError = (payload: {
   appendStoredRecord(ERROR_STORAGE_KEY, event); // Persist errors for local diagnostics.
   dispatchMonitoringEnvelope("error", event); // Forward to remote monitoring when configured.
   window.dispatchEvent(new CustomEvent("monitoring:error", { detail: event })); // Expose event for future observability bridges.
+  reportErrorEvent({
+    level: "error",
+    message: event.message,
+    pathname: event.pathname,
+    metadata: {
+      type: event.type,
+      digest: event.digest,
+      hasStack: Boolean(event.stack),
+      requestId,
+    },
+  }); // Forward normalized errors to Sentry-compatible adapter when configured.
 
   const structuredLog: MonitoringStructuredLog = {
     requestId,

@@ -23,6 +23,7 @@ test(".env.example contains required variable keys", () => {
     "NEXT_PUBLIC_AUTH_API_URL",
     "NEXT_PUBLIC_DATA_API_URL",
     "NEXT_PUBLIC_MONITORING_API_URL",
+    "NEXT_PUBLIC_SENTRY_DSN",
     "NEXT_PUBLIC_ALLOW_JSON_FALLBACK",
     "NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG",
     "AGENT_API_KEY",
