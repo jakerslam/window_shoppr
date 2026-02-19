@@ -13,8 +13,9 @@ import { ProductDetail } from "@/features/product-detail";
 import LoadingSpinner from "@/shared/components/loading/LoadingSpinner";
 import Modal from "@/shared/components/modal/Modal";
 import EyeIcon from "@/shared/components/icons/EyeIcon";
-import RouteErrorFallback from "@/shared/components/error/RouteErrorFallback";
 import styles from "@/app/blog/[slug]/page.module.css";
+
+const PREVIEW_TIMEOUT_MS = 7000; // Prevent preview modals from getting stuck indefinitely on slow/offline API calls.
 
 /**
  * Render markdown-style inline links into React nodes.
@@ -122,15 +123,20 @@ export default function BlogArticleClient({ article }: { article: BlogArticle })
     }
 
     let cancelled = false;
-    const timeoutId = window.setTimeout(() => {
+    const abortController = new AbortController();
+    const loadingTimeoutId = window.setTimeout(() => {
       setPreviewProduct(null); // Clear previous product before fetching new preview.
       setPreviewState("loading"); // Show spinner while fetching.
     }, 0);
+    const requestTimeoutId = window.setTimeout(() => {
+      abortController.abort(); // Force-close hanging requests so the UI can recover.
+    }, PREVIEW_TIMEOUT_MS);
 
     (async () => {
       const response = await requestDataApi<unknown>({
         path: `/data/products/${encodeURIComponent(previewSlug)}`,
         method: "GET",
+        signal: abortController.signal,
       }); // Load one product by slug for the preview modal.
 
       if (cancelled) {
@@ -156,7 +162,9 @@ export default function BlogArticleClient({ article }: { article: BlogArticle })
 
     return () => {
       cancelled = true; // Prevent state updates after unmount or slug changes.
-      window.clearTimeout(timeoutId); // Clean up deferred loading-state updates.
+      abortController.abort(); // Cancel in-flight preview requests when navigating away.
+      window.clearTimeout(loadingTimeoutId); // Clean up deferred loading-state updates.
+      window.clearTimeout(requestTimeoutId); // Clean up forced-timeout timer.
     };
   }, [previewEnabled, previewSlug]);
 
@@ -256,14 +264,29 @@ export default function BlogArticleClient({ article }: { article: BlogArticle })
           ) : previewProduct ? (
             <ProductDetail product={previewProduct} inModal />
           ) : (
-            <RouteErrorFallback
-              error={new Error("Preview unavailable")}
-              reset={() => router.back()}
-              title="Preview unavailable."
-              message="We couldn't load this product preview right now."
-              backHref={`/blog/${article.slug}/`}
-              backLabel="← Back to article"
-            />
+            <div className={styles.articlePage__previewError}>
+              <h2 className={styles.articlePage__previewErrorTitle}>
+                Preview unavailable.
+              </h2>
+              <p className={styles.articlePage__previewErrorText}>
+                We could not load this product preview right now.
+              </p>
+              <div className={styles.articlePage__previewErrorActions}>
+                <button
+                  className={styles.articlePage__previewErrorAction}
+                  type="button"
+                  onClick={() => router.back()} // Close the preview modal by removing query param.
+                >
+                  ← Back to article
+                </button>
+                <Link
+                  className={styles.articlePage__previewErrorAction}
+                  href={buildProductHref(previewSlug)}
+                >
+                  Open product page
+                </Link>
+              </div>
+            </div>
           )}
         </Modal>
       ) : null}

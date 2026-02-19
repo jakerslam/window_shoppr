@@ -42,11 +42,13 @@ export const requestDataApi = async <T>({
   method = "GET",
   body,
   cacheConfig,
+  signal,
 }: {
   path: string;
   method?: "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
   body?: Record<string, unknown>;
   cacheConfig?: RequestDataApiCacheConfig;
+  signal?: AbortSignal;
 }): Promise<DataApiResult<T> | null> => {
   const baseUrl = getDataApiBaseUrl();
   if (!baseUrl) {
@@ -63,18 +65,27 @@ export const requestDataApi = async <T>({
       };
     }
 
-    const requestInit: RequestInit & {
-      next?: { revalidate?: number; tags?: string[] };
-    } = {
+    const headers: Record<string, string> = {
+      ...(isMutationMethod ? getCsrfHeaders() : {}), // Attach CSRF + origin assertions on mutations.
+    };
+
+    if (isMutationMethod || body) {
+      headers["Content-Type"] = "application/json"; // Only set JSON content type when sending a JSON payload.
+    }
+
+    const requestInit: RequestInit = {
       method,
-      headers: {
-        "Content-Type": "application/json",
-        ...(isMutationMethod ? getCsrfHeaders() : {}), // Attach CSRF + origin assertions on mutations.
-      },
+      headers,
       body: body ? JSON.stringify(body) : undefined,
       cache: cacheConfig?.cache ?? "no-store",
-      next: cacheConfig?.next,
+      signal,
     };
+
+    // Next.js fetch caching config is server-only; never attach it to browser fetch calls.
+    if (typeof window === "undefined" && cacheConfig?.next) {
+      (requestInit as RequestInit & { next: RequestDataApiCacheConfig["next"] }).next =
+        cacheConfig.next;
+    }
     const response = await fetch(`${baseUrl}${path}`, requestInit);
 
     const parsed = (await response.json().catch(() => undefined)) as
