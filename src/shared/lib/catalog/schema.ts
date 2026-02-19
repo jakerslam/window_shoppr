@@ -22,6 +22,12 @@ export const ProductSchema: z.ZodType<Product> = z
     category: z.string().min(1), // Top-level category label.
     subCategory: z.string().min(1).optional(), // Optional nested category.
     tags: z.array(z.string().min(1)).optional(), // Optional keyword tags.
+    blogId: z.string().min(1).optional(), // Optional related blog article id.
+    blogSlug: z
+      .string()
+      .min(1)
+      .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
+      .optional(), // Optional related blog slug for product-to-blog linking.
     price: z.number().finite().nonnegative(), // Current price shown to users.
     originalPrice: z.number().finite().nonnegative().optional(), // Optional crossed-out price.
     rating: z.number().finite().min(0).max(5).optional(), // 0..5 star rating.

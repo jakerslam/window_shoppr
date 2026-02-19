@@ -31,6 +31,8 @@ export type Product = {
   category: string;
   subCategory?: string;
   tags?: string[];
+  blogId?: string;
+  blogSlug?: string;
   price: number;
   originalPrice?: number;
   rating?: number;

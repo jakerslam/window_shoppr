@@ -79,8 +79,8 @@ Automation: 0/4 (0.0%)    ░░░░░░░░░░░░░░░░░░
 - [x] B14: Blog-to-product conversion instrumentation (click-through, affiliate click depth, assisted conversion attribution).
 - [x] B15: Backend CMS/API for blog content (article CRUD, taxonomy management, workflow status, scheduled publish, cache invalidation).
 - [x] B16: Seed `10` sample blog articles for local fallback; use the blog seed file when SQL/blog API is unavailable (same fallback pattern as product JSON source).
-- [ ] 🔵 B17: Add optional `blogSlug`/`blogId` field to product JSON/SQL schema and product type definitions.
-- [ ] B18: On product detail render, check whether a linked blog exists; if present, show a contextual `Read Blog Post` CTA under the description that routes to the linked blog article.
+- [x] B17: Add optional `blogSlug`/`blogId` field to product JSON/SQL schema and product type definitions.
+- [ ] 🔵 B18: On product detail render, check whether a linked blog exists; if present, show a contextual `Read Blog Post` CTA under the description that routes to the linked blog article.
 
 ## Performance & Stability
 - [x] R22: Image optimization and lazy-loading
