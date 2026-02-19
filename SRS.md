@@ -1,8 +1,8 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 152/155 (98.1%)  ████████████████████
-Frontend: 63/69 (91.3%)   ██████████████████░░
+Overall: 163/166 (98.2%)  ████████████████████
+Frontend: 74/80 (92.5%)   ███████████████████░
 Backend: 22/22 (100.0%)   ████████████████████
 Automation: 0/4 (0.0%)    ░░░░░░░░░░░░░░░░░░░░
 
@@ -68,17 +68,17 @@ Automation: 0/4 (0.0%)    ░░░░░░░░░░░░░░░░░░
 - [x] B3: Agentic topic proposal scoring pipeline (LLM query signal + search trend signal + viral signal + affiliate-link coverage score + business priority score).
 - [x] B4: Topic eligibility gate (must map to >=1 valid referral link; score boost for multiple relevant links).
 - [x] B5: Agentic research workflow (SERP/content pattern scan, competitor format signals, source collection, fact checklist).
-- [ ] 🔵 B6: Outline generation workflow (intent-first structure, FAQ blocks, comparison tables, and product-slot planning).
-- [ ] B7: Draft generation workflow (helpful-first content, natural product insertion, dynamic media placeholders, disclosure-aware copy).
-- [ ] B8: SEO + LLM optimization layer (entities, semantic headings, concise answer blocks, quote-ready summaries, schema, internal links).
-- [ ] B9: AI metadata generation (title, meta description, OG/Twitter metadata, article schema fields, slug recommendations).
-- [ ] B10: Quality gates before publish (factuality checks, citation quality, duplicate/thin-content checks, affiliate/disclosure compliance, readability threshold, and prompt-library guardrails).
-- [ ] B11: Editorial polish pass (voice/style consistency, originality uplift, anti-generic rewrite). Avoid “AI detection evasion” goals.
-- [ ] B12: Publish states + approvals (draft -> review -> approved -> published) with agent + admin audit trail.
-- [ ] B13: Blog index ranking personalization (use consented cookies/preferences to prioritize likely-relevant/likely-converting articles).
-- [ ] B14: Blog-to-product conversion instrumentation (click-through, affiliate click depth, assisted conversion attribution).
-- [ ] B15: Backend CMS/API for blog content (article CRUD, taxonomy management, workflow status, scheduled publish, cache invalidation).
-- [ ] B16: Seed `10` sample blog articles for local fallback; use the blog seed file when SQL/blog API is unavailable (same fallback pattern as product JSON source).
+- [x] B6: Outline generation workflow (intent-first structure, FAQ blocks, comparison tables, and product-slot planning).
+- [x] B7: Draft generation workflow (helpful-first content, natural product insertion, dynamic media placeholders, disclosure-aware copy).
+- [x] B8: SEO + LLM optimization layer (entities, semantic headings, concise answer blocks, quote-ready summaries, schema, internal links).
+- [x] B9: AI metadata generation (title, meta description, OG/Twitter metadata, article schema fields, slug recommendations).
+- [x] B10: Quality gates before publish (factuality checks, citation quality, duplicate/thin-content checks, affiliate/disclosure compliance, readability threshold, and prompt-library guardrails).
+- [x] B11: Editorial polish pass (voice/style consistency, originality uplift, anti-generic rewrite). Avoid “AI detection evasion” goals.
+- [x] B12: Publish states + approvals (draft -> review -> approved -> published) with agent + admin audit trail.
+- [x] B13: Blog index ranking personalization (use consented cookies/preferences to prioritize likely-relevant/likely-converting articles).
+- [x] B14: Blog-to-product conversion instrumentation (click-through, affiliate click depth, assisted conversion attribution).
+- [x] B15: Backend CMS/API for blog content (article CRUD, taxonomy management, workflow status, scheduled publish, cache invalidation).
+- [x] B16: Seed `10` sample blog articles for local fallback; use the blog seed file when SQL/blog API is unavailable (same fallback pattern as product JSON source).
 
 ## Performance & Stability
 - [x] R22: Image optimization and lazy-loading
@@ -164,7 +164,7 @@ Automation: 0/4 (0.0%)    ░░░░░░░░░░░░░░░░░░
 - [x] R62: Release strategy hardening (staging environment, release checklist, rollback and smoke-test workflow)
 
 ## Optional Optimizations & Refactors
-- [ ] O1: Extract product sorting/filtering into reusable helpers
+- [ ] 🔵 O1: Extract product sorting/filtering into reusable helpers
 - [ ] O2: Add search weighting and relevance scoring
 - [ ] O3: Add pagination/virtualization for large product sets
 - [x] O4: Refactor folder structure into features/ + shared/ for enterprise organization

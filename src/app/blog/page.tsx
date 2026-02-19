@@ -1,5 +1,5 @@
-import Link from "next/link";
-import { getBlogArticles } from "@/shared/lib/blog/data";
+import BlogIndexClient from "@/app/blog/BlogIndexClient";
+import { getBlogCatalog } from "@/shared/lib/blog/cms";
 import styles from "@/app/blog/page.module.css";
 
 export const metadata = {
@@ -10,8 +10,8 @@ export const metadata = {
 /**
  * Blog index page with local-first article fallback.
  */
-export default function BlogIndexPage() {
-  const articles = getBlogArticles();
+export default async function BlogIndexPage() {
+  const { items: articles } = await getBlogCatalog();
 
   return (
     <section className={styles.blogPage}>
@@ -20,19 +20,7 @@ export default function BlogIndexPage() {
         Helpful guides and trend-driven picks connected to products you can shop.
       </p>
 
-      <ul className={styles.blogPage__list}>
-        {articles.map((article) => (
-          <li key={article.id} className={styles.blogPage__card}>
-            <Link className={styles.blogPage__link} href={`/blog/${article.slug}/`}>
-              {article.title}
-            </Link>
-            <p className={styles.blogPage__meta}>
-              {article.category} · {new Date(article.publishedAt).toLocaleDateString()}
-            </p>
-            <p className={styles.blogPage__meta}>{article.summary}</p>
-          </li>
-        ))}
-      </ul>
+      <BlogIndexClient articles={articles} />
     </section>
   );
 }

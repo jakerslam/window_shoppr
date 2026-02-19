@@ -49,3 +49,22 @@
   font-size: 12px;
   color: var(--color-text-muted);
 }
+
+.articlePage__section {
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background: var(--color-surface);
+  padding: 12px 14px;
+  display: grid;
+  gap: 8px;
+}
+
+.articlePage__sectionTitle {
+  margin: 0;
+  color: var(--color-primary-strong);
+  font-size: 20px;
+}
+
+.articlePage__section[data-kind="faq"] {
+  border-style: dashed;
+}

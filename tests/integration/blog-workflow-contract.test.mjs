@@ -27,3 +27,28 @@ test("B3-B5 topic scoring, eligibility, and research workflow exist", () => {
   assert.match(pipeline, /buildBlogResearchPlan/);
   assert.match(pipeline, /referralLinkCount >= 1/);
 });
+
+test("B6-B12 workflow generation, quality gates, and approvals exist", () => {
+  const workflows = read("src/shared/lib/blog/workflows.ts");
+  const approvals = read("src/shared/lib/blog/approvals.ts");
+  assert.match(workflows, /generateBlogOutline/);
+  assert.match(workflows, /generateBlogDraft/);
+  assert.match(workflows, /optimizeBlogForSeoAndLlm/);
+  assert.match(workflows, /generateBlogMetadata/);
+  assert.match(workflows, /runBlogQualityGates/);
+  assert.match(workflows, /runEditorialPolishPass/);
+  assert.match(workflows, /transitionBlogWorkflowState/);
+  assert.match(approvals, /recordBlogWorkflowAudit/);
+});
+
+test("B13-B16 ranking, cms fallback, analytics, and sample catalog exist", () => {
+  const ranking = read("src/shared/lib/blog/ranking.ts");
+  const cms = read("src/shared/lib/blog/cms.ts");
+  const analytics = read("src/shared/lib/blog/analytics.ts");
+  const data = read("src/shared/lib/blog/data.ts");
+  assert.match(ranking, /rankBlogArticlesForUser/);
+  assert.match(cms, /getBlogCatalog/);
+  assert.match(cms, /upsertBlogArticle/);
+  assert.match(analytics, /trackBlogEvent/);
+  assert.match(data, /blog-010/);
+});

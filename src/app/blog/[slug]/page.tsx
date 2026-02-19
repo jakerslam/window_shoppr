@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getBlogArticleBySlug, getBlogArticles } from "@/shared/lib/blog/data";
 import { PUBLIC_ENV } from "@/shared/lib/platform/env";
+import BlogArticleClient from "@/app/blog/[slug]/BlogArticleClient";
 import styles from "@/app/blog/[slug]/page.module.css";
 
 /**
@@ -51,15 +52,9 @@ export default function BlogArticlePage({ params }: { params: { slug: string } }
       <p className={styles.articlePage__meta}>
         {article.category} · {new Date(article.publishedAt).toLocaleDateString()}
       </p>
-      <p className={styles.articlePage__body}>{article.body}</p>
+      <p className={styles.articlePage__body}>{article.summary}</p>
 
-      <div className={styles.articlePage__tags} aria-label="Tags">
-        {article.tags.map((tag) => (
-          <span key={tag} className={styles.articlePage__tag}>
-            {tag}
-          </span>
-        ))}
-      </div>
+      <BlogArticleClient article={article} />
     </article>
   );
 }

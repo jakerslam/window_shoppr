@@ -1,4 +1,4 @@
-# Blog Workflow (B1-B5)
+# Blog Workflow (B1-B16)
 
 - `B1`: Blog architecture is live with:
   - `/blog/` index route
@@ -13,3 +13,35 @@
   - source collection checklist
   - fact validation checklist
   - outline section plan
+- `B6`: Outline generation workflow:
+  - `generateBlogOutline(...)` in `src/shared/lib/blog/workflows.ts`
+- `B7`: Draft generation workflow:
+  - `generateBlogDraft(...)` in `src/shared/lib/blog/workflows.ts`
+- `B8`: SEO + LLM optimization layer:
+  - `optimizeBlogForSeoAndLlm(...)` in `src/shared/lib/blog/workflows.ts`
+- `B9`: AI metadata generation:
+  - `generateBlogMetadata(...)` in `src/shared/lib/blog/workflows.ts`
+- `B10`: Quality gates:
+  - `runBlogQualityGates(...)` in `src/shared/lib/blog/workflows.ts`
+- `B11`: Editorial polish pass:
+  - `runEditorialPolishPass(...)` in `src/shared/lib/blog/workflows.ts`
+- `B12`: Publish states + approvals:
+  - state transitions in `transitionBlogWorkflowState(...)`
+  - workflow audit trail in `src/shared/lib/blog/approvals.ts`
+- `B13`: Blog index personalization:
+  - `rankBlogArticlesForUser(...)` and client-side index ranking.
+- `B14`: Blog conversion instrumentation:
+  - `trackBlogEvent(...)` for article-open and affiliate-click signals.
+- `B15`: Backend CMS/API stubs:
+  - `getBlogCatalog(...)` and `upsertBlogArticle(...)` in `src/shared/lib/blog/cms.ts`
+- `B16`: Local fallback sample set:
+  - `10` sample blog articles in `src/shared/lib/blog/data.ts`
+
+## Layout Standards
+- Layout standards are defined in:
+  - `src/shared/lib/blog/layout-standards.ts`
+- Required variants:
+  - `guide`
+  - `comparison`
+  - `listicle`
+- Each variant defines required section kinds and recommended word ranges.
