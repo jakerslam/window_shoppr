@@ -1,9 +1,9 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 131/150 (87.3%)  █████████████████░░░
+Overall: 132/150 (88.0%)  ██████████████████░░
 Frontend: 58/64 (90.6%)   ██████████████████░░
-Backend: 20/22 (90.9%)    ██████████████████░░
+Backend: 21/22 (95.5%)    ███████████████████░
 Automation: 0/4 (0.0%)    ░░░░░░░░░░░░░░░░░░░░
 
 
@@ -186,8 +186,8 @@ Automation: 0/4 (0.0%)    ░░░░░░░░░░░░░░░░░░
 - [x] R63: Abuse protection and rate limiting (per-IP/session throttles, burst cooldowns, bot challenge on write endpoints, idempotency keys, 429 handling, and violation alerting).
 - [x] R64: CSRF protection for state-changing requests (token/origin enforcement for mutation endpoints).
 - [x] R65: Input/output hardening (centralized sanitization, strict validation, and safe rendering rules for user-generated content).
-- [ ] 🔵 R66: CORS and origin allowlist policy (deny-by-default with environment-specific allowlists).
-- [ ] R67: Auth session hardening (secure HttpOnly cookies at backend cutover, session rotation, idle + absolute timeout policies).
+- [x] R66: CORS and origin allowlist policy (deny-by-default with environment-specific allowlists).
+- [ ] 🔵 R67: Auth session hardening (secure HttpOnly cookies at backend cutover, session rotation, idle + absolute timeout policies).
 - [ ] R68: Security headers runtime verification (automated checks to ensure CSP/HSTS/frame protections are present in deployed environments).
 - [ ] R69: File/upload security policy (type/size validation, malware scanning, signed URL flow, quarantine handling) [activate when uploads are introduced].
 - [ ] R70: Admin/agent high-risk action safeguards (two-step confirmations, approval workflow options, immutable audit coverage).

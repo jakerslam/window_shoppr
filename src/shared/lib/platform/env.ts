@@ -33,6 +33,7 @@ const PUBLIC_ENV_SCHEMA = z.object({
   NEXT_PUBLIC_MONITORING_API_URL: z.string().url().optional(), // Optional monitoring endpoint for error/perf envelopes.
   NEXT_PUBLIC_SENTRY_DSN: z.string().url().optional(), // Optional Sentry DSN for direct client-side error reporting.
   NEXT_PUBLIC_ALLOW_LOCAL_AUTH_FALLBACK: z.enum(["true", "false"]).optional(), // Controls whether local auth fallback is allowed when auth API is unavailable.
+  NEXT_PUBLIC_ALLOWED_ORIGINS: z.string().trim().optional(), // Comma-delimited allowlist of browser origins allowed to send mutation requests.
 });
 
 /**
@@ -51,6 +52,7 @@ const parsePublicEnv = () => {
     NEXT_PUBLIC_MONITORING_API_URL: process.env.NEXT_PUBLIC_MONITORING_API_URL,
     NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
     NEXT_PUBLIC_ALLOW_LOCAL_AUTH_FALLBACK: process.env.NEXT_PUBLIC_ALLOW_LOCAL_AUTH_FALLBACK,
+    NEXT_PUBLIC_ALLOWED_ORIGINS: process.env.NEXT_PUBLIC_ALLOWED_ORIGINS,
   }); // Pull only public vars so this module is safe in client bundles.
 
   if (!parsed.success) {
@@ -82,6 +84,7 @@ const parsePublicEnv = () => {
     allowLocalAuthFallback: data.NEXT_PUBLIC_ALLOW_LOCAL_AUTH_FALLBACK
       ? data.NEXT_PUBLIC_ALLOW_LOCAL_AUTH_FALLBACK === "true"
       : true, // Default true for compatibility; production runtime can disable.
+    allowedOrigins: data.NEXT_PUBLIC_ALLOWED_ORIGINS ?? "", // Comma-delimited CORS/browser origin allowlist for mutation traffic.
   };
 };
 

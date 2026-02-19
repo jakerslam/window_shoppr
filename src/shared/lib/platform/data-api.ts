@@ -1,5 +1,6 @@
 import { PUBLIC_ENV } from "@/shared/lib/platform/env";
 import { getCsrfHeaders } from "@/shared/lib/platform/csrf";
+import { canSendMutationFromCurrentOrigin } from "@/shared/lib/platform/origin-policy";
 
 type DataApiSuccess<T> = {
   ok: true;
@@ -54,6 +55,14 @@ export const requestDataApi = async <T>({
 
   try {
     const isMutationMethod = method !== "GET";
+    if (isMutationMethod && !canSendMutationFromCurrentOrigin()) {
+      return {
+        ok: false,
+        message: "Request blocked by origin policy.",
+        status: 403,
+      };
+    }
+
     const requestInit: RequestInit & {
       next?: { revalidate?: number; tags?: string[] };
     } = {
