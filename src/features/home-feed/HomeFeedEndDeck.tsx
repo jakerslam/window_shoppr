@@ -10,11 +10,15 @@ export default function HomeFeedEndDeck({
   showActions,
   onReplayDeck,
   onBrowseAllCategories,
+  onLoadNextPage,
+  hasNextPage,
 }: {
   categoryLabel: string;
   showActions: boolean;
   onReplayDeck: () => void;
   onBrowseAllCategories: () => void;
+  onLoadNextPage?: () => void;
+  hasNextPage?: boolean;
 }) {
   return (
     <div className={styles.homeFeed__endDeck} role="status" aria-live="polite">
@@ -26,6 +30,15 @@ export default function HomeFeedEndDeck({
       </p>
       {showActions ? (
         <div className={styles.homeFeed__endDeckActions}>
+          {hasNextPage && onLoadNextPage ? (
+            <button
+              className={styles.homeFeed__endDeckButton}
+              type="button"
+              onClick={onLoadNextPage}
+            >
+              Load Next Picks
+            </button>
+          ) : null}
           <button
             className={styles.homeFeed__endDeckButton}
             type="button"

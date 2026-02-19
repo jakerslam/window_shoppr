@@ -26,6 +26,7 @@ import styles from "@/features/home-feed/HomeFeed.module.css";
 const BASE_COLUMN_DURATIONS = [38, 46, 54, 62, 70];
 const SPEED_MODE_STORAGE_KEY = "window_shoppr_feed_speed_mode";
 const END_DECK_BAR_HEIGHT = 126;
+const FEED_PAGE_SIZE = 240;
 
 /**
  * Validate storage values before applying them to speed mode state.
@@ -49,6 +50,7 @@ export default function HomeFeed({
   const searchParams = useSearchParams();
   const [viewportWidth, setViewportWidth] = useState(1280);
   const [sortOption, setSortOption] = useState<SortOption>("newest");
+  const [feedPage, setFeedPage] = useState(0);
   const [speedMode, setSpeedMode] = useState<"cozy" | "quick">(() => {
     if (typeof window === "undefined") {
       return "cozy";
@@ -143,6 +145,11 @@ export default function HomeFeed({
         : rankedProducts.filter((product) => !product.isSponsored),
     [rankedProducts, sponsoredCardsEnabled],
   );
+  const hasNextFeedPage = (feedPage + 1) * FEED_PAGE_SIZE < feedProducts.length;
+  const pagedFeedProducts = useMemo(
+    () => feedProducts.slice(feedPage * FEED_PAGE_SIZE, (feedPage + 1) * FEED_PAGE_SIZE),
+    [feedPage, feedProducts],
+  );
 
   const resultsLabel = `Browse ${feedProducts.length} ${subtitleLabel}`;
   const modalProductSlug = searchParams.get("product");
@@ -177,9 +184,22 @@ export default function HomeFeed({
     handleDeckExhausted,
     handleReplayFeed,
   } = useHomeFeedDecks({
-    feedProducts,
+    feedProducts: pagedFeedProducts,
     columnCount,
   });
+
+  /**
+   * Reset pagination whenever upstream feed composition changes.
+   */
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setFeedPage(0); // Return to first page on new search/category/sort inputs.
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timeoutId); // Clear pending reset on rapid filter changes.
+    };
+  }, [searchQuery, selectedCategory, selectedSubCategory, sortOption]);
 
   /**
    * Reset filters and return to the all-categories feed.
@@ -188,6 +208,13 @@ export default function HomeFeed({
     clearFilters();
     router.push("/");
   }, [clearFilters, router]);
+
+  /**
+   * Advance to the next feed page when available.
+   */
+  const handleLoadNextFeedPage = useCallback(() => {
+    setFeedPage((previous) => previous + 1); // Move forward by one fixed page.
+  }, []);
 
   /**
    * Build a stable open handler for a given product card.
@@ -244,6 +271,8 @@ export default function HomeFeed({
             <HomeFeedEndDeck
               categoryLabel={displayCategory || "all categories"}
               showActions
+              hasNextPage={hasNextFeedPage}
+              onLoadNextPage={handleLoadNextFeedPage}
               onReplayDeck={handleReplayFeed}
               onBrowseAllCategories={handleBrowseAllCategories}
             />
