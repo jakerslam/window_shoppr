@@ -167,8 +167,8 @@ Automation: 0/4 (0.0%)    ░░░░░░░░░░░░░░░░░░
 
 ## Optional Optimizations & Refactors
 - [x] O1: Extract product sorting/filtering into reusable helpers
-- [ ] 🔵 O2: Add search weighting and relevance scoring
-- [ ] O3: Add pagination/virtualization for large product sets
+- [x] O2: Add search weighting and relevance scoring
+- [ ] 🔵 O3: Add pagination/virtualization for large product sets
 - [x] O4: Refactor folder structure into features/ + shared/ for enterprise organization
 - [x] R26: Wishlist search input (filter saved items)
 - [x] R26.1: Wishlist search integration (mobile search targets wishlist on /wishlist; desktop wishlist search bar)

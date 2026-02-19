@@ -43,8 +43,8 @@ export default function useFilteredSortedProducts({
   }, [products, searchQuery, selectedCategory, selectedSubCategory]);
 
   const sortedProducts = useMemo(() => {
-    return sortProducts({ products: filteredProducts, sortOption });
-  }, [filteredProducts, sortOption]);
+    return sortProducts({ products: filteredProducts, sortOption, searchQuery });
+  }, [filteredProducts, searchQuery, sortOption]);
 
   const rankedProducts = useMemo(
     () =>

@@ -1,0 +1,37 @@
+.blogNotFound {
+  width: min(760px, 100%);
+  margin: 0 auto;
+  padding: 36px 4vw 120px;
+  display: grid;
+  gap: 14px;
+}
+
+.blogNotFound__title {
+  margin: 0;
+  color: var(--color-primary-strong);
+  font-size: clamp(28px, 4vw, 42px);
+}
+
+.blogNotFound__body {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.blogNotFound__button {
+  width: fit-content;
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-muted);
+  color: var(--color-primary-strong);
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.blogNotFound__button:hover {
+  opacity: 0.75;
+}
