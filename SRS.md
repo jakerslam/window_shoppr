@@ -1,9 +1,9 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 167/181 (92.3%)  ██████████████████░░
-Frontend: 112/116 (96.6%) ███████████████████░
-Backend: 55/61 (90.2%)    ██████████████████░░
+Overall: 169/183 (92.3%)  ███████████████████░░
+Frontend: 112/116 (96.6%) ████████████████████░
+Backend: 57/63 (90.5%)    ███████████████████░░
 Automation: 0/4 (0.0%)    ░░░░░░░░░░░░░░░░░░░░
 
 
@@ -101,8 +101,10 @@ Automation: 0/4 (0.0%)    ░░░░░░░░░░░░░░░░░░
 - [x] R12.3: Account management wiring (backend/auth integration)
 - [x] R12.4: Auth gate for profile/settings and notifications (require login/signup session after auth backend is live)
 - [x] R30: SQL data layer wiring (products, wishlist, email capture submissions)
-- [ ] R30.1: Deploy SQL-backed Data API service (Postgres or equivalent) and implement endpoints used by the web app (products, offers/prices, wishlists/lists, deal submissions, comments, notifications, window points, blog).
-- [ ] R30.2: Deploy Auth API service (email + social providers) and switch production sessions to secure HttpOnly cookies (remove local auth fallback in production builds).
+- [x] R30.1a: Local Data API reference server (SQLite + Node) implementing `/data/*` endpoints used by the web app.
+- [ ] R30.1b: Production Data API deployment (Postgres or equivalent) + hardened runtime (RBAC, rate limits, observability, and scaling).
+- [x] R30.2a: Local Auth API reference server (email + social stubs) implementing `/auth/*` endpoints used by the web app.
+- [ ] R30.2b: Production Auth API deployment and switch sessions to secure HttpOnly cookies (remove local auth fallback in production builds).
 - [ ] R30.3: Frontend production cutover (set `PUBLIC_ENV.dataApiUrl` and `PUBLIC_ENV.authApiUrl`; fail production builds if missing to avoid silent local fallbacks).
 - [ ] R30.4: Production DB lifecycle (migrations, rollback plan, deterministic staging seeds, and data integrity verification checklist).
 

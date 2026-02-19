@@ -43,3 +43,9 @@ next-env.d.ts
 
 # Editor swap files
 *.swp
+
+# Local SQLite databases (runtime backend dev)
+*.sqlite
+*.sqlite3
+*.sqlite-wal
+*.sqlite-shm

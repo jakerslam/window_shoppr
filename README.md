@@ -25,6 +25,24 @@ npm run dev
 
 Open http://localhost:3000
 
+### Optional Local SQL/API Backend
+This repo includes a lightweight local API server (SQLite + Node) that implements the `NEXT_PUBLIC_DATA_API_URL` + `NEXT_PUBLIC_AUTH_API_URL` contracts.
+
+Terminal 1:
+```bash
+npm run api:dev
+```
+
+Terminal 2:
+```bash
+# Example (local runtime mode)
+NEXT_PUBLIC_DEPLOY_TARGET=runtime \\
+NEXT_PUBLIC_DATA_API_URL=http://127.0.0.1:8787 \\
+NEXT_PUBLIC_AUTH_API_URL=http://127.0.0.1:8787 \\
+NEXT_PUBLIC_ALLOWED_ORIGINS=http://localhost:3000 \\
+npm run dev
+```
+
 ## Key Directories
 - `src/app` — Routes, layout, metadata, sitemap/robots
 - `src/features` — Feature modules (feed, product detail, wishlist, auth, nav)

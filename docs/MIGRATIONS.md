@@ -31,4 +31,5 @@ This validates sequence ordering, rollback pairing, and deterministic seed const
 ## Current baseline
 - `001_initial_schema.sql`
 - `002_agent_queue_schema.sql`
+- `003_backend_entities.sql`
 - `001_seed_base_data.sql`
