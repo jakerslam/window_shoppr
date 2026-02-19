@@ -1,6 +1,5 @@
 import {
   BlogLayoutVariant,
-  BlogAffiliateLink,
   BlogDraft,
   BlogMetadataPackage,
   BlogOptimization,
@@ -9,6 +8,13 @@ import {
   BlogTopicProposal,
   BlogWorkflowState,
 } from "@/shared/lib/blog/types";
+
+const pickDeterministic = (choices: string[], seed: string) => {
+  const index =
+    seed.split("").reduce((total, char) => total + char.charCodeAt(0), 0) %
+    choices.length;
+  return choices[index];
+};
 
 const expandSectionContent = ({
   kind,
@@ -24,28 +30,51 @@ const expandSectionContent = ({
   tags: string[];
 }) => {
   const tagHint = tags.slice(0, 3).join(", ");
+  const seed = `${kind}:${keyword}:${category}:${variant}`;
 
   if (kind === "intro") {
     const hook =
       variant === "story"
-        ? `You can waste months buying "almost right" ${keyword} and still feel stuck.`
-        : `Most people researching ${keyword} want confidence before spending, not a giant checklist.`;
-    return `${hook}\n\nThe fastest path is to define your real constraint first: budget, time, storage space, or ease of use. In ${category}, a "best" product is only best when it fits your routine and keeps working after the first week. This piece keeps things practical and skimmable so you can decide faster with less regret.`;
+        ? pickDeterministic(
+            [
+              `You can buy “perfect” ${keyword} and still stop using it by week two.`,
+              `Most regrets with ${keyword} come from fit, not price.`,
+              `If ${keyword} feels like a rabbit hole, it usually is.`,
+            ],
+            seed,
+          )
+        : pickDeterministic(
+            [
+              `Shopping for ${keyword} is harder than it should be.`,
+              `The best ${keyword} is the one that survives normal life.`,
+              `Most ${keyword} look similar until real use starts.`,
+            ],
+            seed,
+          );
+    const framing = pickDeterministic(
+      [
+        `This guide focuses on what matters in ${category}: friction, upkeep, and whether it fits your routine.`,
+        `Below are the few criteria that actually matter, then feed-backed picks with clear tradeoffs.`,
+        `Use this as a shortcut: shortlist by routine-fit first, then compare features.`,
+      ],
+      `${seed}:framing`,
+    );
+    return `${hook}\n\n${framing}`;
   }
 
   if (kind === "step") {
-    return `Evaluate ${keyword} in this order:\n1. Durability and material quality.\n2. Daily usability and setup friction.\n3. Maintenance overhead and hidden costs.\n4. Total 6-12 month value.\n\nCompare two or three options side by side and eliminate anything that fails in at least two categories.`;
+    return `What to look for in ${keyword}:\n- Durability and material quality.\n- Daily usability and setup friction.\n- Maintenance overhead and hidden costs.\n- Total 6-12 month value.\n\nCompare two or three options side by side and cut anything that fails in at least two categories.`;
   }
 
   if (kind === "comparison") {
-    return `Use this quick framing for ${keyword}:\n- Starter pick: minimum friction, lowest risk.\n- Best value: strongest performance per dollar.\n- Comfort upgrade: premium option that actually earns it.\n\nWe prioritize products aligned with ${tagHint} so recommendations match real browsing intent.`;
+    return `How to decide quickly:\n- Starter pick: minimum friction, lowest risk.\n- Best value: strongest performance per dollar.\n- Comfort upgrade: premium option that actually earns it.\n\nThemes that matter for this topic: ${tagHint}.`;
   }
 
   if (kind === "faq") {
-    return `FAQ that matters:\n- Is it worth the price now, not just on sale day?\n- Will it hold up after the honeymoon week?\n- What red flags should I avoid?\n\nIf two options are close, choose the one with clearer specs, fewer dependencies, and better long-term reliability signals.`;
+    return `FAQ that matters:\n- Is it worth the price now, not just on sale day?\n- Will it hold up after month one?\n- What red flags should I avoid?\n\nIf two options are close, choose the one with clearer specs and fewer dependencies.`;
   }
 
-  return `Bottom line: choose the option you'll keep using, not the one with the loudest headline. For ${keyword}, start with one high-fit pick, test it in your routine, then upgrade only if it removes a real pain point.`;
+  return `Bottom line: choose the option you'll keep using. For ${keyword}, start simple, validate fit in your routine, then upgrade only if it removes real friction.`;
 };
 
 /**
@@ -128,25 +157,16 @@ export const generateBlogDraft = (outline: BlogOutline): BlogDraft => ({
   title: outline.title,
   sections: outline.sections,
   affiliateIntegrations: [
-    "Integrate primary product in comparison section.",
-    "Include 1-2 alternates in fit/use-case section.",
+    "Integrate primary product naturally in comparison flow.",
+    "Include alternatives with explicit tradeoffs.",
   ],
-  body: outline.sections
-    .map((section) => `## ${section.heading}\n\n${section.content}`)
-    .join("\n\n"),
+  body: [
+    "_Disclosure: This post includes affiliate links. If you buy through them, we may earn a commission at no extra cost._",
+    ...outline.sections.map((section) => `## ${section.heading}\n\n${section.content}`),
+    "## Avoid this mistake",
+    "Do not optimize for features first. Optimize for routine-fit first, then add upgrades only if they remove a recurring annoyance.",
+  ].join("\n\n"),
 });
-
-/**
- * Build conversion-first affiliate CTA copy blocks.
- */
-export const buildAffiliateCallouts = (links: BlogAffiliateLink[]) =>
-  links.map((link, index) => {
-    const hook =
-      index === 0
-        ? "If you only click one option, start with this one:"
-        : "Good alternate if the first pick is out of stock:";
-    return `${hook}\n${link.label} — ${link.href}`;
-  });
 
 /**
  * Build SEO + LLM optimization package for a draft.
@@ -194,16 +214,30 @@ export const runBlogQualityGates = (draft: BlogDraft): BlogQualityGateResult => 
   const wordCount = draft.body.split(/\s+/).filter(Boolean).length;
   const headingCount = (draft.body.match(/^## /gm) ?? []).length;
   const listSignal = /(^\d+\.\s)|(^-\s)/gm.test(draft.body);
-  const linkSignal = /https?:\/\//.test(draft.body);
+  const hasNakedLinks = /https?:\/\/\S+/i.test(draft.body);
+  const topWindow = draft.body.split("\n").slice(0, 8).join("\n").toLowerCase();
+  const hasDisclosureNearTop = /affiliate|commission|may earn/.test(topWindow);
+  const templatePhrases = [
+    "fastest path",
+    "define your real constraint",
+    "honeymoon week",
+    "loudest headline",
+  ];
+  const hasTemplateStink = templatePhrases.some((phrase) =>
+    draft.body.toLowerCase().includes(phrase),
+  );
+  const tradeoffSignal = /trade-?off|however|avoid|skip|only if|downside/i.test(draft.body);
   const checks = {
     factuality: true,
     citationQuality: true,
-    thinContent: wordCount >= 220,
-    affiliateDisclosure: true,
-    readability: wordCount >= 220,
-    usefulnessOrFun: /why|how|quick|mistake|best|worth/i.test(draft.title + draft.body),
+    thinContent: wordCount >= 300,
+    affiliateDisclosure: hasDisclosureNearTop,
+    readability: wordCount >= 300,
+    usefulnessOrFun:
+      /why|how|quick|mistake|best|worth|regret|avoid/i.test(draft.title + draft.body) &&
+      !hasTemplateStink,
     scannability: headingCount >= 3 && listSignal,
-    affiliateCoverage: linkSignal,
+    affiliateCoverage: !hasNakedLinks && tradeoffSignal,
   };
   return {
     pass: Object.values(checks).every(Boolean),

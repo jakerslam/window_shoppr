@@ -1,6 +1,5 @@
 import { scoreBlogTopicProposal, isBlogTopicEligible } from "@/shared/lib/blog/pipeline";
 import {
-  buildAffiliateCallouts,
   generateBlogDraft,
   generateBlogMetadata,
   generateBlogOutline,
@@ -255,18 +254,21 @@ const enrichSectionsWithFeedProducts = ({
 
   const feedBlock = relatedProducts
     .map(
-      (product, index) =>
-        `${index + 1}. ${product.name} (${product.retailer}) - $${product.price.toFixed(
-          2,
-        )}. ${product.description}`,
+      (product, index) => {
+        const tradeoff =
+          index === 0
+            ? "Tradeoff: strongest all-round fit, but not always the cheapest."
+            : index === 1
+              ? "Tradeoff: better value, but may skip premium extras."
+              : "Tradeoff: useful alternate when availability or fit changes.";
+        return (
+          `${index + 1}. ${product.name} (${product.retailer}) - $${product.price.toFixed(
+            2,
+          )}. ${product.description}\n   ${tradeoff}`
+        );
+      },
     )
     .join("\n");
-  const affiliateBlock = buildAffiliateCallouts(
-    relatedProducts.map((product) => ({
-      label: product.name,
-      href: product.affiliateUrl,
-    })),
-  ).join("\n\n");
 
   return sections.map((section) => {
     if (section.kind !== "comparison") {
@@ -275,7 +277,7 @@ const enrichSectionsWithFeedProducts = ({
 
     return {
       ...section,
-      content: `${section.content}\n\nFeatured feed picks:\n${feedBlock}\n\n${affiliateBlock}`,
+      content: `${section.content}\n\nFeatured feed picks:\n${feedBlock}`,
     };
   });
 };
