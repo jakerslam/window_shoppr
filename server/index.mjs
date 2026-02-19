@@ -5,8 +5,10 @@ import { openDatabase } from "./db.mjs";
 import { matchRoute } from "./router.mjs";
 import { applyCors, readJsonBody, writeApiError, writeApiOk } from "./utils.mjs";
 import {
+  handleAuthAccount,
   handleAuthLogin,
   handleAuthLogout,
+  handleAuthSession,
   handleAuthSignup,
   handleAuthSocial,
 } from "./routes/auth.mjs";
@@ -146,6 +148,16 @@ const routes = [
     method: "POST",
     pattern: /^\/auth\/logout$/,
     handler: handleAuthLogout,
+  },
+  {
+    method: "PATCH",
+    pattern: /^\/auth\/account$/,
+    handler: handleAuthAccount,
+  },
+  {
+    method: "GET",
+    pattern: /^\/auth\/session$/,
+    handler: handleAuthSession,
   },
   {
     method: "GET",

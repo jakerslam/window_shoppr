@@ -40,3 +40,7 @@ npm run dev
 ## Notes
 - The Node `sqlite` API is still marked experimental in Node 22.
 - Production should use a managed Postgres instance (Neon or equivalent) + a hardened API deployment; this server exists to keep the web app’s backend seam honest.
+- Runtime auth uses HttpOnly session cookies (`ws_session` by default).
+- Session endpoints:
+  - `GET /auth/session` (resolve active session from cookie)
+  - `PATCH /auth/account` (update profile fields for current session)

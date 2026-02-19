@@ -34,4 +34,16 @@ export const SERVER_CONFIG = {
     process.env.ALLOWED_ORIGINS ?? process.env.NEXT_PUBLIC_ALLOWED_ORIGINS,
   ),
   agentApiKey: String(process.env.AGENT_API_KEY ?? "").trim(),
+  sessionCookie: {
+    name: String(process.env.WINDOW_SHOPPR_SESSION_COOKIE_NAME ?? "").trim() || "ws_session",
+    domain: String(process.env.WINDOW_SHOPPR_SESSION_COOKIE_DOMAIN ?? "").trim() || undefined,
+    sameSite:
+      String(process.env.WINDOW_SHOPPR_SESSION_COOKIE_SAMESITE ?? "").trim() || "Lax",
+    secure:
+      String(process.env.WINDOW_SHOPPR_SESSION_COOKIE_SECURE ?? "").trim() === "true"
+        ? true
+        : String(process.env.WINDOW_SHOPPR_SESSION_COOKIE_SECURE ?? "").trim() === "false"
+          ? false
+          : process.env.NODE_ENV === "production",
+  },
 };

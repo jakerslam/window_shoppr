@@ -1,10 +1,98 @@
 import { randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 import { z } from "zod";
+import { SERVER_CONFIG } from "../config.mjs";
 import { writeApiError, writeApiOk, shortHash } from "../utils.mjs";
 
 const EMAIL_SCHEMA = z.string().trim().toLowerCase().email();
 const PASSWORD_SCHEMA = z.string().min(6).max(200);
 const PROVIDER_SCHEMA = z.enum(["email", "google", "x", "meta"]);
+
+/**
+ * Parse a cookie header into key/value pairs (best-effort, RFC-lite).
+ */
+const parseCookies = (raw) => {
+  if (typeof raw !== "string" || !raw.trim()) {
+    return {};
+  }
+
+  return raw.split(";").reduce((acc, part) => {
+    const [key, ...rest] = part.trim().split("=");
+    if (!key) {
+      return acc;
+    }
+
+    const value = rest.join("=");
+    if (!value) {
+      return acc;
+    }
+
+    acc[key] = decodeURIComponent(value);
+    return acc;
+  }, {});
+};
+
+/**
+ * Read the auth-session token from the request cookie header.
+ */
+const readSessionTokenFromCookie = (req) => {
+  const cookieHeader = req?.headers?.cookie;
+  const cookies = parseCookies(cookieHeader);
+  const name = SERVER_CONFIG.sessionCookie.name;
+  const token = cookies[name];
+  return typeof token === "string" && token.trim() ? token.trim() : null;
+};
+
+/**
+ * Serialize a session cookie with hardened defaults.
+ */
+const buildSessionCookie = ({ token, expiresAt }) => {
+  const { name, domain, sameSite, secure } = SERVER_CONFIG.sessionCookie;
+  const attributes = [
+    `${name}=${encodeURIComponent(token)}`,
+    "Path=/",
+    "HttpOnly",
+    `SameSite=${sameSite || "Lax"}`,
+  ];
+
+  if (domain) {
+    attributes.push(`Domain=${domain}`);
+  }
+
+  if (expiresAt) {
+    attributes.push(`Expires=${new Date(expiresAt).toUTCString()}`);
+  }
+
+  if (secure) {
+    attributes.push("Secure");
+  }
+
+  return attributes.join("; ");
+};
+
+/**
+ * Clear the session cookie explicitly.
+ */
+const buildClearedSessionCookie = () => {
+  const { name, domain, sameSite, secure } = SERVER_CONFIG.sessionCookie;
+  const attributes = [
+    `${name}=`,
+    "Path=/",
+    "HttpOnly",
+    `SameSite=${sameSite || "Lax"}`,
+    "Expires=Thu, 01 Jan 1970 00:00:00 GMT",
+    "Max-Age=0",
+  ];
+
+  if (domain) {
+    attributes.push(`Domain=${domain}`);
+  }
+
+  if (secure) {
+    attributes.push("Secure");
+  }
+
+  return attributes.join("; ");
+};
 
 /**
  * Create a password hash string using scrypt with a random salt.
@@ -53,7 +141,80 @@ const createAuthSession = async ({ db, accountId }) => {
     [sessionId, accountId, sessionToken, nowIso, expiresAt],
   );
 
-  return { sessionId, expiresAt };
+  return { sessionToken, expiresAt };
+};
+
+/**
+ * Resolve active session context from a session token.
+ */
+const readActiveSessionContext = async ({ db, sessionToken }) => {
+  const row = await db.queryOne(
+    `SELECT
+      s.account_id,
+      s.session_token,
+      s.expires_at,
+      s.revoked_at,
+      a.provider,
+      a.email,
+      a.display_name,
+      a.marketing_emails,
+      a.roles_json
+    FROM auth_sessions s
+    INNER JOIN accounts a ON a.id = s.account_id
+    WHERE s.session_token = ?
+    LIMIT 1;`,
+    [sessionToken],
+  );
+
+  if (!row?.session_token) {
+    return null;
+  }
+
+  if (row.revoked_at) {
+    return null;
+  }
+
+  const expiresAtMs = new Date(row.expires_at).getTime();
+  if (Number.isFinite(expiresAtMs) && expiresAtMs < Date.now()) {
+    return null;
+  }
+
+  const roles = (() => {
+    try {
+      const parsedRoles = JSON.parse(row.roles_json ?? "[]");
+      return Array.isArray(parsedRoles) && parsedRoles.length > 0 ? parsedRoles : ["user"];
+    } catch {
+      return ["user"];
+    }
+  })();
+
+  return {
+    provider: row.provider,
+    roles,
+    email: row.email ?? undefined,
+    displayName: row.display_name ?? undefined,
+    marketingEmails: Boolean(row.marketing_emails),
+    expiresAt: row.expires_at,
+  };
+};
+
+/**
+ * Resolve a response-safe session payload from active session context.
+ */
+const readActiveSession = async ({ db, sessionToken }) => {
+  const context = await readActiveSessionContext({ db, sessionToken });
+  if (!context) {
+    return null;
+  }
+
+  return {
+    provider: context.provider,
+    roles: context.roles,
+    email: context.email,
+    displayName: context.displayName,
+    marketingEmails: context.marketingEmails,
+    expiresAt: context.expiresAt,
+  };
 };
 
 /**
@@ -114,7 +275,8 @@ export const handleAuthSignup = async ({ db, body, res }) => {
     ],
   );
 
-  const { sessionId, expiresAt } = await createAuthSession({ db, accountId });
+  const { sessionToken, expiresAt } = await createAuthSession({ db, accountId });
+  res.setHeader("set-cookie", buildSessionCookie({ token: sessionToken, expiresAt }));
 
   writeApiOk(res, {
     session: {
@@ -123,7 +285,6 @@ export const handleAuthSignup = async ({ db, body, res }) => {
       email: parsed.data.email,
       displayName: parsed.data.displayName ?? undefined,
       marketingEmails: Boolean(parsed.data.marketingEmails),
-      sessionId,
       expiresAt,
     },
   });
@@ -156,7 +317,8 @@ export const handleAuthLogin = async ({ db, body, res }) => {
     return;
   }
 
-  const { sessionId, expiresAt } = await createAuthSession({ db, accountId: account.id });
+  const { sessionToken, expiresAt } = await createAuthSession({ db, accountId: account.id });
+  res.setHeader("set-cookie", buildSessionCookie({ token: sessionToken, expiresAt }));
   const roles = (() => {
     try {
       const parsedRoles = JSON.parse(account.roles_json ?? "[]");
@@ -173,7 +335,6 @@ export const handleAuthLogin = async ({ db, body, res }) => {
       email: parsed.data.email,
       displayName: account.display_name ?? undefined,
       marketingEmails: Boolean(account.marketing_emails),
-      sessionId,
       expiresAt,
     },
   });
@@ -233,7 +394,8 @@ export const handleAuthSocial = async ({ db, body, res }) => {
     }
   })();
 
-  const { sessionId, expiresAt } = await createAuthSession({ db, accountId });
+  const { sessionToken, expiresAt } = await createAuthSession({ db, accountId });
+  res.setHeader("set-cookie", buildSessionCookie({ token: sessionToken, expiresAt }));
 
   writeApiOk(res, {
     session: {
@@ -241,7 +403,6 @@ export const handleAuthSocial = async ({ db, body, res }) => {
       roles,
       displayName: account?.display_name ?? `${provider.toUpperCase()} user`,
       marketingEmails: Boolean(account?.marketing_emails),
-      sessionId,
       expiresAt,
     },
   });
@@ -250,6 +411,109 @@ export const handleAuthSocial = async ({ db, body, res }) => {
 /**
  * Handle POST /auth/logout.
  */
-export const handleAuthLogout = async ({ res }) => {
+export const handleAuthLogout = async ({ db, req, res }) => {
+  const sessionToken = readSessionTokenFromCookie(req);
+  if (sessionToken) {
+    await db.exec(
+      `UPDATE auth_sessions
+       SET revoked_at = ?
+       WHERE session_token = ? AND revoked_at IS NULL;`,
+      [new Date().toISOString(), sessionToken],
+    );
+  }
+
+  res.setHeader("set-cookie", buildClearedSessionCookie());
   writeApiOk(res, { ok: true });
+};
+
+/**
+ * Handle GET /auth/session.
+ */
+export const handleAuthSession = async ({ db, req, res }) => {
+  res.setHeader("cache-control", "no-store"); // Never cache user sessions.
+
+  const sessionToken = readSessionTokenFromCookie(req);
+  if (!sessionToken) {
+    writeApiError(res, 401, "Not authenticated.");
+    return;
+  }
+
+  const session = await readActiveSession({ db, sessionToken });
+  if (!session?.provider) {
+    res.setHeader("set-cookie", buildClearedSessionCookie());
+    writeApiError(res, 401, "Not authenticated.");
+    return;
+  }
+
+  writeApiOk(res, { session });
+};
+
+/**
+ * Handle PATCH /auth/account.
+ */
+export const handleAuthAccount = async ({ db, req, body, res }) => {
+  const parsed = z
+    .object({
+      displayName: z.string().trim().min(1).max(80).optional(),
+      marketingEmails: z.boolean().optional(),
+    })
+    .safeParse(body);
+
+  if (!parsed.success) {
+    writeApiError(res, 400, "Invalid account update payload.");
+    return;
+  }
+
+  if (
+    typeof parsed.data.displayName === "undefined" &&
+    typeof parsed.data.marketingEmails === "undefined"
+  ) {
+    writeApiError(res, 400, "No account changes provided.");
+    return;
+  }
+
+  const sessionToken = readSessionTokenFromCookie(req);
+  if (!sessionToken) {
+    writeApiError(res, 401, "Not authenticated.");
+    return;
+  }
+
+  const context = await readActiveSessionContext({ db, sessionToken });
+  if (!context?.account_id) {
+    res.setHeader("set-cookie", buildClearedSessionCookie());
+    writeApiError(res, 401, "Not authenticated.");
+    return;
+  }
+
+  const nextDisplayName =
+    typeof parsed.data.displayName === "undefined"
+      ? context.displayName ?? null
+      : parsed.data.displayName;
+  const nextMarketingEmails =
+    typeof parsed.data.marketingEmails === "undefined"
+      ? context.marketingEmails
+      : parsed.data.marketingEmails;
+
+  await db.exec(
+    `UPDATE accounts
+     SET display_name = ?, marketing_emails = ?, updated_at = ?
+     WHERE id = ?;`,
+    [
+      nextDisplayName,
+      nextMarketingEmails ? 1 : 0,
+      new Date().toISOString(),
+      context.account_id,
+    ],
+  );
+
+  writeApiOk(res, {
+    session: {
+      provider: context.provider,
+      roles: context.roles,
+      email: context.email,
+      displayName: nextDisplayName ?? undefined,
+      marketingEmails: nextMarketingEmails,
+      expiresAt: context.expiresAt,
+    },
+  });
 };

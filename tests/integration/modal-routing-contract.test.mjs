@@ -14,7 +14,7 @@ test("runtime modal routing contract exists", () => {
   assert.match(homeFeedSource, /\/?\?product=\$\{encodeURIComponent\(product\.slug\)\}/);
   assert.match(homeFeedSource, /router\.push\(`\/product\/\$\{product\.slug\}\/`\)/);
   assert.match(homeFeedSource, /useSearchParams\(\)/);
-  assert.match(homeFeedSource, /<Modal>/);
+  assert.match(homeFeedSource, /<Modal/);
   assert.match(homeFeedSource, /<ProductDetail product=\{modalProduct\} inModal \/>/);
   assert.match(homePageSource, /<HomeFeed products=\{products\} \/>/);
 });

@@ -30,6 +30,10 @@ Copy `.env.example` to `.env.local` for local development.
 - `WINDOW_SHOPPR_AUTO_MIGRATE`: `true/false`. When true, the API server auto-applies SQL migrations + seeds on boot (default: `false` in production, `true` otherwise).
 - `WINDOW_SHOPPR_SEED_FROM_JSON`: `true/false`. When true, the API server imports `src/data/products.json` into SQL tables if the catalog is empty (default: `false` in production, `true` otherwise).
 - `WINDOW_SHOPPR_PG_POOL_MAX`: max Postgres pool connections when `DATABASE_URL` is set (default: `10`).
+- `WINDOW_SHOPPR_SESSION_COOKIE_NAME`: auth-session cookie name (default: `ws_session`).
+- `WINDOW_SHOPPR_SESSION_COOKIE_DOMAIN`: optional cookie domain override (for example: `.window-shoppr.com`).
+- `WINDOW_SHOPPR_SESSION_COOKIE_SAMESITE`: cookie SameSite mode (`Lax`, `Strict`, `None`; default: `Lax`).
+- `WINDOW_SHOPPR_SESSION_COOKIE_SECURE`: `true/false`. When unset, defaults to `true` in production.
 
 ## Environment profiles
 

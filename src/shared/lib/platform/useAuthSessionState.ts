@@ -1,12 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { requestAuthSessionFromApi } from "@/shared/lib/platform/auth/api";
 import {
   AUTH_SESSION_STORAGE_KEY,
   AuthSession,
+  clearAuthSession,
   readAuthSession,
   touchAuthSessionActivity,
 } from "@/shared/lib/platform/auth-session";
+import { PUBLIC_ENV } from "@/shared/lib/platform/env";
 
 /**
  * Subscribe to auth-session changes from local storage and in-tab events.
@@ -26,6 +29,20 @@ export default function useAuthSessionState() {
     };
 
     syncSession(); // Hydrate once on mount.
+    if (PUBLIC_ENV.deployTarget === "runtime" && PUBLIC_ENV.authApiUrl.trim()) {
+      void requestAuthSessionFromApi().then((result) => {
+        if (result?.ok) {
+          syncSession(); // Refresh from backend-backed session payload.
+          return;
+        }
+
+        if (result && !result.ok) {
+          clearAuthSession(); // Clear stale local session when backend says unauthenticated.
+          syncSession();
+        }
+      });
+    }
+
     window.addEventListener("auth:session", syncSession);
     window.addEventListener("storage", handleStorage);
 

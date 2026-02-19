@@ -54,6 +54,7 @@ export const applyCors = ({ req, res, allowedOrigins }) => {
   } else if (allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
     res.setHeader("access-control-allow-origin", origin);
     res.setHeader("vary", "origin");
+    res.setHeader("access-control-allow-credentials", "true");
   }
 
   res.setHeader("access-control-allow-methods", "GET,POST,PATCH,PUT,DELETE,OPTIONS");
