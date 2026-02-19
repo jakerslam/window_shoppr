@@ -15,6 +15,8 @@ export type AuthSession = {
 };
 
 export const AUTH_SESSION_STORAGE_KEY = "window_shoppr_auth_session"; // Local storage key for auth session stubs.
+const AUTH_IDLE_TIMEOUT_MS = 1000 * 60 * 60 * 2; // Invalidate sessions idle for 2 hours.
+const AUTH_ABSOLUTE_TIMEOUT_MS = 1000 * 60 * 60 * 24 * 14; // Hard cap session lifetime at 14 days.
 
 /**
  * Normalize raw storage payloads into a safe auth session shape.
@@ -86,7 +88,16 @@ export const readAuthSession = (): AuthSession | null => {
       return null;
     }
 
-    if (Number.isFinite(new Date(session.expiresAt).getTime()) && new Date(session.expiresAt) < new Date()) {
+    const now = Date.now();
+    const expiresAtMs = new Date(session.expiresAt).getTime();
+    const issuedAtMs = new Date(session.issuedAt).getTime();
+    const updatedAtMs = new Date(session.updatedAt).getTime();
+
+    if (
+      (Number.isFinite(expiresAtMs) && expiresAtMs < now) ||
+      (Number.isFinite(issuedAtMs) && now - issuedAtMs > AUTH_ABSOLUTE_TIMEOUT_MS) ||
+      (Number.isFinite(updatedAtMs) && now - updatedAtMs > AUTH_IDLE_TIMEOUT_MS)
+    ) {
       clearAuthSession(); // Clear expired sessions automatically.
       return null;
     }
@@ -145,6 +156,40 @@ export const writeAuthSession = ({
     window.localStorage.setItem(AUTH_SESSION_STORAGE_KEY, JSON.stringify(payload));
   } catch {
     // Ignore storage errors to avoid blocking UI.
+  }
+
+  window.dispatchEvent(new CustomEvent("auth:session", { detail: payload }));
+};
+
+/**
+ * Mark the current session as active and rotate identifiers after inactivity.
+ */
+export const touchAuthSessionActivity = () => {
+  if (typeof window === "undefined") {
+    return; // Skip storage writes during SSR.
+  }
+
+  const current = readAuthSession();
+  if (!current) {
+    return;
+  }
+
+  const now = new Date().toISOString();
+  const updatedAtMs = new Date(current.updatedAt).getTime();
+  const shouldRotateSessionId =
+    Number.isFinite(updatedAtMs) && Date.now() - updatedAtMs > 1000 * 60 * 30; // Rotate id after 30 min inactivity.
+  const payload: AuthSession = {
+    ...current,
+    updatedAt: now,
+    sessionId: shouldRotateSessionId
+      ? `sess_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`
+      : current.sessionId,
+  };
+
+  try {
+    window.localStorage.setItem(AUTH_SESSION_STORAGE_KEY, JSON.stringify(payload));
+  } catch {
+    // Ignore storage failures to avoid blocking UI.
   }
 
   window.dispatchEvent(new CustomEvent("auth:session", { detail: payload }));
