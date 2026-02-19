@@ -15,16 +15,21 @@
   - outline section plan
 - `B6`: Outline generation workflow:
   - `generateBlogOutline(...)` in `src/shared/lib/blog/workflows.ts`
+  - Uses soft structure guidance (not rigid essay template).
+  - Supports tone/style variation by topic signal (guide/story/listicle/comparison).
 - `B7`: Draft generation workflow:
   - `generateBlogDraft(...)` in `src/shared/lib/blog/workflows.ts`
+  - Produces readable long-form blocks with skimmable formatting.
 - `B8`: SEO + LLM optimization layer:
   - `optimizeBlogForSeoAndLlm(...)` in `src/shared/lib/blog/workflows.ts`
 - `B9`: AI metadata generation:
   - `generateBlogMetadata(...)` in `src/shared/lib/blog/workflows.ts`
 - `B10`: Quality gates:
   - `runBlogQualityGates(...)` in `src/shared/lib/blog/workflows.ts`
+  - Enforces usefulness-or-fun gate, scannability, readability, and affiliate-link coverage.
 - `B11`: Editorial polish pass:
   - `runEditorialPolishPass(...)` in `src/shared/lib/blog/workflows.ts`
+  - Normalizes paragraph spacing for blog readability.
 - `B12`: Publish states + approvals:
   - state transitions in `transitionBlogWorkflowState(...)`
   - workflow audit trail in `src/shared/lib/blog/approvals.ts`
@@ -36,6 +41,7 @@
   - `getBlogCatalog(...)` and `upsertBlogArticle(...)` in `src/shared/lib/blog/cms.ts`
 - `B16`: Local fallback sample set:
   - `10` sample blog articles in `src/shared/lib/blog/data.ts`
+  - Generated from feed products (category/tag/blogSlug match) with embedded affiliate CTAs.
 
 ## Layout Standards
 - Layout standards are defined in:

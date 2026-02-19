@@ -2,7 +2,7 @@ import { BlogLayoutVariant } from "@/shared/lib/blog/types";
 
 export type BlogLayoutStandard = {
   variant: BlogLayoutVariant;
-  requiredSectionKinds: string[];
+  preferredSectionKinds: string[];
   maxSectionCount: number;
   recommendedWordRange: [number, number];
 };
@@ -10,21 +10,27 @@ export type BlogLayoutStandard = {
 export const BLOG_LAYOUT_STANDARDS: BlogLayoutStandard[] = [
   {
     variant: "guide",
-    requiredSectionKinds: ["intro", "step", "summary"],
+    preferredSectionKinds: ["intro", "step", "summary"],
     maxSectionCount: 8,
     recommendedWordRange: [900, 1800],
   },
   {
     variant: "comparison",
-    requiredSectionKinds: ["intro", "comparison", "faq", "summary"],
+    preferredSectionKinds: ["intro", "comparison", "faq", "summary"],
     maxSectionCount: 9,
     recommendedWordRange: [1000, 2000],
   },
   {
     variant: "listicle",
-    requiredSectionKinds: ["intro", "step", "faq", "summary"],
+    preferredSectionKinds: ["intro", "step", "faq", "summary"],
     maxSectionCount: 10,
     recommendedWordRange: [850, 1600],
+  },
+  {
+    variant: "story",
+    preferredSectionKinds: ["intro", "comparison", "summary"],
+    maxSectionCount: 7,
+    recommendedWordRange: [800, 1700],
   },
 ];
 

@@ -1,4 +1,6 @@
 import {
+  BlogLayoutVariant,
+  BlogAffiliateLink,
   BlogDraft,
   BlogMetadataPackage,
   BlogOptimization,
@@ -10,11 +12,13 @@ import {
 
 const expandSectionContent = ({
   kind,
+  variant,
   keyword,
   category,
   tags,
 }: {
   kind: BlogOutline["sections"][number]["kind"];
+  variant: BlogLayoutVariant;
   keyword: string;
   category: string;
   tags: string[];
@@ -22,28 +26,34 @@ const expandSectionContent = ({
   const tagHint = tags.slice(0, 3).join(", ");
 
   if (kind === "intro") {
-    return `Most people researching ${keyword} want confidence before spending, not a giant checklist. The fastest path is to define your real constraint first: budget, time, storage space, or ease of use. In ${category}, a "best" product is only best when it fits your routine and keeps working after the first week. This guide uses practical criteria and avoids hype so you can decide quickly. We focus on repeatable buying patterns, not one-off deals, and keep examples grounded in everyday use cases. If you only remember one thing, make it this: choose for consistency and comfort first, then optimize for extras.`;
+    const hook =
+      variant === "story"
+        ? `You can waste months buying "almost right" ${keyword} and still feel stuck.`
+        : `Most people researching ${keyword} want confidence before spending, not a giant checklist.`;
+    return `${hook}\n\nThe fastest path is to define your real constraint first: budget, time, storage space, or ease of use. In ${category}, a "best" product is only best when it fits your routine and keeps working after the first week. This piece keeps things practical and skimmable so you can decide faster with less regret.`;
   }
 
   if (kind === "step") {
-    return `Evaluate ${keyword} in this order: durability, daily usability, maintenance overhead, and total cost after 6-12 months. Durability tells you whether the product survives normal use without becoming another replacement cycle. Usability asks whether setup is simple enough that you'll actually use it. Maintenance overhead catches hidden friction like refill cycles, cleaning complexity, or subscriptions. Total cost keeps "cheap now, expensive later" purchases out of your cart. Compare two or three options side by side with the same criteria and eliminate anything that fails at least two categories. This structure keeps decisions objective and prevents impulse-based overbuying.`;
+    return `Evaluate ${keyword} in this order:\n1. Durability and material quality.\n2. Daily usability and setup friction.\n3. Maintenance overhead and hidden costs.\n4. Total 6-12 month value.\n\nCompare two or three options side by side and eliminate anything that fails in at least two categories.`;
   }
 
   if (kind === "comparison") {
-    return `When mapping products to use-cases, match each option to a clear scenario: starter pick, best value, and premium comfort upgrade. Starter picks should cover the core need with minimal setup. Value picks should balance reliability and price without obvious tradeoffs. Premium picks should earn higher cost through convenience, longevity, or measurable quality improvements. For ${keyword}, we also prioritize products that align with ${tagHint} so recommendations stay relevant to how people actually browse and buy. Keep alternatives in the same size class and intended use so comparisons remain fair. The goal is to narrow choices, not inflate the list.`;
+    return `Use this quick framing for ${keyword}:\n- Starter pick: minimum friction, lowest risk.\n- Best value: strongest performance per dollar.\n- Comfort upgrade: premium option that actually earns it.\n\nWe prioritize products aligned with ${tagHint} so recommendations match real browsing intent.`;
   }
 
   if (kind === "faq") {
-    return `Common buyer questions for ${keyword} usually fall into three buckets: "Is this worth the price?", "How long will it last?", and "What should I skip?" Price value is strongest when the product reduces repeated work or replacement. Longevity is easiest to evaluate through materials, warranty signals, and failure patterns in verified reviews. To avoid bad buys, skip options that hide basic specs, overpromise with vague claims, or require add-ons to perform as advertised. If two products look similar, choose the one with clearer documentation and fewer setup dependencies. Clear answers reduce hesitation and improve post-purchase satisfaction.`;
+    return `FAQ that matters:\n- Is it worth the price now, not just on sale day?\n- Will it hold up after the honeymoon week?\n- What red flags should I avoid?\n\nIf two options are close, choose the one with clearer specs, fewer dependencies, and better long-term reliability signals.`;
   }
 
-  return `Bottom line: choose the option that fits your routine with the least friction and the highest long-term confidence. For ${keyword}, the right pick is rarely the flashiest; it is the one you will keep using because setup is simple and outcomes are reliable. Start with one product that solves your primary use-case, then add optional upgrades only if they remove a real pain point. That approach protects budget, reduces clutter, and creates better conversion from browse to buy without regret. If you're still deciding, shortlist two options and compare them against your top non-negotiables before checkout.`;
+  return `Bottom line: choose the option you'll keep using, not the one with the loudest headline. For ${keyword}, start with one high-fit pick, test it in your routine, then upgrade only if it removes a real pain point.`;
 };
 
 /**
  * Generate an outline from a scored topic proposal.
  */
 export const generateBlogOutline = (proposal: BlogTopicProposal): BlogOutline => {
+  const variant: "guide" | "comparison" | "listicle" | "story" =
+    proposal.viralSignalScore >= 72 ? "story" : "guide";
   return {
     title: proposal.title,
     targetKeyword: proposal.targetKeyword,
@@ -56,6 +66,7 @@ export const generateBlogOutline = (proposal: BlogTopicProposal): BlogOutline =>
         heading: "Why this topic matters",
         content: expandSectionContent({
           kind: "intro",
+          variant,
           keyword: proposal.targetKeyword,
           category: proposal.category,
           tags: proposal.tags,
@@ -66,6 +77,7 @@ export const generateBlogOutline = (proposal: BlogTopicProposal): BlogOutline =>
         heading: "How to evaluate options",
         content: expandSectionContent({
           kind: "step",
+          variant,
           keyword: proposal.targetKeyword,
           category: proposal.category,
           tags: proposal.tags,
@@ -76,6 +88,7 @@ export const generateBlogOutline = (proposal: BlogTopicProposal): BlogOutline =>
         heading: "Product picks and fit",
         content: expandSectionContent({
           kind: "comparison",
+          variant,
           keyword: proposal.targetKeyword,
           category: proposal.category,
           tags: proposal.tags,
@@ -86,6 +99,7 @@ export const generateBlogOutline = (proposal: BlogTopicProposal): BlogOutline =>
         heading: "FAQ",
         content: expandSectionContent({
           kind: "faq",
+          variant,
           keyword: proposal.targetKeyword,
           category: proposal.category,
           tags: proposal.tags,
@@ -96,6 +110,7 @@ export const generateBlogOutline = (proposal: BlogTopicProposal): BlogOutline =>
         heading: "Bottom line",
         content: expandSectionContent({
           kind: "summary",
+          variant,
           keyword: proposal.targetKeyword,
           category: proposal.category,
           tags: proposal.tags,
@@ -120,6 +135,18 @@ export const generateBlogDraft = (outline: BlogOutline): BlogDraft => ({
     .map((section) => `## ${section.heading}\n\n${section.content}`)
     .join("\n\n"),
 });
+
+/**
+ * Build conversion-first affiliate CTA copy blocks.
+ */
+export const buildAffiliateCallouts = (links: BlogAffiliateLink[]) =>
+  links.map((link, index) => {
+    const hook =
+      index === 0
+        ? "If you only click one option, start with this one:"
+        : "Good alternate if the first pick is out of stock:";
+    return `${hook}\n${link.label} — ${link.href}`;
+  });
 
 /**
  * Build SEO + LLM optimization package for a draft.
@@ -165,12 +192,18 @@ export const generateBlogMetadata = ({
  */
 export const runBlogQualityGates = (draft: BlogDraft): BlogQualityGateResult => {
   const wordCount = draft.body.split(/\s+/).filter(Boolean).length;
+  const headingCount = (draft.body.match(/^## /gm) ?? []).length;
+  const listSignal = /(^\d+\.\s)|(^-\s)/gm.test(draft.body);
+  const linkSignal = /https?:\/\//.test(draft.body);
   const checks = {
     factuality: true,
     citationQuality: true,
     thinContent: wordCount >= 220,
     affiliateDisclosure: true,
-    readability: true,
+    readability: wordCount >= 260,
+    usefulnessOrFun: /why|how|quick|mistake|best|worth/i.test(draft.title + draft.body),
+    scannability: headingCount >= 3 && listSignal,
+    affiliateCoverage: linkSignal,
   };
   return {
     pass: Object.values(checks).every(Boolean),
@@ -183,7 +216,10 @@ export const runBlogQualityGates = (draft: BlogDraft): BlogQualityGateResult => 
  */
 export const runEditorialPolishPass = (draft: BlogDraft) => ({
   ...draft,
-  body: `${draft.body}\n\n_Editorial polish: tone normalized for clarity and consistency._`,
+  body: draft.body
+    .replace(/\n{3,}/g, "\n\n")
+    .replace(/\. ([A-Z])/g, ".\n\n$1")
+    .trim(),
 });
 
 /**

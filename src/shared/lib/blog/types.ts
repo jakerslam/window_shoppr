@@ -11,15 +11,21 @@ export type BlogArticle = {
   seoDescription: string;
   layoutVariant: BlogLayoutVariant;
   sections: BlogSection[];
+  affiliateLinks: BlogAffiliateLink[];
   status: "draft" | "review" | "approved" | "published";
 };
 
-export type BlogLayoutVariant = "guide" | "comparison" | "listicle";
+export type BlogLayoutVariant = "guide" | "comparison" | "listicle" | "story";
 
 export type BlogSection = {
   heading: string;
   content: string;
   kind: "intro" | "step" | "comparison" | "faq" | "summary";
+};
+
+export type BlogAffiliateLink = {
+  label: string;
+  href: string;
 };
 
 export type BlogTopicProposal = {
@@ -92,6 +98,9 @@ export type BlogQualityGateResult = {
     thinContent: boolean;
     affiliateDisclosure: boolean;
     readability: boolean;
+    usefulnessOrFun: boolean;
+    scannability: boolean;
+    affiliateCoverage: boolean;
   };
 };
 

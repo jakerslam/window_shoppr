@@ -1,5 +1,6 @@
 import { scoreBlogTopicProposal, isBlogTopicEligible } from "@/shared/lib/blog/pipeline";
 import {
+  buildAffiliateCallouts,
   generateBlogDraft,
   generateBlogMetadata,
   generateBlogOutline,
@@ -230,8 +231,10 @@ const getRelatedFeedProducts = (seed: BlogSeed) =>
     .slice(0, 3)
     .map((product) => ({
       name: product.name,
+      slug: product.slug,
       price: product.price,
       retailer: product.retailer ?? "Retailer",
+      affiliateUrl: product.affiliateUrl,
       description: truncateDescription(product.description),
     }));
 
@@ -258,6 +261,12 @@ const enrichSectionsWithFeedProducts = ({
         )}. ${product.description}`,
     )
     .join("\n");
+  const affiliateBlock = buildAffiliateCallouts(
+    relatedProducts.map((product) => ({
+      label: product.name,
+      href: product.affiliateUrl,
+    })),
+  ).join("\n\n");
 
   return sections.map((section) => {
     if (section.kind !== "comparison") {
@@ -266,7 +275,7 @@ const enrichSectionsWithFeedProducts = ({
 
     return {
       ...section,
-      content: `${section.content}\n\nFeatured feed picks:\n${feedBlock}`,
+      content: `${section.content}\n\nFeatured feed picks:\n${feedBlock}\n\n${affiliateBlock}`,
     };
   });
 };
@@ -324,6 +333,10 @@ const buildArticleFromSeed = (seed: BlogSeed): BlogArticle => {
     seoDescription: metadata.description,
     layoutVariant: seed.layoutVariant,
     sections: enrichedSections,
+    affiliateLinks: relatedProducts.map((product) => ({
+      label: `${product.name} on ${product.retailer}`,
+      href: product.affiliateUrl,
+    })),
     status: score.totalScore >= 55 ? "published" : "review",
   };
 };
