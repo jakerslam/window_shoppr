@@ -24,9 +24,11 @@ import styles from "@/features/product-detail/ProductDetail.module.css";
 export default function ProductDetail({
   product,
   inModal = false,
+  origin,
 }: {
   product: Product;
   inModal?: boolean;
+  origin?: "feed" | "wishlist" | "blog";
 }) {
   const router = useRouter();
   const { setSearchQuery } = useCategoryFilter();
@@ -94,6 +96,7 @@ export default function ProductDetail({
           dealLabel={dealLabel}
           onTagClick={handleTagClick}
           hasDeal={hasDeal}
+          hideRelatedBlogLink={origin === "blog"}
         />
       </div>
     </section>

@@ -33,12 +33,14 @@ export default function ProductDetailInfo({
   dealLabel,
   onTagClick,
   hasDeal,
+  hideRelatedBlogLink = false,
 }: {
   product: Product;
   showDealBadge: boolean;
   dealLabel: string | null;
   onTagClick: (tag: string) => void;
   hasDeal: boolean;
+  hideRelatedBlogLink?: boolean;
 }) {
   const ratingValue = product.rating ?? 0; // Default to zero for fill calculations.
   const ratingPercent = clamp((ratingValue / 5) * 100, 0, 100); // Convert rating to percent.
@@ -148,7 +150,7 @@ export default function ProductDetailInfo({
         characterLimit={PRODUCT_UI.DESCRIPTION_COLLAPSE_LIMIT}
       />
 
-      {relatedBlogArticle ? (
+      {relatedBlogArticle && !hideRelatedBlogLink ? (
         <Link
           className={styles.productDetail__blogLink}
           href={`/blog/${relatedBlogArticle.slug}/`}

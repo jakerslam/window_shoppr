@@ -154,7 +154,16 @@ const writeWindowPointsState = (state: WindowPointsState) => {
     // Ignore storage failures to avoid blocking core user flows.
   }
 
-  window.dispatchEvent(new CustomEvent(WINDOW_POINTS_EVENT, { detail: state }));
+  const dispatchUpdate = () => {
+    window.dispatchEvent(new CustomEvent(WINDOW_POINTS_EVENT, { detail: state }));
+  }; // Notify listeners after the current call stack to avoid render-phase setState warnings.
+
+  if (typeof window.queueMicrotask === "function") {
+    window.queueMicrotask(dispatchUpdate); // Prefer microtask scheduling for minimal UI lag.
+    return;
+  }
+
+  window.setTimeout(dispatchUpdate, 0); // Fallback for older browsers without queueMicrotask.
 };
 
 /**

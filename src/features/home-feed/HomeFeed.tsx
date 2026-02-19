@@ -296,7 +296,7 @@ export default function HomeFeed({
       )}
 
       {PUBLIC_ENV.deployTarget === "runtime" && modalProduct ? (
-        <Modal>
+        <Modal contentClassName={styles.homeFeed__productModal}>
           <ProductDetail product={modalProduct} inModal />
         </Modal>
       ) : null}

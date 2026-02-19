@@ -216,8 +216,8 @@
 }
 
 .articlePage__previewButton {
-  width: 34px;
-  height: 34px;
+  width: 28px;
+  height: 28px;
   border-radius: 999px;
   border: 1px solid var(--color-border);
   background: var(--color-surface-muted);
@@ -232,8 +232,8 @@
 }
 
 .articlePage__previewButton svg {
-  width: 18px;
-  height: 18px;
+  width: 15px;
+  height: 15px;
 }
 
 .articlePage__previewButton:hover {
@@ -250,6 +250,13 @@
 
 .articlePage__previewModal {
   width: min(1040px, 94vw);
+}
+
+@media (min-width: 821px) {
+  .articlePage__previewModal {
+    height: calc(100vh - 48px);
+    max-height: calc(100vh - 48px);
+  }
 }
 
 .articlePage__previewError {

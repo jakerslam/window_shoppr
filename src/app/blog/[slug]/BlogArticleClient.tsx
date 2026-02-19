@@ -279,7 +279,7 @@ export default function BlogArticleClient({ article }: { article: BlogArticle })
               <LoadingSpinner label="Loading preview…" size={34} />
             </div>
           ) : previewProduct ? (
-            <ProductDetail product={previewProduct} inModal />
+            <ProductDetail product={previewProduct} inModal origin="blog" />
           ) : (
             <div className={styles.articlePage__previewError}>
               <h2 className={styles.articlePage__previewErrorTitle}>

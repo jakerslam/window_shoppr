@@ -684,3 +684,15 @@
 .homeFeed__emptyAction:hover {
   opacity: 0.8;
 }
+
+/* Full-height product modal on desktop to make the detail view feel app-like. */
+.homeFeed__productModal {
+  width: min(1100px, 94vw);
+}
+
+@media (min-width: 821px) {
+  .homeFeed__productModal {
+    height: calc(100vh - 48px);
+    max-height: calc(100vh - 48px);
+  }
+}
