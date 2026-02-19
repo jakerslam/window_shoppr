@@ -1,9 +1,9 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 163/166 (98.2%)  ████████████████████
-Frontend: 74/80 (92.5%)   ███████████████████░
-Backend: 22/22 (100.0%)   ████████████████████
+Overall: 167/181 (92.3%)  ██████████████████░░
+Frontend: 112/116 (96.6%) ███████████████████░
+Backend: 55/61 (90.2%)    ██████████████████░░
 Automation: 0/4 (0.0%)    ░░░░░░░░░░░░░░░░░░░░
 
 
@@ -81,6 +81,10 @@ Automation: 0/4 (0.0%)    ░░░░░░░░░░░░░░░░░░
 - [x] B16: Seed `10` sample blog articles for local fallback; use the blog seed file when SQL/blog API is unavailable (same fallback pattern as product JSON source).
 - [x] B17: Add optional `blogSlug`/`blogId` field to product JSON/SQL schema and product type definitions.
 - [x] B18: On product detail render, check whether a linked blog exists; if present, show a contextual `Read Blog Post` CTA under the description that routes to the linked blog article.
+- [ ] B19: Live blog ingestion (trend/viral inputs, SERP pattern scan, citation storage, dedupe, and “update vs new post” policy).
+- [ ] B20: Blog brief generation (angle, persona, constraints, anti-picks, and affiliate-slot plan) to reduce template repetition and improve conversion intent.
+- [ ] B21: Blog article creation quality v2 (more varied structures per variant, less rigid essay feel, stronger hooks, and higher editorial “human” feel while staying truthful).
+- [ ] B22: Blog ingestion + editorial review UX (admin-side gate report visibility, inline edit, republish flow, and audit trail).
 
 ## Performance & Stability
 - [x] R22: Image optimization and lazy-loading
@@ -97,6 +101,10 @@ Automation: 0/4 (0.0%)    ░░░░░░░░░░░░░░░░░░
 - [x] R12.3: Account management wiring (backend/auth integration)
 - [x] R12.4: Auth gate for profile/settings and notifications (require login/signup session after auth backend is live)
 - [x] R30: SQL data layer wiring (products, wishlist, email capture submissions)
+- [ ] R30.1: Deploy SQL-backed Data API service (Postgres or equivalent) and implement endpoints used by the web app (products, offers/prices, wishlists/lists, deal submissions, comments, notifications, window points, blog).
+- [ ] R30.2: Deploy Auth API service (email + social providers) and switch production sessions to secure HttpOnly cookies (remove local auth fallback in production builds).
+- [ ] R30.3: Frontend production cutover (set `PUBLIC_ENV.dataApiUrl` and `PUBLIC_ENV.authApiUrl`; fail production builds if missing to avoid silent local fallbacks).
+- [ ] R30.4: Production DB lifecycle (migrations, rollback plan, deterministic staging seeds, and data integrity verification checklist).
 
 ## Analytics & Revenue
 - [x] R29.9: Post-click purchase confirmation prompt ("Did you buy this?" + review reminder hook)
@@ -107,6 +115,14 @@ Automation: 0/4 (0.0%)    ░░░░░░░░░░░░░░░░░░
 - [x] R29.4: Native ad cards (occasional sponsored cards in feed, non-disruptive)
 - [x] R23: Click tracking for affiliate links
 - [x] R24: Cookie consent + privacy/affiliate disclosure (accept all + essential only)
+- [ ] R82: Production analytics + attribution pipeline (server event ingestion + storage + dashboards for funnel + conversion; deprecate localStorage-only analytics in production).
+- [ ] R82.1: Affiliate click IDs + attribution model (last-touch + assisted conversions, cross-session stitching where consented, exportable reporting).
+
+## Automation
+- [ ] A1: Agent worker/service (queue consumer) for deal submissions + affiliate minting jobs (retry/backoff, dedupe, run logs, alerting).
+- [ ] A2: Blog generation scheduler (topic proposals -> research -> drafts -> gates -> draft record) with configurable cadence and daily caps.
+- [ ] A3: Moderation automation (reports/comments) with agent suggestions + human approval workflow; immutable audit events on actions.
+- [ ] A4: Automation ops dashboard (heartbeats, last run, backlog size, failure rate) + admin-only manual “run now” triggers.
 
 ## UX & Accessibility
 - [x] R43.2: Show a compact window-points badge in the top bar to the left of the notifications bell (desktop + mobile-safe sizing).
