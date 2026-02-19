@@ -1,3 +1,5 @@
+import type { Product } from "@/shared/lib/catalog/types";
+
 export type BlogArticle = {
   id: string;
   slug: string;
@@ -27,6 +29,7 @@ export type BlogAffiliateLink = {
   label: string;
   href: string;
   productSlug?: string; // Optional product slug for in-app previews.
+  productPreview?: Product; // Optional inline product data for offline/static previews.
 };
 
 export type BlogTopicProposal = {

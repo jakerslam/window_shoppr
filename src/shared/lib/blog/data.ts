@@ -313,6 +313,9 @@ const buildArticleFromSeed = (seed: BlogSeed): BlogArticle => {
       label: `${product.name} on ${product.retailer}`,
       href: product.affiliateUrl,
       productSlug: product.slug,
+      productPreview:
+        FALLBACK_PRODUCTS.find((candidate) => candidate.slug === product.slug) ??
+        undefined, // Attach local product data for preview modals when the data API is unavailable.
     })),
     status: score.totalScore >= 55 ? "published" : "review",
   };

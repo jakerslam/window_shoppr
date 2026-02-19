@@ -124,7 +124,16 @@ export default function BlogArticleClient({ article }: { article: BlogArticle })
 
     let cancelled = false;
     const abortController = new AbortController();
+    const inlinePreview =
+      article.affiliateLinks.find((link) => link.productSlug === previewSlug)
+        ?.productPreview ?? null; // Use inline preview data while API fetches (or when API is unreachable).
     const loadingTimeoutId = window.setTimeout(() => {
+      if (inlinePreview) {
+        setPreviewProduct(inlinePreview); // Show inline preview instantly when available.
+        setPreviewState("idle"); // Avoid spinner when a preview is already available.
+        return;
+      }
+
       setPreviewProduct(null); // Clear previous product before fetching new preview.
       setPreviewState("loading"); // Show spinner while fetching.
     }, 0);
@@ -144,8 +153,12 @@ export default function BlogArticleClient({ article }: { article: BlogArticle })
       }
 
       if (!response || !response.ok) {
-        setPreviewProduct(null);
-        setPreviewState("error");
+        if (!inlinePreview) {
+          setPreviewProduct(null);
+          setPreviewState("error");
+        } else {
+          setPreviewState("idle"); // Keep inline preview visible when API fetch fails.
+        }
         return;
       }
 
@@ -155,8 +168,12 @@ export default function BlogArticleClient({ article }: { article: BlogArticle })
         setPreviewProduct(validated);
         setPreviewState("idle");
       } catch {
-        setPreviewProduct(null);
-        setPreviewState("error");
+        if (!inlinePreview) {
+          setPreviewProduct(null);
+          setPreviewState("error");
+        } else {
+          setPreviewState("idle"); // Keep inline preview visible when validation fails.
+        }
       }
     })();
 
@@ -166,7 +183,7 @@ export default function BlogArticleClient({ article }: { article: BlogArticle })
       window.clearTimeout(loadingTimeoutId); // Clean up deferred loading-state updates.
       window.clearTimeout(requestTimeoutId); // Clean up forced-timeout timer.
     };
-  }, [previewEnabled, previewSlug]);
+  }, [article.affiliateLinks, previewEnabled, previewSlug]);
 
   /**
    * Open a product preview modal in-place by setting the product query param.
@@ -257,7 +274,7 @@ export default function BlogArticleClient({ article }: { article: BlogArticle })
 
       {previewEnabled && previewSlug ? (
         <Modal contentClassName={styles.articlePage__previewModal}>
-          {previewState === "loading" ? (
+          {previewState === "loading" && !previewProduct ? (
             <div className={styles.articlePage__previewLoading}>
               <LoadingSpinner label="Loading preview…" size={34} />
             </div>
