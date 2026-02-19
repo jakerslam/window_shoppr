@@ -1,9 +1,43 @@
 "use client";
 
-import { useEffect } from "react";
+import { ReactNode, useEffect } from "react";
 import { BlogArticle } from "@/shared/lib/blog/types";
 import { trackBlogEvent } from "@/shared/lib/blog/analytics";
 import styles from "@/app/blog/[slug]/page.module.css";
+
+const renderInlineMarkdown = (value: string): ReactNode[] => {
+  const parts: ReactNode[] = [];
+  const pattern = /\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g;
+  let lastIndex = 0;
+  let match = pattern.exec(value);
+
+  while (match) {
+    const [fullMatch, label, href] = match;
+    const matchIndex = match.index;
+    if (matchIndex > lastIndex) {
+      parts.push(value.slice(lastIndex, matchIndex));
+    }
+    parts.push(
+      <a
+        key={`${href}-${matchIndex}`}
+        className={styles.articlePage__inlineLink}
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {label}
+      </a>,
+    );
+    lastIndex = matchIndex + fullMatch.length;
+    match = pattern.exec(value);
+  }
+
+  if (lastIndex < value.length) {
+    parts.push(value.slice(lastIndex));
+  }
+
+  return parts;
+};
 
 const renderContentBlock = (content: string) =>
   content.split("\n\n").map((block, blockIndex) => {
@@ -17,7 +51,7 @@ const renderContentBlock = (content: string) =>
         <ul key={`list-${blockIndex}`} className={styles.articlePage__list}>
           {lines.map((line) => (
             <li key={line} className={styles.articlePage__listItem}>
-              {line.replace(/^\d+\.\s|^-\s/, "")}
+              {renderInlineMarkdown(line.replace(/^\d+\.\s|^-\s/, ""))}
             </li>
           ))}
         </ul>
@@ -26,7 +60,7 @@ const renderContentBlock = (content: string) =>
 
     return (
       <p key={`p-${blockIndex}`} className={styles.articlePage__paragraph}>
-        {lines.join(" ")}
+        {renderInlineMarkdown(lines.join(" "))}
       </p>
     );
   });
@@ -45,12 +79,26 @@ export default function BlogArticleClient({ article }: { article: BlogArticle })
   }, [article.category, article.slug]);
 
   return (
-    <>
-      <div className={styles.articlePage__tags} aria-label="Tags">
-        {article.tags.map((tag) => (
-          <span key={tag} className={styles.articlePage__tag}>
-            {tag}
-          </span>
+    <div className={styles.articlePage__content}>
+      <div className={styles.articlePage__main}>
+        <div className={styles.articlePage__tags} aria-label="Tags">
+          {article.tags.map((tag) => (
+            <span key={tag} className={styles.articlePage__tag}>
+              {tag}
+            </span>
+          ))}
+        </div>
+
+        {article.sections.map((section, index) => (
+          <section
+            key={`${section.heading}-${index}`}
+            className={styles.articlePage__section}
+            data-kind={section.kind}
+            data-layout={article.layoutVariant}
+          >
+            <h2 className={styles.articlePage__sectionTitle}>{section.heading}</h2>
+            {renderContentBlock(section.content)}
+          </section>
         ))}
       </div>
 
@@ -71,18 +119,6 @@ export default function BlogArticleClient({ article }: { article: BlogArticle })
           ))}
         </ul>
       </aside>
-
-      {article.sections.map((section, index) => (
-        <section
-          key={`${section.heading}-${index}`}
-          className={styles.articlePage__section}
-          data-kind={section.kind}
-          data-layout={article.layoutVariant}
-        >
-          <h2 className={styles.articlePage__sectionTitle}>{section.heading}</h2>
-          {renderContentBlock(section.content)}
-        </section>
-      ))}
-    </>
+    </div>
   );
 }

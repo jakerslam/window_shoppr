@@ -228,59 +228,27 @@ const getRelatedFeedProducts = (seed: BlogSeed) =>
     return productTagTokens.some((tag) => seedTagTokens.has(tag));
   })
     .slice(0, 3)
-    .map((product) => ({
+    .map((product, index) => ({
       name: product.name,
       slug: product.slug,
       price: product.price,
+      priceText: `$${product.price.toFixed(2)}`,
       retailer: product.retailer ?? "Retailer",
       affiliateUrl: product.affiliateUrl,
       description: truncateDescription(product.description),
+      bestFor:
+        index === 0
+          ? "everyday reliability"
+          : index === 1
+            ? "value-focused setups"
+            : "backup or alternate fit",
+      tradeoff:
+        index === 0
+          ? "Trade-off: strongest all-round fit, but not always the lowest price."
+          : index === 1
+            ? "Trade-off: better value, but may skip premium extras."
+            : "Trade-off: useful alternate when availability or fit changes.",
     }));
-
-/**
- * Inject live feed product details into the article comparison block.
- */
-const enrichSectionsWithFeedProducts = ({
-  sections,
-  seed,
-}: {
-  sections: BlogArticle["sections"];
-  seed: BlogSeed;
-}) => {
-  const relatedProducts = getRelatedFeedProducts(seed);
-  if (relatedProducts.length === 0) {
-    return sections;
-  }
-
-  const feedBlock = relatedProducts
-    .map(
-      (product, index) => {
-        const tradeoff =
-          index === 0
-            ? "Tradeoff: strongest all-round fit, but not always the cheapest."
-            : index === 1
-              ? "Tradeoff: better value, but may skip premium extras."
-              : "Tradeoff: useful alternate when availability or fit changes.";
-        return (
-          `${index + 1}. ${product.name} (${product.retailer}) - $${product.price.toFixed(
-            2,
-          )}. ${product.description}\n   ${tradeoff}`
-        );
-      },
-    )
-    .join("\n");
-
-  return sections.map((section) => {
-    if (section.kind !== "comparison") {
-      return section;
-    }
-
-    return {
-      ...section,
-      content: `${section.content}\n\nFeatured feed picks:\n${feedBlock}`,
-    };
-  });
-};
 
 /**
  * Run the local agentic workflow to produce a publishable fallback article.
@@ -306,13 +274,19 @@ const buildArticleFromSeed = (seed: BlogSeed): BlogArticle => {
   }
 
   const outline = generateBlogOutline(proposal);
-  const enrichedSections = enrichSectionsWithFeedProducts({
-    sections: outline.sections,
-    seed,
-  });
   const draft = generateBlogDraft({
     ...outline,
-    sections: enrichedSections,
+    category: seed.category,
+    variant: seed.layoutVariant,
+    feedPicks: relatedProducts.map((product) => ({
+      label: product.name,
+      href: product.affiliateUrl,
+      merchant: product.retailer,
+      price: product.priceText,
+      blurb: product.description,
+      bestFor: product.bestFor,
+      tradeoff: product.tradeoff,
+    })),
   });
   const polished = runEditorialPolishPass(draft);
   const quality = runBlogQualityGates(polished);
@@ -334,7 +308,7 @@ const buildArticleFromSeed = (seed: BlogSeed): BlogArticle => {
     seoTitle: metadata.title,
     seoDescription: metadata.description,
     layoutVariant: seed.layoutVariant,
-    sections: enrichedSections,
+    sections: polished.sections,
     affiliateLinks: relatedProducts.map((product) => ({
       label: `${product.name} on ${product.retailer}`,
       href: product.affiliateUrl,

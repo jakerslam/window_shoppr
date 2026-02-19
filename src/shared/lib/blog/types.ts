@@ -20,7 +20,7 @@ export type BlogLayoutVariant = "guide" | "comparison" | "listicle" | "story";
 export type BlogSection = {
   heading: string;
   content: string;
-  kind: "intro" | "step" | "comparison" | "faq" | "summary";
+  kind: "intro" | "step" | "picks" | "comparison" | "faq" | "summary";
 };
 
 export type BlogAffiliateLink = {
@@ -64,6 +64,19 @@ export type BlogOutline = {
   sections: BlogSection[];
   targetKeyword: string;
   faqQuestions: string[];
+  category?: string;
+  variant?: BlogLayoutVariant;
+  feedPicks?: BlogFeedPick[];
+};
+
+export type BlogFeedPick = {
+  label: string;
+  href?: string;
+  merchant?: string;
+  price?: string;
+  blurb?: string;
+  bestFor?: string;
+  tradeoff?: string;
 };
 
 export type BlogDraft = {
@@ -101,6 +114,8 @@ export type BlogQualityGateResult = {
     usefulnessOrFun: boolean;
     scannability: boolean;
     affiliateCoverage: boolean;
+    noDuplicatePicks: boolean;
+    noFakeSeeLinks: boolean;
   };
 };
 
