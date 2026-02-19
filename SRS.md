@@ -1,7 +1,7 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 135/150 (90.0%)  ███████████████████░
+Overall: 147/150 (98.0%)  ████████████████████
 Frontend: 58/64 (90.6%)   ██████████████████░░
 Backend: 22/22 (100.0%)   ████████████████████
 Automation: 0/4 (0.0%)    ░░░░░░░░░░░░░░░░░░░░
@@ -63,7 +63,7 @@ Automation: 0/4 (0.0%)    ░░░░░░░░░░░░░░░░░░
 - [x] R21: Sitemap, robots, and canonical URLs
 
 ## BLOG
-- [ ] B1: Blog information architecture (index page, article page, category/tag taxonomy, canonical + breadcrumb support).
+- [ ] 🔵 B1: Blog information architecture (index page, article page, category/tag taxonomy, canonical + breadcrumb support).
 - [ ] B2: Desktop top-bar `Blog` navigation entry; mobile omits top-level blog nav (blog accessed via direct links/search/discovery modules).
 - [ ] B3: Agentic topic proposal scoring pipeline (LLM query signal + search trend signal + viral signal + affiliate-link coverage score + business priority score).
 - [ ] B4: Topic eligibility gate (must map to >=1 valid referral link; score boost for multiple relevant links).
@@ -190,18 +190,18 @@ Automation: 0/4 (0.0%)    ░░░░░░░░░░░░░░░░░░
 - [x] R67: Auth session hardening (secure HttpOnly cookies at backend cutover, session rotation, idle + absolute timeout policies).
 - [x] R68: Security headers runtime verification (automated checks to ensure CSP/HSTS/frame protections are present in deployed environments).
 - [x] R69: File/upload security policy (type/size validation, malware scanning, signed URL flow, quarantine handling) [activate when uploads are introduced].
-- [ ] 🔵 R70: Admin/agent high-risk action safeguards (two-step confirmations, approval workflow options, immutable audit coverage).
-- [ ] R71: Backup and restore drill (documented RTO/RPO targets with periodic restore verification).
-- [ ] R72: Dependency/supply-chain hardening (lockfile enforcement, provenance checks, update cadence + SLA).
-- [ ] R73: Threat model and security review gate (auth, submissions, moderation, affiliate workflows reviewed before launch).
-- [ ] R74: Cost and performance guardrails (bundle-size budgets, API usage budgets, and CI regressions checks).
-- [ ] R75: Migration rehearsal automation (run forward + rollback against fresh and seeded databases in CI).
-- [ ] R76: API contract drift prevention (spec/code parity checks generated from source-of-truth and CI enforcement).
-- [ ] R77: Feature-flag lifecycle governance (owner + expiry metadata, stale-flag detection, and cleanup SLA).
-- [ ] R78: Synthetic critical user journeys (feed -> product -> affiliate click, auth -> wishlist) with scheduled checks.
-- [ ] R79: Local-storage schema versioning and migrations (safe upgrades for returning users).
-- [ ] R80: Admin operations dashboard with RBAC (admin-only access, violation monitoring, queue health, key analytics).
-- [ ] R81: Agent/admin moderation command surface (approve/reject submissions, respond to reports, takedown listings/comments, ban/unban users) with immutable audit events.
+- [x] R70: Admin/agent high-risk action safeguards (two-step confirmations, approval workflow options, immutable audit coverage).
+- [x] R71: Backup and restore drill (documented RTO/RPO targets with periodic restore verification).
+- [x] R72: Dependency/supply-chain hardening (lockfile enforcement, provenance checks, update cadence + SLA).
+- [x] R73: Threat model and security review gate (auth, submissions, moderation, affiliate workflows reviewed before launch).
+- [x] R74: Cost and performance guardrails (bundle-size budgets, API usage budgets, and CI regressions checks).
+- [x] R75: Migration rehearsal automation (run forward + rollback against fresh and seeded databases in CI).
+- [x] R76: API contract drift prevention (spec/code parity checks generated from source-of-truth and CI enforcement).
+- [x] R77: Feature-flag lifecycle governance (owner + expiry metadata, stale-flag detection, and cleanup SLA).
+- [x] R78: Synthetic critical user journeys (feed -> product -> affiliate click, auth -> wishlist) with scheduled checks.
+- [x] R79: Local-storage schema versioning and migrations (safe upgrades for returning users).
+- [x] R80: Admin operations dashboard with RBAC (admin-only access, violation monitoring, queue health, key analytics).
+- [x] R81: Agent/admin moderation command surface (approve/reject submissions, respond to reports, takedown listings/comments, ban/unban users) with immutable audit events.
 
 ## Quickfixes
 - [x] Q1: Mobile feed card save star pinned to bottom-left corner
