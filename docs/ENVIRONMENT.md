@@ -21,9 +21,15 @@ Copy `.env.example` to `.env.local` for local development.
 
 ### Server-only secrets
 - `AGENT_API_KEY`: key required for privileged agent mutation endpoints when API-key mode is enabled.
+- `DATABASE_URL`: Postgres connection string for the runtime API server (Neon/Render/etc). When set, the server uses Postgres instead of local SQLite.
 - `VERCEL_TOKEN`: CI deploy token for Vercel workflow.
 - `VERCEL_ORG_ID`: Vercel org id.
 - `VERCEL_PROJECT_ID`: Vercel project id.
+
+### Runtime API server (advanced)
+- `WINDOW_SHOPPR_AUTO_MIGRATE`: `true/false`. When true, the API server auto-applies SQL migrations + seeds on boot (default: `false` in production, `true` otherwise).
+- `WINDOW_SHOPPR_SEED_FROM_JSON`: `true/false`. When true, the API server imports `src/data/products.json` into SQL tables if the catalog is empty (default: `false` in production, `true` otherwise).
+- `WINDOW_SHOPPR_PG_POOL_MAX`: max Postgres pool connections when `DATABASE_URL` is set (default: `10`).
 
 ## Environment profiles
 

@@ -76,37 +76,36 @@ const mapProductRow = (row) => ({
  * Handle GET /data/products.
  */
 export const handleGetProducts = async ({ db, res }) => {
-  const rows = db
-    .prepare(
-      `SELECT
-        p.*,
-        e.images_json,
-        e.tags_json,
-        e.video_url,
-        e.deal_ends_at,
-        e.save_count,
-        e.blog_slug,
-        e.blog_id,
-        e.affiliate_verification_json,
-        e.ad_creative_json,
-        e.is_sponsored,
-        e.source,
-        e.external_id,
-        e.last_seen_at,
-        e.last_price_check_at
-      FROM products p
-      LEFT JOIN product_extras e ON e.product_id = p.id
-      WHERE p.publish_state = 'published'
-      ORDER BY p.updated_at DESC;`,
-    )
-    .all()
-    .map((row) => ({
-      ...row,
-      images: parseJsonColumn(row.images_json, []),
-      tags: parseJsonColumn(row.tags_json, undefined),
-      affiliate_verification: parseJsonColumn(row.affiliate_verification_json, undefined),
-      ad_creative: parseJsonColumn(row.ad_creative_json, undefined),
-    }));
+  const rawRows = await db.query(
+    `SELECT
+      p.*,
+      e.images_json,
+      e.tags_json,
+      e.video_url,
+      e.deal_ends_at,
+      e.save_count,
+      e.blog_slug,
+      e.blog_id,
+      e.affiliate_verification_json,
+      e.ad_creative_json,
+      e.is_sponsored,
+      e.source,
+      e.external_id,
+      e.last_seen_at,
+      e.last_price_check_at
+    FROM products p
+    LEFT JOIN product_extras e ON e.product_id = p.id
+    WHERE p.publish_state = 'published'
+    ORDER BY p.updated_at DESC;`,
+  );
+
+  const rows = rawRows.map((row) => ({
+    ...row,
+    images: parseJsonColumn(row.images_json, []),
+    tags: parseJsonColumn(row.tags_json, undefined),
+    affiliate_verification: parseJsonColumn(row.affiliate_verification_json, undefined),
+    ad_creative: parseJsonColumn(row.ad_creative_json, undefined),
+  }));
 
   writeApiOk(res, { products: rows.map(mapProductRow) });
 };
@@ -115,30 +114,29 @@ export const handleGetProducts = async ({ db, res }) => {
  * Handle GET /data/products/:slug.
  */
 export const handleGetProductBySlug = async ({ db, res, slug }) => {
-  const row = db
-    .prepare(
-      `SELECT
-        p.*,
-        e.images_json,
-        e.tags_json,
-        e.video_url,
-        e.deal_ends_at,
-        e.save_count,
-        e.blog_slug,
-        e.blog_id,
-        e.affiliate_verification_json,
-        e.ad_creative_json,
-        e.is_sponsored,
-        e.source,
-        e.external_id,
-        e.last_seen_at,
-        e.last_price_check_at
-      FROM products p
-      LEFT JOIN product_extras e ON e.product_id = p.id
-      WHERE p.slug = ? AND p.publish_state = 'published'
-      LIMIT 1;`,
-    )
-    .get(slug);
+  const row = await db.queryOne(
+    `SELECT
+      p.*,
+      e.images_json,
+      e.tags_json,
+      e.video_url,
+      e.deal_ends_at,
+      e.save_count,
+      e.blog_slug,
+      e.blog_id,
+      e.affiliate_verification_json,
+      e.ad_creative_json,
+      e.is_sponsored,
+      e.source,
+      e.external_id,
+      e.last_seen_at,
+      e.last_price_check_at
+    FROM products p
+    LEFT JOIN product_extras e ON e.product_id = p.id
+    WHERE p.slug = ? AND p.publish_state = 'published'
+    LIMIT 1;`,
+    [slug],
+  );
 
   if (!row) {
     writeApiError(res, 404, "Product not found.");
@@ -174,11 +172,12 @@ export const handleEmailCapture = async ({ db, body, res }) => {
   }
 
   const id = `ecs_${shortHash(`${parsed.data.email}:${parsed.data.submittedAt}`)}`;
-  db.prepare(
+  await db.exec(
     `INSERT INTO email_captures (id, email, source, submitted_at)
      VALUES (?, ?, ?, ?)
      ON CONFLICT(id) DO NOTHING;`,
-  ).run(id, parsed.data.email, parsed.data.source, parsed.data.submittedAt);
+    [id, parsed.data.email, parsed.data.source, parsed.data.submittedAt],
+  );
 
   writeApiOk(res, { id });
 };
@@ -202,18 +201,19 @@ export const handlePurchaseIntent = async ({ db, body, res }) => {
     return;
   }
 
-  db.prepare(
+  await db.exec(
     `INSERT INTO purchase_intents (id, product_id, product_slug, intent, answered_at)
      VALUES (?, ?, ?, ?, ?)
      ON CONFLICT(id) DO UPDATE SET
        intent = excluded.intent,
        answered_at = excluded.answered_at;`,
-  ).run(
-    parsed.data.id,
-    parsed.data.productId,
-    parsed.data.productSlug,
-    parsed.data.intent,
-    parsed.data.answeredAt,
+    [
+      parsed.data.id,
+      parsed.data.productId,
+      parsed.data.productSlug,
+      parsed.data.intent,
+      parsed.data.answeredAt,
+    ],
   );
 
   writeApiOk(res, { id: parsed.data.id });
@@ -243,7 +243,7 @@ export const handleAuthAudit = async ({ db, body, res }) => {
   }
 
   const entry = parsed.data.entry;
-  db.prepare(
+  await db.exec(
     `INSERT INTO auth_audit_log (
       id,
       at,
@@ -254,14 +254,15 @@ export const handleAuthAudit = async ({ db, body, res }) => {
       metadata_json
     ) VALUES (?, ?, ?, ?, ?, ?, ?)
     ON CONFLICT(id) DO NOTHING;`,
-  ).run(
-    entry.id,
-    entry.at,
-    entry.action,
-    entry.status,
-    JSON.stringify(entry.actorRoles ?? []),
-    entry.actorEmail ?? null,
-    entry.metadata ? JSON.stringify(entry.metadata) : null,
+    [
+      entry.id,
+      entry.at,
+      entry.action,
+      entry.status,
+      JSON.stringify(entry.actorRoles ?? []),
+      entry.actorEmail ?? null,
+      entry.metadata ? JSON.stringify(entry.metadata) : null,
+    ],
   );
 
   writeApiOk(res, { id: entry.id });
@@ -294,35 +295,27 @@ export const handleAnalyticsEvents = async ({ db, body, res }) => {
   }
 
   const nowIso = new Date().toISOString();
-  const insertEvent = db.prepare(
-    `INSERT INTO analytics_events (id, type, occurred_at, received_at, payload_json)
-     VALUES (?, ?, ?, ?, ?)
-     ON CONFLICT(id) DO NOTHING;`,
-  );
+  const insertEventSql = `INSERT INTO analytics_events (id, type, occurred_at, received_at, payload_json)
+    VALUES (?, ?, ?, ?, ?)
+    ON CONFLICT(id) DO NOTHING;`;
 
-  db.exec("BEGIN");
-  try {
-    parsed.data.events.forEach((event) => {
+  await db.transaction(async (tx) => {
+    for (const event of parsed.data.events) {
       const id =
         event.id ??
         `ae_${shortHash(
           `${event.type}:${event.occurredAt}:${JSON.stringify(event.payload).slice(0, 180)}`,
         )}`; // Deterministic fallback id for idempotent ingestion.
 
-      insertEvent.run(
+      await tx.exec(insertEventSql, [
         id,
         event.type,
         event.occurredAt,
         nowIso,
         JSON.stringify(event.payload ?? {}),
-      );
-    });
-
-    db.exec("COMMIT");
-  } catch (error) {
-    db.exec("ROLLBACK");
-    throw error;
-  }
+      ]);
+    }
+  });
 
   writeApiOk(res, { ok: true });
 };
@@ -347,12 +340,18 @@ export const handleSaveDelta = async ({ db, body, res }) => {
   const delta = parsed.data.delta;
   const initial = Math.max(0, delta);
 
-  db.prepare(
+  const clampExpression =
+    db.dialect === "postgres"
+      ? "GREATEST(0, COALESCE(save_count, 0) + ?)"
+      : "MAX(0, COALESCE(save_count, 0) + ?)";
+
+  await db.exec(
     `INSERT INTO product_extras (product_id, images_json, save_count)
      VALUES (?, '[]', ?)
      ON CONFLICT(product_id) DO UPDATE SET
-       save_count = MAX(0, COALESCE(save_count, 0) + ?);`,
-  ).run(parsed.data.productId, initial, delta);
+       save_count = ${clampExpression};`,
+    [parsed.data.productId, initial, delta],
+  );
 
   writeApiOk(res, { ok: true });
 };
@@ -389,7 +388,7 @@ export const handleDealSubmission = async ({ db, body, res }) => {
 
   const item = parsed.data.queueItem;
   const sub = item.submission;
-  db.prepare(
+  await db.exec(
     `INSERT INTO deal_submissions (
       id,
       url,
@@ -414,19 +413,20 @@ export const handleDealSubmission = async ({ db, body, res }) => {
       coupon_code = excluded.coupon_code,
       status = excluded.status,
       updated_at = excluded.updated_at;`,
-  ).run(
-    item.id,
-    sub.url,
-    sub.title,
-    sub.category,
-    sub.subCategory ?? null,
-    typeof sub.salePrice === "number" ? sub.salePrice : null,
-    typeof sub.listPrice === "number" ? sub.listPrice : null,
-    sub.couponCode ?? null,
-    item.status,
-    item.source,
-    item.createdAt,
-    item.updatedAt,
+    [
+      item.id,
+      sub.url,
+      sub.title,
+      sub.category,
+      sub.subCategory ?? null,
+      typeof sub.salePrice === "number" ? sub.salePrice : null,
+      typeof sub.listPrice === "number" ? sub.listPrice : null,
+      sub.couponCode ?? null,
+      item.status,
+      item.source,
+      item.createdAt,
+      item.updatedAt,
+    ],
   );
 
   writeApiOk(res, { id: item.id });
@@ -453,7 +453,7 @@ export const handleAffiliateMintQueueItem = async ({ db, body, res }) => {
   }
 
   const item = parsed.data.queueItem;
-  db.prepare(
+  await db.exec(
     `INSERT INTO agent_queue_events (
       id,
       action,
@@ -467,13 +467,14 @@ export const handleAffiliateMintQueueItem = async ({ db, body, res }) => {
       payload_json = excluded.payload_json,
       status = excluded.status,
       updated_at = excluded.updated_at;`,
-  ).run(
-    item.id,
-    item.submissionQueueId,
-    JSON.stringify(parsed.data.queueItem),
-    item.status,
-    new Date().toISOString(),
-    new Date().toISOString(),
+    [
+      item.id,
+      item.submissionQueueId,
+      JSON.stringify(parsed.data.queueItem),
+      item.status,
+      new Date().toISOString(),
+      new Date().toISOString(),
+    ],
   );
 
   writeApiOk(res, { id: item.id });
@@ -517,44 +518,35 @@ export const handleWishlistSync = async ({ db, body, res }) => {
   const ownerId = payload.accountId ?? payload.guestId;
   const nowIso = new Date().toISOString();
 
-  const upsertWishlist = db.prepare(
-    `INSERT INTO wishlists (id, owner_id, name, created_at, updated_at)
-     VALUES (?, ?, ?, ?, ?)
-     ON CONFLICT(id) DO UPDATE SET
-       name = excluded.name,
-       updated_at = excluded.updated_at;`,
-  );
+  const upsertWishlistSql = `INSERT INTO wishlists (id, owner_id, name, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?)
+    ON CONFLICT(id) DO UPDATE SET
+      name = excluded.name,
+      updated_at = excluded.updated_at;`;
 
-  const upsertWishlistItem = db.prepare(
-    `INSERT INTO wishlist_items (id, wishlist_id, product_id, created_at)
-     VALUES (?, ?, ?, ?)
-     ON CONFLICT(wishlist_id, product_id) DO NOTHING;`,
-  );
+  const upsertWishlistItemSql = `INSERT INTO wishlist_items (id, wishlist_id, product_id, created_at)
+    VALUES (?, ?, ?, ?)
+    ON CONFLICT(wishlist_id, product_id) DO NOTHING;`;
 
-  const deleteItemsForWishlist = db.prepare(
-    `DELETE FROM wishlist_items WHERE wishlist_id = ?;`,
-  );
+  const deleteItemsForWishlistSql = `DELETE FROM wishlist_items WHERE wishlist_id = ?;`;
 
-  db.exec("BEGIN");
-  try {
-    Object.entries(payload.wishlist.lists).forEach(([listName, productIds]) => {
+  await db.transaction(async (tx) => {
+    for (const [listName, productIds] of Object.entries(payload.wishlist.lists)) {
       const wishlistId = `wl_${shortHash(`${ownerId}:${listName}`)}`;
-      upsertWishlist.run(wishlistId, ownerId, listName, nowIso, nowIso);
-      deleteItemsForWishlist.run(wishlistId); // Replace list contents for deterministic sync.
-      (productIds ?? []).forEach((productId) => {
-        upsertWishlistItem.run(
+
+      await tx.exec(upsertWishlistSql, [wishlistId, ownerId, listName, nowIso, nowIso]);
+      await tx.exec(deleteItemsForWishlistSql, [wishlistId]); // Replace list contents for deterministic sync.
+
+      for (const productId of productIds ?? []) {
+        await tx.exec(upsertWishlistItemSql, [
           `wli_${shortHash(`${wishlistId}:${productId}`)}`,
           wishlistId,
           productId,
           nowIso,
-        );
-      });
-    });
-    db.exec("COMMIT");
-  } catch (error) {
-    db.exec("ROLLBACK");
-    throw error;
-  }
+        ]);
+      }
+    }
+  });
 
   writeApiOk(res, {
     accountId: payload.accountId ?? undefined,
@@ -566,19 +558,18 @@ export const handleWishlistSync = async ({ db, body, res }) => {
  * Handle GET /data/blog/articles.
  */
 export const handleGetBlogArticles = async ({ db, res }) => {
-  const rows = db
-    .prepare(
-      `SELECT * FROM blog_articles
-       WHERE status IN ('published', 'approved', 'review', 'draft')
-       ORDER BY published_at DESC;`,
-    )
-    .all()
-    .map((row) => ({
-      ...row,
-      tags: parseJsonColumn(row.tags_json, []),
-      sections: parseJsonColumn(row.sections_json, []),
-      affiliateLinks: parseJsonColumn(row.affiliate_links_json, []),
-    }));
+  const rawRows = await db.query(
+    `SELECT * FROM blog_articles
+     WHERE status IN ('published', 'approved', 'review', 'draft')
+     ORDER BY published_at DESC;`,
+  );
+
+  const rows = rawRows.map((row) => ({
+    ...row,
+    tags: parseJsonColumn(row.tags_json, []),
+    sections: parseJsonColumn(row.sections_json, []),
+    affiliateLinks: parseJsonColumn(row.affiliate_links_json, []),
+  }));
 
   const items = rows.map((row) => ({
     id: row.id,
@@ -633,7 +624,7 @@ export const handleUpsertBlogArticle = async ({ db, body, res }) => {
   const article = parsed.data.article;
   const nowIso = new Date().toISOString();
 
-  db.prepare(
+  await db.exec(
     `INSERT INTO blog_articles (
       id,
       slug,
@@ -667,23 +658,24 @@ export const handleUpsertBlogArticle = async ({ db, body, res }) => {
       affiliate_links_json = excluded.affiliate_links_json,
       status = excluded.status,
       updated_at = excluded.updated_at;`,
-  ).run(
-    article.id,
-    article.slug,
-    article.title,
-    article.summary,
-    article.body,
-    article.category,
-    JSON.stringify(article.tags ?? []),
-    article.publishedAt,
-    article.seoTitle,
-    article.seoDescription,
-    article.layoutVariant,
-    JSON.stringify(article.sections ?? []),
-    JSON.stringify(article.affiliateLinks ?? []),
-    article.status,
-    nowIso,
-    nowIso,
+    [
+      article.id,
+      article.slug,
+      article.title,
+      article.summary,
+      article.body,
+      article.category,
+      JSON.stringify(article.tags ?? []),
+      article.publishedAt,
+      article.seoTitle,
+      article.seoDescription,
+      article.layoutVariant,
+      JSON.stringify(article.sections ?? []),
+      JSON.stringify(article.affiliateLinks ?? []),
+      article.status,
+      nowIso,
+      nowIso,
+    ],
   );
 
   writeApiOk(res, { id: article.id });

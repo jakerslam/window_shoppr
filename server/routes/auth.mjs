@@ -37,20 +37,21 @@ const verifyPassword = (password, stored) => {
 /**
  * Create and persist a backend session token for an authenticated account.
  */
-const createAuthSession = ({ db, accountId }) => {
+const createAuthSession = async ({ db, accountId }) => {
   const nowIso = new Date().toISOString();
   const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 14).toISOString();
   const sessionToken = `st_${randomBytes(24).toString("hex")}`;
   const sessionId = `sess_${shortHash(`${accountId}:${sessionToken}:${nowIso}`)}`;
 
-  db.prepare(
+  await db.exec(
     `INSERT INTO auth_sessions (id, account_id, session_token, created_at, expires_at)
      VALUES (?, ?, ?, ?, ?)
      ON CONFLICT(id) DO UPDATE SET
        session_token = excluded.session_token,
        created_at = excluded.created_at,
        expires_at = excluded.expires_at;`,
-  ).run(sessionId, accountId, sessionToken, nowIso, expiresAt);
+    [sessionId, accountId, sessionToken, nowIso, expiresAt],
+  );
 
   return { sessionId, expiresAt };
 };
@@ -74,22 +75,22 @@ export const handleAuthSignup = async ({ db, body, res }) => {
   }
 
   const nowIso = new Date().toISOString();
-  const existing = db
-    .prepare(`SELECT id FROM accounts WHERE provider = 'email' AND email = ?`)
-    .get(parsed.data.email);
+  const existing = await db.queryOne(
+    `SELECT id FROM accounts WHERE provider = 'email' AND email = ?`,
+    [parsed.data.email],
+  );
   if (existing?.id) {
     writeApiError(res, 409, "An account with that email already exists.");
     return;
   }
 
-  const firstAccountRow = db.prepare("SELECT COUNT(1) as count FROM accounts").get();
-  const isFirstAccount =
-    typeof firstAccountRow?.count === "number" ? firstAccountRow.count === 0 : false;
+  const firstAccountRow = await db.queryOne("SELECT COUNT(1) as count FROM accounts");
+  const isFirstAccount = Number(firstAccountRow?.count ?? 0) === 0;
   const rolesJson = JSON.stringify(isFirstAccount ? ["admin"] : ["user"]);
   const accountId = `acct_${shortHash(`email:${parsed.data.email}`)}`;
   const passwordHash = hashPassword(parsed.data.password);
 
-  db.prepare(
+  await db.exec(
     `INSERT INTO accounts (
       id,
       provider,
@@ -101,18 +102,19 @@ export const handleAuthSignup = async ({ db, body, res }) => {
       created_at,
       updated_at
     ) VALUES (?, 'email', ?, ?, ?, ?, ?, ?, ?);`,
-  ).run(
-    accountId,
-    parsed.data.email,
-    passwordHash,
-    parsed.data.displayName ?? null,
-    parsed.data.marketingEmails ? 1 : 0,
-    rolesJson,
-    nowIso,
-    nowIso,
+    [
+      accountId,
+      parsed.data.email,
+      passwordHash,
+      parsed.data.displayName ?? null,
+      parsed.data.marketingEmails ? 1 : 0,
+      rolesJson,
+      nowIso,
+      nowIso,
+    ],
   );
 
-  const { sessionId, expiresAt } = createAuthSession({ db, accountId });
+  const { sessionId, expiresAt } = await createAuthSession({ db, accountId });
 
   writeApiOk(res, {
     session: {
@@ -143,19 +145,18 @@ export const handleAuthLogin = async ({ db, body, res }) => {
     return;
   }
 
-  const account = db
-    .prepare(
-      `SELECT id, password_hash, display_name, marketing_emails, roles_json
-       FROM accounts WHERE provider = 'email' AND email = ?`,
-    )
-    .get(parsed.data.email);
+  const account = await db.queryOne(
+    `SELECT id, password_hash, display_name, marketing_emails, roles_json
+     FROM accounts WHERE provider = 'email' AND email = ?`,
+    [parsed.data.email],
+  );
 
   if (!account?.id || !verifyPassword(parsed.data.password, account.password_hash)) {
     writeApiError(res, 401, "Invalid email or password.");
     return;
   }
 
-  const { sessionId, expiresAt } = createAuthSession({ db, accountId: account.id });
+  const { sessionId, expiresAt } = await createAuthSession({ db, accountId: account.id });
   const roles = (() => {
     try {
       const parsedRoles = JSON.parse(account.roles_json ?? "[]");
@@ -197,11 +198,12 @@ export const handleAuthSocial = async ({ db, body, res }) => {
   const nowIso = new Date().toISOString();
   const accountId = `acct_${shortHash(`provider:${provider}`)}`;
 
-  const existing = db
-    .prepare("SELECT id, display_name, marketing_emails, roles_json FROM accounts WHERE id = ?")
-    .get(accountId);
+  const existing = await db.queryOne(
+    "SELECT id, display_name, marketing_emails, roles_json FROM accounts WHERE id = ?",
+    [accountId],
+  );
   if (!existing?.id) {
-    db.prepare(
+    await db.exec(
       `INSERT INTO accounts (
         id,
         provider,
@@ -213,12 +215,14 @@ export const handleAuthSocial = async ({ db, body, res }) => {
         created_at,
         updated_at
       ) VALUES (?, ?, NULL, NULL, ?, 0, '["user"]', ?, ?);`,
-    ).run(accountId, provider, `${provider.toUpperCase()} user`, nowIso, nowIso);
+      [accountId, provider, `${provider.toUpperCase()} user`, nowIso, nowIso],
+    );
   }
 
-  const account = db
-    .prepare("SELECT display_name, marketing_emails, roles_json FROM accounts WHERE id = ?")
-    .get(accountId);
+  const account = await db.queryOne(
+    "SELECT display_name, marketing_emails, roles_json FROM accounts WHERE id = ?",
+    [accountId],
+  );
 
   const roles = (() => {
     try {
@@ -229,7 +233,7 @@ export const handleAuthSocial = async ({ db, body, res }) => {
     }
   })();
 
-  const { sessionId, expiresAt } = createAuthSession({ db, accountId });
+  const { sessionId, expiresAt } = await createAuthSession({ db, accountId });
 
   writeApiOk(res, {
     session: {

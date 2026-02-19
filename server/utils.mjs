@@ -59,7 +59,7 @@ export const applyCors = ({ req, res, allowedOrigins }) => {
   res.setHeader("access-control-allow-methods", "GET,POST,PATCH,PUT,DELETE,OPTIONS");
   res.setHeader(
     "access-control-allow-headers",
-    "content-type,x-csrf-token,x-window-origin,authorization",
+    "content-type,x-csrf-token,x-window-origin,x-agent-key,x-request-id,authorization",
   );
   res.setHeader("access-control-max-age", "86400");
 };
@@ -69,4 +69,3 @@ export const applyCors = ({ req, res, allowedOrigins }) => {
  */
 export const shortHash = (input) =>
   createHash("sha256").update(String(input)).digest("hex").slice(0, 12);
-

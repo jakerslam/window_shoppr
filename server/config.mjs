@@ -17,6 +17,19 @@ export const SERVER_CONFIG = {
   sqlitePath:
     process.env.WINDOW_SHOPPR_SQLITE_PATH ||
     resolve(process.cwd(), "db", "window-shoppr.sqlite"),
+  databaseUrl: String(process.env.DATABASE_URL ?? "").trim(),
+  autoMigrate:
+    String(process.env.WINDOW_SHOPPR_AUTO_MIGRATE ?? "").trim() === "true"
+      ? true
+      : String(process.env.WINDOW_SHOPPR_AUTO_MIGRATE ?? "").trim() === "false"
+        ? false
+        : process.env.NODE_ENV !== "production",
+  seedFromJson:
+    String(process.env.WINDOW_SHOPPR_SEED_FROM_JSON ?? "").trim() === "true"
+      ? true
+      : String(process.env.WINDOW_SHOPPR_SEED_FROM_JSON ?? "").trim() === "false"
+        ? false
+        : process.env.NODE_ENV !== "production",
   allowedOrigins: parseCommaList(
     process.env.ALLOWED_ORIGINS ?? process.env.NEXT_PUBLIC_ALLOWED_ORIGINS,
   ),

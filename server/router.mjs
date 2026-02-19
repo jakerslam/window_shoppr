@@ -15,9 +15,9 @@ export const matchRoute = ({ method, pathname, routes }) => {
     return {
       handler: route.handler,
       params: route.getParams ? route.getParams(match) : {},
+      route,
     };
   }
 
   return null;
 };
-
