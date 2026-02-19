@@ -312,6 +312,7 @@ const buildArticleFromSeed = (seed: BlogSeed): BlogArticle => {
     affiliateLinks: relatedProducts.map((product) => ({
       label: `${product.name} on ${product.retailer}`,
       href: product.affiliateUrl,
+      productSlug: product.slug,
     })),
     status: score.totalScore >= 55 ? "published" : "review",
   };

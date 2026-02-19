@@ -1,10 +1,24 @@
 "use client";
 
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
+import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { BlogArticle } from "@/shared/lib/blog/types";
 import { trackBlogEvent } from "@/shared/lib/blog/analytics";
+import { requestDataApi } from "@/shared/lib/platform/data-api";
+import { PUBLIC_ENV } from "@/shared/lib/platform/env";
+import { ProductSchema } from "@/shared/lib/catalog/schema";
+import { Product } from "@/shared/lib/catalog/types";
+import { ProductDetail } from "@/features/product-detail";
+import LoadingSpinner from "@/shared/components/loading/LoadingSpinner";
+import Modal from "@/shared/components/modal/Modal";
+import EyeIcon from "@/shared/components/icons/EyeIcon";
+import RouteErrorFallback from "@/shared/components/error/RouteErrorFallback";
 import styles from "@/app/blog/[slug]/page.module.css";
 
+/**
+ * Render markdown-style inline links into React nodes.
+ */
 const renderInlineMarkdown = (value: string): ReactNode[] => {
   const parts: ReactNode[] = [];
   const pattern = /\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g;
@@ -39,6 +53,9 @@ const renderInlineMarkdown = (value: string): ReactNode[] => {
   return parts;
 };
 
+/**
+ * Render paragraph/list blocks from section content.
+ */
 const renderContentBlock = (content: string) =>
   content.split("\n\n").map((block, blockIndex) => {
     const lines = block.split("\n").map((line) => line.trim()).filter(Boolean);
@@ -69,6 +86,17 @@ const renderContentBlock = (content: string) =>
  * Client article renderer with section layouts + analytics tracking.
  */
 export default function BlogArticleClient({ article }: { article: BlogArticle }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const previewSlug = searchParams.get("product"); // Query param used to open in-article product previews.
+  const [previewProduct, setPreviewProduct] = useState<Product | null>(null);
+  const [previewState, setPreviewState] = useState<"idle" | "loading" | "error">(
+    "idle",
+  );
+  const previewEnabled =
+    PUBLIC_ENV.deployTarget === "runtime" && Boolean(PUBLIC_ENV.dataApiUrl); // Only enable modal previews when a runtime Data API is configured.
+
   useEffect(() => {
     trackBlogEvent({
       type: "blog_article_open",
@@ -77,6 +105,80 @@ export default function BlogArticleClient({ article }: { article: BlogArticle })
       metadata: { category: article.category },
     });
   }, [article.category, article.slug]);
+
+  /**
+   * Fetch product details for the current preview slug.
+   */
+  useEffect(() => {
+    if (!previewEnabled || !previewSlug) {
+      const timeoutId = window.setTimeout(() => {
+        setPreviewProduct(null); // Clear state when preview is closed or disabled.
+        setPreviewState("idle"); // Reset loading state.
+      }, 0);
+
+      return () => {
+        window.clearTimeout(timeoutId); // Clean up deferred state reset.
+      };
+    }
+
+    let cancelled = false;
+    const timeoutId = window.setTimeout(() => {
+      setPreviewProduct(null); // Clear previous product before fetching new preview.
+      setPreviewState("loading"); // Show spinner while fetching.
+    }, 0);
+
+    (async () => {
+      const response = await requestDataApi<unknown>({
+        path: `/data/products/${encodeURIComponent(previewSlug)}`,
+        method: "GET",
+      }); // Load one product by slug for the preview modal.
+
+      if (cancelled) {
+        return; // Ignore late responses after closing.
+      }
+
+      if (!response || !response.ok) {
+        setPreviewProduct(null);
+        setPreviewState("error");
+        return;
+      }
+
+      const raw = (response.data as { product?: unknown })?.product ?? response.data; // Support enveloped and direct payloads.
+      try {
+        const validated = ProductSchema.parse(raw); // Validate payload before rendering.
+        setPreviewProduct(validated);
+        setPreviewState("idle");
+      } catch {
+        setPreviewProduct(null);
+        setPreviewState("error");
+      }
+    })();
+
+    return () => {
+      cancelled = true; // Prevent state updates after unmount or slug changes.
+      window.clearTimeout(timeoutId); // Clean up deferred loading-state updates.
+    };
+  }, [previewEnabled, previewSlug]);
+
+  /**
+   * Open a product preview modal in-place by setting the product query param.
+   */
+  const handlePreviewOpen = useCallback(
+    (productSlug: string) => {
+      const nextParams = new URLSearchParams(searchParams.toString());
+      nextParams.set("product", productSlug); // Store preview slug in the URL for shareable modals.
+      router.push(`${pathname}?${nextParams.toString()}`); // Navigate without leaving the article route.
+    },
+    [pathname, router, searchParams],
+  );
+
+  /**
+   * Build product page href for static-export fallbacks.
+   */
+  const buildProductHref = useCallback(
+    (productSlug: string) => `/product/${productSlug}/`,
+    [],
+  );
 
   return (
     <div className={styles.articlePage__content}>
@@ -107,18 +209,64 @@ export default function BlogArticleClient({ article }: { article: BlogArticle })
         <ul className={styles.articlePage__affiliateList}>
           {article.affiliateLinks.map((link) => (
             <li key={link.href}>
-              <a
-                className={styles.articlePage__affiliateLink}
-                href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {link.label}
-              </a>
+              <div className={styles.articlePage__affiliateRow}>
+                <a
+                  className={styles.articlePage__affiliateLink}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {link.label}
+                </a>
+
+                {link.productSlug ? (
+                  previewEnabled ? (
+                    <button
+                      className={styles.articlePage__previewButton}
+                      type="button"
+                      aria-label={`Preview ${link.label}`}
+                      onClick={() => handlePreviewOpen(link.productSlug!)} // Open the in-article preview modal.
+                      title="Preview"
+                    >
+                      <EyeIcon />
+                    </button>
+                  ) : (
+                    <Link
+                      className={styles.articlePage__previewButton}
+                      href={buildProductHref(link.productSlug)}
+                      aria-label={`Preview ${link.label}`}
+                      title="Preview"
+                    >
+                      <EyeIcon />
+                    </Link>
+                  )
+                ) : null}
+              </div>
             </li>
           ))}
         </ul>
       </aside>
+
+      {previewEnabled && previewSlug ? (
+        <Modal contentClassName={styles.articlePage__previewModal}>
+          {previewState === "loading" ? (
+            <div className={styles.articlePage__previewLoading}>
+              <LoadingSpinner label="Loading preview…" size={34} />
+            </div>
+          ) : previewProduct ? (
+            <ProductDetail product={previewProduct} inModal />
+          ) : (
+            <RouteErrorFallback
+              error={new Error("Preview unavailable")}
+              reset={() => router.back()}
+              title="Preview unavailable."
+              message="We couldn't load this product preview right now."
+              backHref={`/blog/${article.slug}/`}
+              backLabel="← Back to article"
+            />
+          )}
+        </Modal>
+      ) : null}
     </div>
   );
 }

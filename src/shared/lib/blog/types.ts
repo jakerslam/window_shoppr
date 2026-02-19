@@ -26,6 +26,7 @@ export type BlogSection = {
 export type BlogAffiliateLink = {
   label: string;
   href: string;
+  productSlug?: string; // Optional product slug for in-app previews.
 };
 
 export type BlogTopicProposal = {

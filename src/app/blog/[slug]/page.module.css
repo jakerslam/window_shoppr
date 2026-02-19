@@ -197,6 +197,13 @@
   gap: 10px;
 }
 
+.articlePage__affiliateRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .articlePage__affiliateLink {
   color: var(--color-primary-strong);
   font-weight: 700;
@@ -206,6 +213,39 @@
 
 .articlePage__affiliateLink:hover {
   opacity: 0.82;
+}
+
+.articlePage__previewButton {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-muted);
+  color: var(--color-fg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity 150ms ease, transform 150ms ease;
+  text-decoration: none;
+  flex: 0 0 auto;
+}
+
+.articlePage__previewButton svg {
+  width: 18px;
+  height: 18px;
+}
+
+.articlePage__previewButton:hover {
+  opacity: 0.82;
+  transform: translateY(-1px);
+}
+
+.articlePage__previewLoading {
+  min-height: 520px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .articlePage__shareButton {
