@@ -689,10 +689,3 @@
 .homeFeed__productModal {
   width: min(1100px, 94vw);
 }
-
-@media (min-width: 821px) {
-  .homeFeed__productModal {
-    height: calc(100vh - 48px);
-    max-height: calc(100vh - 48px);
-  }
-}

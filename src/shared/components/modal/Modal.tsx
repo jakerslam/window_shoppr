@@ -11,10 +11,12 @@ export default function Modal({
   children,
   contentClassName,
   contentStyle,
+  variant = "default",
 }: {
   children: React.ReactNode;
   contentClassName?: string;
   contentStyle?: React.CSSProperties;
+  variant?: "default" | "desktop-fullheight";
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -58,7 +60,11 @@ export default function Modal({
   }, [handleClose]);
 
   return (
-    <div className={styles.modal} role="dialog" aria-modal="true">
+    <div
+      className={`${styles.modal} ${variant === "desktop-fullheight" ? styles["modal--desktopFullHeight"] : ""}`}
+      role="dialog"
+      aria-modal="true"
+    >
       {/* Backdrop layer for focus and separation. */}
       <div
         className={styles.modal__backdrop}

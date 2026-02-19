@@ -273,7 +273,10 @@ export default function BlogArticleClient({ article }: { article: BlogArticle })
       </aside>
 
       {previewEnabled && previewSlug ? (
-        <Modal contentClassName={styles.articlePage__previewModal}>
+        <Modal
+          contentClassName={styles.articlePage__previewModal}
+          variant="desktop-fullheight"
+        >
           {previewState === "loading" && !previewProduct ? (
             <div className={styles.articlePage__previewLoading}>
               <LoadingSpinner label="Loading preview…" size={34} />

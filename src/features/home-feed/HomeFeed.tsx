@@ -296,7 +296,10 @@ export default function HomeFeed({
       )}
 
       {PUBLIC_ENV.deployTarget === "runtime" && modalProduct ? (
-        <Modal contentClassName={styles.homeFeed__productModal}>
+        <Modal
+          contentClassName={styles.homeFeed__productModal}
+          variant="desktop-fullheight"
+        >
           <ProductDetail product={modalProduct} inModal />
         </Modal>
       ) : null}
