@@ -48,6 +48,22 @@
   padding-bottom: 0;
 }
 
+.topBar__blogButton {
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-muted);
+  color: var(--color-primary-strong);
+  font-weight: 600;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
 .topBar__categoriesTrigger {
   height: 36px;
   padding: 0 14px;
@@ -632,6 +648,10 @@
     display: none;
   }
 
+  .topBar__blogButton {
+    display: none;
+  }
+
   .topBar__search {
     display: none;
   }
@@ -849,6 +869,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
+  .topBar__blogButton,
   .topBar__categoriesTrigger,
   .topBar__actionButton,
   .topBar__searchInput,
@@ -860,6 +881,7 @@
 }
 
 :global(:root[data-theme="dark"]) .topBar__categoriesTrigger,
+:global(:root[data-theme="dark"]) .topBar__blogButton,
 :global(:root[data-theme="dark"]) .topBar__actionButton,
 :global(:root[data-theme="dark"]) .topBar__searchInput,
 :global(:root[data-theme="dark"]) .topBar__menu,

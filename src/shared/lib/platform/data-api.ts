@@ -1,4 +1,5 @@
 import { PUBLIC_ENV } from "@/shared/lib/platform/env";
+import { getCsrfHeaders } from "@/shared/lib/platform/csrf";
 
 type DataApiSuccess<T> = {
   ok: true;
@@ -52,12 +53,14 @@ export const requestDataApi = async <T>({
   }
 
   try {
+    const isMutationMethod = method !== "GET";
     const requestInit: RequestInit & {
       next?: { revalidate?: number; tags?: string[] };
     } = {
       method,
       headers: {
         "Content-Type": "application/json",
+        ...(isMutationMethod ? getCsrfHeaders() : {}), // Attach CSRF + origin assertions on mutations.
       },
       body: body ? JSON.stringify(body) : undefined,
       cache: cacheConfig?.cache ?? "no-store",

@@ -1,9 +1,9 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 129/150 (86.0%)  █████████████████░░░
+Overall: 130/150 (86.7%)  █████████████████░░░
 Frontend: 58/64 (90.6%)   ██████████████████░░
-Backend: 18/22 (81.8%)    ████████████████░░░░
+Backend: 19/22 (86.4%)    █████████████████░░░
 Automation: 0/4 (0.0%)    ░░░░░░░░░░░░░░░░░░░░
 
 
@@ -61,6 +61,24 @@ Automation: 0/4 (0.0%)    ░░░░░░░░░░░░░░░░░░
 - [x] R25 (Phase 2 Optional): AI-curated blog engine with intent-to-product mapping (pillar templates, FAQ schema)
 - [x] R20: SEO structured data (Product/Offer JSON-LD)
 - [x] R21: Sitemap, robots, and canonical URLs
+
+## BLOG
+- [ ] B1: Blog information architecture (index page, article page, category/tag taxonomy, canonical + breadcrumb support).
+- [ ] B2: Desktop top-bar `Blog` navigation entry; mobile omits top-level blog nav (blog accessed via direct links/search/discovery modules).
+- [ ] B3: Agentic topic proposal scoring pipeline (LLM query signal + search trend signal + viral signal + affiliate-link coverage score + business priority score).
+- [ ] B4: Topic eligibility gate (must map to >=1 valid referral link; score boost for multiple relevant links).
+- [ ] B5: Agentic research workflow (SERP/content pattern scan, competitor format signals, source collection, fact checklist).
+- [ ] B6: Outline generation workflow (intent-first structure, FAQ blocks, comparison tables, and product-slot planning).
+- [ ] B7: Draft generation workflow (helpful-first content, natural product insertion, dynamic media placeholders, disclosure-aware copy).
+- [ ] B8: SEO + LLM optimization layer (entities, semantic headings, concise answer blocks, quote-ready summaries, schema, internal links).
+- [ ] B9: AI metadata generation (title, meta description, OG/Twitter metadata, article schema fields, slug recommendations).
+- [ ] B10: Quality gates before publish (factuality checks, citation quality, duplicate/thin-content checks, affiliate/disclosure compliance, readability threshold, and prompt-library guardrails).
+- [ ] B11: Editorial polish pass (voice/style consistency, originality uplift, anti-generic rewrite). Avoid “AI detection evasion” goals.
+- [ ] B12: Publish states + approvals (draft -> review -> approved -> published) with agent + admin audit trail.
+- [ ] B13: Blog index ranking personalization (use consented cookies/preferences to prioritize likely-relevant/likely-converting articles).
+- [ ] B14: Blog-to-product conversion instrumentation (click-through, affiliate click depth, assisted conversion attribution).
+- [ ] B15: Backend CMS/API for blog content (article CRUD, taxonomy management, workflow status, scheduled publish, cache invalidation).
+- [ ] B16: Seed `10` sample blog articles for local fallback; use the blog seed file when SQL/blog API is unavailable (same fallback pattern as product JSON source).
 
 ## Performance & Stability
 - [x] R22: Image optimization and lazy-loading
@@ -166,8 +184,8 @@ Automation: 0/4 (0.0%)    ░░░░░░░░░░░░░░░░░░
 - [x] D6: Restore modal routing (intercepting routes) after moving off GitHub Pages
 - [x] D7: Launch cleanup - remove local auth fallback account/session store and require backend auth endpoints in production.
 - [x] R63: Abuse protection and rate limiting (per-IP/session throttles, burst cooldowns, bot challenge on write endpoints, idempotency keys, 429 handling, and violation alerting).
-- [ ] 🔵 R64: CSRF protection for state-changing requests (token/origin enforcement for mutation endpoints).
-- [ ] R65: Input/output hardening (centralized sanitization, strict validation, and safe rendering rules for user-generated content).
+- [x] R64: CSRF protection for state-changing requests (token/origin enforcement for mutation endpoints).
+- [ ] 🔵 R65: Input/output hardening (centralized sanitization, strict validation, and safe rendering rules for user-generated content).
 - [ ] R66: CORS and origin allowlist policy (deny-by-default with environment-specific allowlists).
 - [ ] R67: Auth session hardening (secure HttpOnly cookies at backend cutover, session rotation, idle + absolute timeout policies).
 - [ ] R68: Security headers runtime verification (automated checks to ensure CSP/HSTS/frame protections are present in deployed environments).
