@@ -1,10 +1,10 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 97/98 (99.0%)  ████████████████████
-Frontend: 58/64 (90.6%) ██████████████████░░
-Backend: 17/22 (77.3%)  ███████████████░░░░░
-Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░░░
+Overall: 123/150 (82.0%)  ████████████████░░░░
+Frontend: 58/64 (90.6%)   ██████████████████░░
+Backend: 17/22 (77.3%)    ███████████████░░░░░
+Automation: 0/4 (0.0%)    ░░░░░░░░░░░░░░░░░░░░
 
 
 ## Legend
@@ -159,12 +159,31 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 
 ## Deployment
 - [x] D1: Hosting + build pipeline (Vercel or equivalent)
-- [ ] 🔵 D2: Environment config (SITE_URL, API keys, affiliate IDs)
-- [ ] D3: Custom domain + SSL
+- [x] D2: Environment config (SITE_URL, API keys, affiliate IDs)
+- [ ] 🔵 D3: Custom domain + SSL
 - [ ] D4: Production data source (switch JSON → SQL/API)
 - [ ] D5: Monitoring + error reporting (Sentry or similar)
 - [ ] D6: Restore modal routing (intercepting routes) after moving off GitHub Pages
 - [ ] D7: Launch cleanup - remove local auth fallback account/session store and require backend auth endpoints in production.
+- [ ] R63: Abuse protection and rate limiting (per-IP/session throttles, burst cooldowns, bot challenge on write endpoints, idempotency keys, 429 handling, and violation alerting).
+- [ ] R64: CSRF protection for state-changing requests (token/origin enforcement for mutation endpoints).
+- [ ] R65: Input/output hardening (centralized sanitization, strict validation, and safe rendering rules for user-generated content).
+- [ ] R66: CORS and origin allowlist policy (deny-by-default with environment-specific allowlists).
+- [ ] R67: Auth session hardening (secure HttpOnly cookies at backend cutover, session rotation, idle + absolute timeout policies).
+- [ ] R68: Security headers runtime verification (automated checks to ensure CSP/HSTS/frame protections are present in deployed environments).
+- [ ] R69: File/upload security policy (type/size validation, malware scanning, signed URL flow, quarantine handling) [activate when uploads are introduced].
+- [ ] R70: Admin/agent high-risk action safeguards (two-step confirmations, approval workflow options, immutable audit coverage).
+- [ ] R71: Backup and restore drill (documented RTO/RPO targets with periodic restore verification).
+- [ ] R72: Dependency/supply-chain hardening (lockfile enforcement, provenance checks, update cadence + SLA).
+- [ ] R73: Threat model and security review gate (auth, submissions, moderation, affiliate workflows reviewed before launch).
+- [ ] R74: Cost and performance guardrails (bundle-size budgets, API usage budgets, and CI regressions checks).
+- [ ] R75: Migration rehearsal automation (run forward + rollback against fresh and seeded databases in CI).
+- [ ] R76: API contract drift prevention (spec/code parity checks generated from source-of-truth and CI enforcement).
+- [ ] R77: Feature-flag lifecycle governance (owner + expiry metadata, stale-flag detection, and cleanup SLA).
+- [ ] R78: Synthetic critical user journeys (feed -> product -> affiliate click, auth -> wishlist) with scheduled checks.
+- [ ] R79: Local-storage schema versioning and migrations (safe upgrades for returning users).
+- [ ] R80: Admin operations dashboard with RBAC (admin-only access, violation monitoring, queue health, key analytics).
+- [ ] R81: Agent/admin moderation command surface (approve/reject submissions, respond to reports, takedown listings/comments, ban/unban users) with immutable audit events.
 
 ## Quickfixes
 - [x] Q1: Mobile feed card save star pinned to bottom-left corner
