@@ -51,14 +51,7 @@ export default function HomeFeed({
   const [viewportWidth, setViewportWidth] = useState(1280);
   const [sortOption, setSortOption] = useState<SortOption>("newest");
   const [feedPage, setFeedPage] = useState(0);
-  const [speedMode, setSpeedMode] = useState<"cozy" | "quick">(() => {
-    if (typeof window === "undefined") {
-      return "cozy";
-    }
-
-    const savedMode = window.localStorage.getItem(SPEED_MODE_STORAGE_KEY);
-    return savedMode && isValidSpeedMode(savedMode) ? savedMode : "cozy";
-  });
+  const [speedMode, setSpeedMode] = useState<"cozy" | "quick">("cozy");
   const {
     speedPreferences,
     preferredCategorySlugs,
@@ -103,6 +96,22 @@ export default function HomeFeed({
 
     return () => {
       window.removeEventListener("resize", syncViewportWidth);
+    };
+  }, []);
+
+  /**
+   * Hydrate persisted speed mode on the client to avoid SSR/client mismatches.
+   */
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      const savedMode = window.localStorage.getItem(SPEED_MODE_STORAGE_KEY);
+      if (savedMode && isValidSpeedMode(savedMode)) {
+        setSpeedMode(savedMode);
+      }
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timeoutId);
     };
   }, []);
 
