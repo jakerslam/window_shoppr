@@ -6,6 +6,7 @@ import Footer from "@/shared/components/footer/Footer";
 import { EmailCaptureModal } from "@/features/email-capture";
 import { PurchaseFollowupPrompt } from "@/features/purchase-followup";
 import CookieConsent from "@/shared/components/privacy/CookieConsent";
+import DataGovernanceBootstrap from "@/shared/components/privacy/DataGovernanceBootstrap";
 import MonitoringBootstrap from "@/shared/components/monitoring/MonitoringBootstrap";
 import { SITE_URL } from "@/shared/lib/platform/seo";
 import { REFERRER_POLICY } from "@/shared/lib/platform/security";
@@ -118,6 +119,7 @@ export default function RootLayout({
       {/* Page body with shared global layout. */}
       <body className={`${jakartaSans.variable} ${geistMono.variable} ${cormorant.variable}`}>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        <DataGovernanceBootstrap />
         <MonitoringBootstrap />
 
         <div className="site-shell">

@@ -1,7 +1,7 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 94/95 (98.9%)  ████████████████████
+Overall: 97/98 (99.0%)  ████████████████████
 Frontend: 58/64 (90.6%) ██████████████████░░
 Backend: 17/22 (77.3%)  ███████████████░░░░░
 Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░░░
@@ -142,8 +142,8 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 - [x] R58: Incident response readiness (SLOs, alert thresholds, runbooks, on-call escalation flow)
 - [x] R59: Security scanning in CI (dependency vuln scan, secret scan, static security checks)
 - [x] R60: Performance budget gate (Lighthouse/Web Vitals budgets enforced in CI, with mobile thresholds)
-- [ ] 🔵 R61: Data governance controls (retention policy, deletion/export flows, consent-linked data handling)
-- [ ] R62: Release strategy hardening (staging environment, release checklist, rollback and smoke-test workflow)
+- [x] R61: Data governance controls (retention policy, deletion/export flows, consent-linked data handling)
+- [x] R62: Release strategy hardening (staging environment, release checklist, rollback and smoke-test workflow)
 
 ## Optional Optimizations & Refactors
 - [ ] O1: Extract product sorting/filtering into reusable helpers
@@ -158,8 +158,8 @@ Automation: 0/4 (0.0%)  ░░░░░░░░░░░░░░░░░░�
 
 
 ## Deployment
-- [ ] D1: Hosting + build pipeline (Vercel or equivalent)
-- [ ] D2: Environment config (SITE_URL, API keys, affiliate IDs)
+- [x] D1: Hosting + build pipeline (Vercel or equivalent)
+- [ ] 🔵 D2: Environment config (SITE_URL, API keys, affiliate IDs)
 - [ ] D3: Custom domain + SSL
 - [ ] D4: Production data source (switch JSON → SQL/API)
 - [ ] D5: Monitoring + error reporting (Sentry or similar)
