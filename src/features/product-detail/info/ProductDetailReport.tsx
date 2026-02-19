@@ -41,18 +41,22 @@ export default function ProductDetailReport({
       return; // Require details when reason is too generic.
     }
 
-    const queueItem = submitReport({
+    const result = submitReport({
       productId,
       productSlug,
       reason: reportReason,
       details: details || undefined,
     });
 
+    if (!result.ok) {
+      setReportSubmitted(false);
+      setReportMessage(result.message);
+      return;
+    }
+
     setReportSubmitted(true);
     setReportMessage(
-      queueItem
-        ? `Queued for review (${queueItem.id}).`
-        : "Queued for review.",
+      `Queued for review (${result.queueItem.id}).`,
     );
     setIsReportOpen(false);
     setReportDetails("");

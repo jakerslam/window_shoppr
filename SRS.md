@@ -1,9 +1,9 @@
 # Window Shoppr - Software Requirements Specification (SRS)
 
 ## Progress
-Overall: 128/150 (85.3%)  █████████████████░░░
+Overall: 129/150 (86.0%)  █████████████████░░░
 Frontend: 58/64 (90.6%)   ██████████████████░░
-Backend: 17/22 (77.3%)    ███████████████░░░░░
+Backend: 18/22 (81.8%)    ████████████████░░░░
 Automation: 0/4 (0.0%)    ░░░░░░░░░░░░░░░░░░░░
 
 
@@ -165,8 +165,8 @@ Automation: 0/4 (0.0%)    ░░░░░░░░░░░░░░░░░░
 - [x] D5: Monitoring + error reporting (Sentry or similar)
 - [x] D6: Restore modal routing (intercepting routes) after moving off GitHub Pages
 - [x] D7: Launch cleanup - remove local auth fallback account/session store and require backend auth endpoints in production.
-- [ ] 🔵 R63: Abuse protection and rate limiting (per-IP/session throttles, burst cooldowns, bot challenge on write endpoints, idempotency keys, 429 handling, and violation alerting).
-- [ ] R64: CSRF protection for state-changing requests (token/origin enforcement for mutation endpoints).
+- [x] R63: Abuse protection and rate limiting (per-IP/session throttles, burst cooldowns, bot challenge on write endpoints, idempotency keys, 429 handling, and violation alerting).
+- [ ] 🔵 R64: CSRF protection for state-changing requests (token/origin enforcement for mutation endpoints).
 - [ ] R65: Input/output hardening (centralized sanitization, strict validation, and safe rendering rules for user-generated content).
 - [ ] R66: CORS and origin allowlist policy (deny-by-default with environment-specific allowlists).
 - [ ] R67: Auth session hardening (secure HttpOnly cookies at backend cutover, session rotation, idle + absolute timeout policies).

@@ -1,3 +1,5 @@
+import { consumeRateLimit } from "@/shared/lib/platform/rate-limit";
+
 export type ProductComment = {
   id: string;
   productId: string;
@@ -71,6 +73,17 @@ export const submitComment = ({
   author,
   body,
 }: CommentPayload): ProductComment => {
+  const rateLimitResult = consumeRateLimit({
+    action: "comment_write",
+    windowMs: 1000 * 60 * 2,
+    maxRequests: 4,
+    cooldownMs: 1000 * 30,
+    idempotencyKey: `${productId}:${body.trim().toLowerCase()}`,
+  });
+  if (!rateLimitResult.ok) {
+    throw new Error(rateLimitResult.message); // Surface 429-style messaging to the comment UI handler.
+  }
+
   const comment: ProductComment = {
     id: `comment-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
     productId,
@@ -90,4 +103,3 @@ export const submitComment = ({
 
   return comment;
 };
-

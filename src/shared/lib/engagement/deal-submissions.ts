@@ -1,6 +1,7 @@
 "use client";
 
 import { requestDataApi } from "@/shared/lib/platform/data-api";
+import { consumeRateLimit } from "@/shared/lib/platform/rate-limit";
 import { queueAffiliateMintForSubmission } from "@/shared/lib/engagement/affiliate-minting";
 import {
   DEAL_SUBMISSION_CREATED_EVENT,
@@ -57,6 +58,22 @@ export const submitDealSubmission = async (input: {
   agreeIndependent: boolean;
   agreeAccuracy: boolean;
 }) => {
+  const rateLimitResult = consumeRateLimit({
+    action: "deal_submission_write",
+    windowMs: 1000 * 60 * 10,
+    maxRequests: 6,
+    cooldownMs: 1000 * 60 * 3,
+    idempotencyKey: `${input.url.trim().toLowerCase()}::${input.title.trim().toLowerCase()}`,
+  });
+  if (!rateLimitResult.ok) {
+    return {
+      ok: false,
+      statusCode: rateLimitResult.statusCode,
+      message: rateLimitResult.message,
+      retryAfterMs: rateLimitResult.retryAfterMs,
+    } as const;
+  }
+
   const normalizedUrl = normalizeSubmissionUrl(input.url);
   if (!normalizedUrl) {
     return { ok: false, message: "Please enter a valid product URL." } as const;

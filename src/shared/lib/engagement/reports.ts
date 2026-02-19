@@ -1,3 +1,5 @@
+import { consumeRateLimit } from "@/shared/lib/platform/rate-limit";
+
 export type ReportReason = "inaccuracy" | "inappropriate" | "spam" | "other";
 export type ReportStatus = "pending" | "triaged" | "resolved" | "dismissed";
 
@@ -129,7 +131,23 @@ export const updateModerationQueueItem = ({
  */
 export const submitReport = (payload: Omit<ReportPayload, "timestamp">) => {
   if (typeof window === "undefined") {
-    return null; // Skip storage access during SSR.
+    return { ok: false, message: "Reporting is unavailable right now." } as const; // Skip storage access during SSR.
+  }
+
+  const rateLimitResult = consumeRateLimit({
+    action: "report_write",
+    windowMs: 1000 * 60 * 10,
+    maxRequests: 8,
+    cooldownMs: 1000 * 60 * 2,
+    idempotencyKey: `${payload.productId}:${payload.reason}:${payload.details?.trim().toLowerCase() ?? ""}`,
+  });
+  if (!rateLimitResult.ok) {
+    return {
+      ok: false,
+      statusCode: rateLimitResult.statusCode,
+      retryAfterMs: rateLimitResult.retryAfterMs,
+      message: rateLimitResult.message,
+    } as const;
   }
 
   const report: ReportPayload = {
@@ -171,7 +189,7 @@ export const submitReport = (payload: Omit<ReportPayload, "timestamp">) => {
     new CustomEvent("moderation:queue:enqueue", { detail: queueItem }),
   ); // Broadcast new queue work for future agent ingestion.
 
-  return queueItem;
+  return { ok: true, queueItem } as const;
 };
 
 /**

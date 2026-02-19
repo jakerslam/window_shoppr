@@ -122,12 +122,20 @@ export default function ProductDetailComments({
       return;
     }
 
-    submitComment({
-      productId,
-      productSlug,
-      author,
-      body: trimmedBody,
-    });
+    try {
+      submitComment({
+        productId,
+        productSlug,
+        author,
+        body: trimmedBody,
+      });
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Unable to post right now.";
+      setErrorMessage(message);
+      setIsSubmitted(false);
+      return;
+    }
 
     setCommentsVersion((prev) => prev + 1); // Refresh comments from storage after local submit.
     setBody("");
