@@ -14,6 +14,7 @@ Copy `.env.example` to `.env.local` for local development.
 - `NEXT_PUBLIC_DATA_API_URL`: data backend base URL.
 - `NEXT_PUBLIC_MONITORING_API_URL`: monitoring ingest endpoint.
 - `NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG`: affiliate tag for automatic minting.
+- `NEXT_PUBLIC_ALLOW_JSON_FALLBACK`: `true/false` gate for JSON catalog fallback when SQL/API is unavailable.
 
 ### Server-only secrets
 - `AGENT_API_KEY`: key required for privileged agent mutation endpoints when API-key mode is enabled.
@@ -26,6 +27,7 @@ Copy `.env.example` to `.env.local` for local development.
 ### Local development
 - `NEXT_PUBLIC_DEPLOY_TARGET=runtime`
 - leave API URLs blank to run local-first fallback mode.
+- keep `NEXT_PUBLIC_ALLOW_JSON_FALLBACK=true`.
 
 ### GitHub Pages beta
 - `NEXT_PUBLIC_DEPLOY_TARGET=static-export`
@@ -35,6 +37,7 @@ Copy `.env.example` to `.env.local` for local development.
 ### Production runtime
 - `NEXT_PUBLIC_DEPLOY_TARGET=runtime`
 - set auth/data/monitoring API URLs
+- set `NEXT_PUBLIC_ALLOW_JSON_FALLBACK=false` to enforce SQL/API source only
 - set `AGENT_API_KEY`
 
 ## Security notes
